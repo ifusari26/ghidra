@@ -92,7 +92,7 @@ public class FdtHeader implements StructConverter {
 
 	/**
 	 * Returns the MAGIC value of this FDT Header.
-	 * @see FdtConstants.MAGIC.
+	 * @see FdtConstants#FDT_MAGIC
 	 * @return the MAGIC value of this FDT Header
 	 */
 	public int getMagic() {

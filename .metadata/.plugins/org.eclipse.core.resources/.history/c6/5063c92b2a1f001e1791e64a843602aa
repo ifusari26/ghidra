@@ -1,0 +1,7 @@
+package tools.ghidra.marshmallows;
+
+import ghidra.framework.plugintool.util.PluginPackage;
+
+public class MarshmallowsPluginPackage extends PluginPackage {
+
+}

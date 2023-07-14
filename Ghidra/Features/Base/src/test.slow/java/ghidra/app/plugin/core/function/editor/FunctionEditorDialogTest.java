@@ -143,7 +143,7 @@ public class FunctionEditorDialogTest extends AbstractGhidraHeadedIntegrationTes
 
 		ClassicSampleX86ProgramBuilder builder = new ClassicSampleX86ProgramBuilder();
 		program = builder.getProgram();
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.openProgram(program.getDomainFile());
 		builder.dispose();
 		waitForSwing();

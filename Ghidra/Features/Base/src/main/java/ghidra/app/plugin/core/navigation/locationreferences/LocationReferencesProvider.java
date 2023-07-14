@@ -310,8 +310,7 @@ public class LocationReferencesProvider extends ComponentProviderAdapter
 	}
 
 	private void goTo(ProgramLocation loc, Program theProgram) {
-		GoToService goToService = tool.getService(GoToService.class);
-		goToService.goTo(loc, theProgram);
+		tool.getService(GoToService.class).ifPresent(service -> service.goTo(loc, theProgram));
 	}
 
 	private void addListeners() {

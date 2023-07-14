@@ -113,7 +113,7 @@ public abstract class AbstractGhidraScriptMgrPluginTest
 		plugin = env.getPlugin(GhidraScriptMgrPlugin.class);
 		assertNotNull(plugin);
 
-		console = env.getTool().getService(ConsoleService.class);
+		console = env.getTool().getService(ConsoleService.class).orElseThrow();
 		assertNotNull(console);
 
 		provider = plugin.getProvider();
@@ -1251,7 +1251,7 @@ public abstract class AbstractGhidraScriptMgrPluginTest
 	protected SpyConsole installSpyConsole() {
 		final PluginTool tool = plugin.getTool();
 		runSwing(() -> {
-			ConsoleService defaultConsole = tool.getService(ConsoleService.class);
+			ConsoleService defaultConsole = tool.getService(ConsoleService.class).orElseThrow();
 
 			//@formatter:off
 			invokeInstanceMethod(

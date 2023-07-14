@@ -91,7 +91,7 @@ public class CallTreePluginTest extends AbstractGhidraHeadedIntegrationTest {
 		env.showTool();
 
 		program = createProgram();
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.openProgram(program.getDomainFile());
 
 		// setup a good start location

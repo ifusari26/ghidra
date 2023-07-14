@@ -74,7 +74,7 @@ public class PropertyManagerPluginTest extends AbstractGhidraHeadedIntegrationTe
 		builder.createMemory("test", "0x01001000", 0x100);
 		program = builder.getProgram();
 
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.openProgram(program.getDomainFile());
 		addrFactory = program.getAddressFactory();
 
@@ -123,7 +123,7 @@ public class PropertyManagerPluginTest extends AbstractGhidraHeadedIntegrationTe
 		assertTrue(tm instanceof PropertyManagerTableModel);
 		model = (PropertyManagerTableModel) tm;
 
-		markerService = tool.getService(MarkerService.class);
+		markerService = tool.getService(MarkerService.class).orElseThrow();
 		assertNotNull(markerService);
 	}
 

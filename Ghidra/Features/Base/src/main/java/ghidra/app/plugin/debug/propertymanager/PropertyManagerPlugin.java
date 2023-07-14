@@ -69,9 +69,7 @@ public class PropertyManagerPlugin extends ProgramPlugin implements DomainObject
 
 	@Override
 	protected void init() {
-
-		markerService = tool.getService(MarkerService.class);
-
+		markerService = tool.getService(MarkerService.class).orElseThrow();
 		updateTimer = new Timer(500, e -> {
 			if (propertyViewProvider != null && propertyViewProvider.isVisible()) {
 				propertyViewProvider.refresh();

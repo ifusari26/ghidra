@@ -62,7 +62,7 @@ public class ModuleSortPluginTest extends AbstractGhidraHeadedIntegrationTest {
 			}
 		}
 		actions = getActionsByOwner(tool, plugin.getName());
-		service = tool.getService(ProgramTreeService.class);
+		service = tool.getService(ProgramTreeService.class).orElseThrow();
 
 		ProgramBuilder builder = new ProgramBuilder("notepad", ProgramBuilder._TOY);
 		builder.createMemory("test1", "0x1001000", 0x1000);
@@ -85,7 +85,7 @@ public class ModuleSortPluginTest extends AbstractGhidraHeadedIntegrationTest {
 
 		program = builder.getProgram();
 
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.openProgram(program.getDomainFile());
 // for debug
 //		env.showTool();
@@ -107,7 +107,7 @@ public class ModuleSortPluginTest extends AbstractGhidraHeadedIntegrationTest {
 		gps[0] = new GroupPath(new String[] { root.getName(), "DLLs" });
 		setSelection(gps);
 
-		ViewManagerService vmService = tool.getService(ViewManagerService.class);
+		ViewManagerService vmService = tool.getService(ViewManagerService.class).orElseThrow();
 		ViewProviderService vps = vmService.getCurrentViewProvider();
 
 		Object context = vps.getActivePopupObject(null);
@@ -156,7 +156,7 @@ public class ModuleSortPluginTest extends AbstractGhidraHeadedIntegrationTest {
 		program.endTransaction(transactionID, true);
 		program.flushEvents();
 
-		ViewManagerService vmService = tool.getService(ViewManagerService.class);
+		ViewManagerService vmService = tool.getService(ViewManagerService.class).orElseThrow();
 		ViewProviderService vps = vmService.getCurrentViewProvider();
 
 		for (DockingActionIf action : actions) {
@@ -197,7 +197,7 @@ public class ModuleSortPluginTest extends AbstractGhidraHeadedIntegrationTest {
 		for (int i = 0; i < names.length; i++) {
 			assertEquals(names[i], kids[i].getName());
 		}
-		ViewManagerService vmService = tool.getService(ViewManagerService.class);
+		ViewManagerService vmService = tool.getService(ViewManagerService.class).orElseThrow();
 		ViewProviderService vps = vmService.getCurrentViewProvider();
 
 		Object context = vps.getActivePopupObject(null);
@@ -226,7 +226,7 @@ public class ModuleSortPluginTest extends AbstractGhidraHeadedIntegrationTest {
 	@Test
 	public void testProgramClosed() {
 		env.close(program);
-		ViewManagerService vmService = tool.getService(ViewManagerService.class);
+		ViewManagerService vmService = tool.getService(ViewManagerService.class).orElseThrow();
 		ViewProviderService vps = vmService.getCurrentViewProvider();
 
 		Object context = vps.getActivePopupObject(null);

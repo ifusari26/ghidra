@@ -18,15 +18,18 @@ package ghidra.framework.plugintool;
 
 import ghidra.framework.plugintool.util.ServiceListener;
 
+import java.util.Optional;
+
 /**
  * Interface for providing Services 
  */
 public interface ServiceProvider {
 	/**
-	 * Returns the Service object that implements the given service interface.
-	 * @param serviceClass the interface class.
-	 */
-	public <T> T getService(Class<T> serviceClass);
+     * Returns the Service object that implements the given service interface.
+     *
+     * @param serviceClass the interface class.
+     */
+	public <T> Optional<T> getService(Class<T> serviceClass);
 	
 	/**
 	 * Adds a listener that will be called as services are added and removed from this 

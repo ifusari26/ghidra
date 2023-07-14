@@ -152,7 +152,7 @@ public class SelectByFlowPlugin extends Plugin implements OptionsChangeListener 
 
 	@Override
 	protected void init() {
-		blockModelService = tool.getService(BlockModelService.class);
+		tool.getService(BlockModelService.class).ifPresent(service -> blockModelService = service);
 	}
 
 	@Override

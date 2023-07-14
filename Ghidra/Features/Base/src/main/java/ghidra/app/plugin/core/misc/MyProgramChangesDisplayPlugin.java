@@ -162,8 +162,10 @@ public class MyProgramChangesDisplayPlugin extends ProgramPlugin implements Doma
 
 	@Override
 	public void init() {
-		markerService = tool.getService(MarkerService.class);
-		updateManager = new SwingUpdateManager(1000, () -> updateChangeMarkers());
+		tool.getService(MarkerService.class).ifPresent(service -> {
+			markerService = service;
+			updateManager = new SwingUpdateManager(1000, this::updateChangeMarkers);
+		});
 	}
 
 	@Override

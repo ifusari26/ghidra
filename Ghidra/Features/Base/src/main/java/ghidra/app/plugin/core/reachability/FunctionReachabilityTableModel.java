@@ -131,8 +131,7 @@ public class FunctionReachabilityTableModel
 	}
 
 	private CodeBlockIterator getCallGraphBlocks(TaskMonitor monitor) throws CancelledException {
-		BlockModelService blockModelService = serviceProvider.getService(BlockModelService.class);
-
+		final BlockModelService blockModelService = serviceProvider.getService(BlockModelService.class).orElseThrow();
 		CodeBlockModel model;
 		try {
 			model = blockModelService.getNewModelByName(
@@ -177,15 +176,20 @@ public class FunctionReachabilityTableModel
 	private CodeBlock getDestinationBlock(CodeBlockReference destination, TaskMonitor monitor)
 			throws CancelledException {
 
-		Address targetAddress = destination.getDestinationAddress();
-		BlockModelService blockModelService = serviceProvider.getService(BlockModelService.class);
-		CodeBlockModel codeBlockModel = blockModelService.getActiveSubroutineModel();
-		CodeBlock targetBlock = codeBlockModel.getFirstCodeBlockContaining(targetAddress, monitor);
-		if (targetBlock == null) {
-			return null; // no code found for call; external?
-		}
-
-		return targetBlock;
+		return serviceProvider
+				.getService(BlockModelService.class)
+				.map(
+						service -> {
+							final CodeBlockModel codeBlockModel = service.getActiveSubroutineModel(this.program);
+							try {
+								Address targetAddress = destination.getDestinationAddress();
+								return codeBlockModel.getFirstCodeBlockContaining(targetAddress, monitor);
+							} catch (CancelledException e) {
+								return null;
+							}
+						}
+				)
+				.orElseThrow(CancelledException::new);
 	}
 
 	void setFunctions(Function from, Function to) {

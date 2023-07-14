@@ -18,6 +18,7 @@ package ghidra.app.plugin.core.hover;
 import static ghidra.util.HTMLUtilities.*;
 
 import java.awt.*;
+import java.util.Optional;
 
 import javax.swing.JComponent;
 import javax.swing.JToolTip;
@@ -152,19 +153,15 @@ public abstract class AbstractReferenceHover extends AbstractConfigurableHover {
 	 * the first time we want to use the panel.
 	 */
 	protected void initializeLazily() {
-		if (panel != null) {
-			return;
-		}
-		if (tool == null) {
-			return;
-		}
-		if (codeFormatService == null) {
-			codeFormatService = tool.getService(CodeFormatService.class);
-		}
-		if (codeFormatService == null) {
+		if (panel != null || tool == null) {
 			return;
 		}
 
+		final Optional<CodeFormatService> codeFormatServiceOptional = tool.getService(CodeFormatService.class);
+		if (codeFormatServiceOptional.isEmpty()) {
+			return;
+		}
+		codeFormatService = codeFormatServiceOptional.get();
 		toolTip = new JToolTip();
 
 		panel = new ListingPanel(codeFormatService.getFormatManager());// share the manager from the code viewer

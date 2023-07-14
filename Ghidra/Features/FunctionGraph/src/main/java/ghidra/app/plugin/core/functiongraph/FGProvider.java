@@ -123,14 +123,13 @@ public class FGProvider extends VisualGraphComponentProvider<FGVertex, FGEdge, F
 		actionManager = new FGActionManager(plugin, controller, this);
 
 		rebuildGraphUpdateManager =
-			new SwingUpdateManager(1000, 10000, () -> refreshAndKeepPerspective());
+			new SwingUpdateManager(1000, 10000, this::refreshAndKeepPerspective);
 
 		updateLocationUpdateManager =
-			new SwingUpdateManager(250, 750, () -> setPendingLocationFromUpdateManager());
+			new SwingUpdateManager(250, 750, this::setPendingLocationFromUpdateManager);
 
 		clipboardProvider = new FGClipboardProvider(tool, controller);
-		ClipboardService service = tool.getService(ClipboardService.class);
-		setClipboardService(service);
+		tool.getService(ClipboardService.class).ifPresent(this::setClipboardService);
 	}
 
 	@Override
@@ -249,8 +248,9 @@ public class FGProvider extends VisualGraphComponentProvider<FGVertex, FGEdge, F
 	}
 
 	public void saveLocationToHistory() {
-		NavigationHistoryService historyService = tool.getService(NavigationHistoryService.class);
-		historyService.addNewLocation(this);
+		tool.getService(NavigationHistoryService.class).ifPresent(
+				service -> service.addNewLocation(this)
+		);
 	}
 
 	@Override
@@ -1255,9 +1255,8 @@ public class FGProvider extends VisualGraphComponentProvider<FGVertex, FGEdge, F
 		tool.setStatusInfo(message);
 	}
 
-	public void internalGoTo(ProgramLocation location, Program program) {
-		GoToService goToService = tool.getService(GoToService.class);
-		goToService.goTo(this, location, program);
+	public void internalGoTo(final ProgramLocation location, final Program program) {
+		tool.getService(GoToService.class).ifPresent(service -> service.goTo(this, location, program));
 	}
 
 	@Override
@@ -1267,10 +1266,9 @@ public class FGProvider extends VisualGraphComponentProvider<FGVertex, FGEdge, F
 				tool.setStatusInfo("Program location not applicable for this provider!");
 				return false;
 			}
-			ProgramManager programManagerService = tool.getService(ProgramManager.class);
-			if (programManagerService != null) {
-				programManagerService.setCurrentProgram(gotoProgram);
-			}
+			tool.getService(ProgramManager.class).ifPresent(
+					service -> service.setCurrentProgram(gotoProgram)
+			);
 		}
 		setLocation(location);
 		notifyLocationChanged(location);

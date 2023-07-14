@@ -23,6 +23,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
@@ -831,7 +832,7 @@ public class AnnotationTest extends AbstractGhidraHeadedIntegrationTest {
 	private void addFakeProgramByPath(SpyServiceProvider provider, String path) {
 
 		SpyProjectDataService spyProjectData =
-			(SpyProjectDataService) provider.getService(ProjectDataService.class);
+			(SpyProjectDataService) provider.getService(ProjectDataService.class).orElseThrow();
 		FakeRootFolder root = spyProjectData.fakeProjectData.fakeRootFolder;
 
 		String parentPath = FilenameUtils.getFullPath(path);
@@ -871,20 +872,20 @@ public class AnnotationTest extends AbstractGhidraHeadedIntegrationTest {
 	private class SpyServiceProvider extends TestDummyServiceProvider {
 
 		private SpyProgramManager spyProgramManager = new SpyProgramManager();
-		private SpyProjectDataService spyProjectDataService = new SpyProjectDataService();
-		private SpyGoToService spyGoToService = new SpyGoToService();
+		private final SpyProjectDataService spyProjectDataService = new SpyProjectDataService();
+		private final SpyGoToService spyGoToService = new SpyGoToService();
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public <T> T getService(Class<T> serviceClass) {
+		public <T> Optional<T> getService(Class<T> serviceClass) {
 			if (serviceClass == ProgramManager.class) {
-				return (T) spyProgramManager;
+				return Optional.of((T) spyProgramManager);
 			}
 			else if (serviceClass == ProjectDataService.class) {
-				return (T) spyProjectDataService;
+				return Optional.of((T) spyProjectDataService);
 			}
 			else if (serviceClass == GoToService.class) {
-				return (T) spyGoToService;
+				return Optional.of((T) spyGoToService);
 			}
 			return super.getService(serviceClass);
 		}

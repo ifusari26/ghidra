@@ -310,7 +310,7 @@ public class SymbolReferenceModel extends AddressBasedTableModel<Reference> {
 		public String getValue(Reference rowObject, Settings settings, Program program,
 				ServiceProvider serviceProvider) throws IllegalArgumentException {
 
-			BlockModelService service = serviceProvider.getService(BlockModelService.class);
+			BlockModelService service = serviceProvider.getService(BlockModelService.class).orElseThrow();
 			CodeBlockModel model = getCodeBlockModel(program, service);
 			return getSubroutineName(rowObject, service, program, model);
 		}
@@ -329,7 +329,7 @@ public class SymbolReferenceModel extends AddressBasedTableModel<Reference> {
 		public ProgramLocation getProgramLocation(Reference rowObject, Settings settings,
 				Program program, ServiceProvider serviceProvider) {
 
-			BlockModelService service = serviceProvider.getService(BlockModelService.class);
+			BlockModelService service = serviceProvider.getService(BlockModelService.class).orElseThrow();
 			CodeBlockModel model = getCodeBlockModel(program, service);
 			String subroutineName = getSubroutineName(rowObject, service, program, model);
 			if (subroutineName == null) {

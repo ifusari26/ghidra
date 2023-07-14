@@ -138,7 +138,8 @@ public class SymbolAnnotatedStringHandler implements AnnotatedStringHandler {
 		Program program = sourceNavigatable.getProgram();
 		List<Symbol> symbols = getSymbols(symbolText, program);
 
-		GoToService goToService = serviceProvider.getService(GoToService.class);
+		// This should exist!
+		GoToService goToService = serviceProvider.getService(GoToService.class).orElseThrow();
 
 		// try going to the symbol first
 		if (!symbols.isEmpty()) {

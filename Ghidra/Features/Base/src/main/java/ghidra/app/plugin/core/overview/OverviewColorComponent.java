@@ -106,10 +106,7 @@ public class OverviewColorComponent extends JPanel implements OverviewProvider {
 	}
 
 	protected void gotoAddress(Address address) {
-		GoToService gotoService = tool.getService(GoToService.class);
-		if (gotoService != null) {
-			gotoService.goTo(navigatable, address);
-		}
+		tool.getService(GoToService.class).ifPresent(service -> service.goTo(navigatable, address));
 	}
 
 	@Override

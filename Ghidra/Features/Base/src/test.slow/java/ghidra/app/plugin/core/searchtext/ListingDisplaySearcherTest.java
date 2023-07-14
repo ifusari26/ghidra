@@ -61,7 +61,7 @@ public class ListingDisplaySearcherTest extends AbstractGhidraHeadedIntegrationT
 		tool.addPlugin(SearchTextPlugin.class.getName());
 		cb = env.getPlugin(CodeBrowserPlugin.class);
 		program = buildProgram();
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.openProgram(program.getDomainFile());
 
 		env.showTool();

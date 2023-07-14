@@ -65,7 +65,7 @@ public class DebuggerPcodeStepperProviderTest extends AbstractGhidraHeadedDebugg
 		traceManager = addPlugin(tool, DebuggerTraceManagerServicePlugin.class);
 		pcodePlugin = addPlugin(tool, DebuggerPcodeStepperPlugin.class);
 		listingPlugin = addPlugin(tool, DebuggerListingPlugin.class); // For colors
-		emuService = tool.getService(DebuggerEmulationService.class);
+		emuService = tool.getService(DebuggerEmulationService.class).orElseThrow();
 
 		pcodeProvider = waitForComponentProvider(DebuggerPcodeStepperProvider.class);
 

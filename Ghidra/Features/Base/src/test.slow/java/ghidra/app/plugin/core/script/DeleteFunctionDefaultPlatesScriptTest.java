@@ -59,7 +59,7 @@ public class DeleteFunctionDefaultPlatesScriptTest extends AbstractGhidraHeadedI
 
 		env.showTool();
 
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.openProgram(program.getDomainFile());
 		script = Application.getModuleFile("Base",
 			"ghidra_scripts/DeleteFunctionDefaultPlatesScript.java").getFile(true);

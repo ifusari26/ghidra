@@ -44,13 +44,16 @@ public class MapRegionsDebuggerBot extends AbstractMapDebuggerBot {
 	@Override
 	protected void doAnalysis(PluginTool tool, Trace trace, Set<Program> programs,
 			TaskMonitor monitor) throws CancelledException {
-		DebuggerStaticMappingService mappingService =
-			tool.getService(DebuggerStaticMappingService.class);
-		if (mappingService != null) {
+		Optional<DebuggerStaticMappingService> mappingServiceOptional = tool.getService(
+				DebuggerStaticMappingService.class
+		);
+		if (mappingServiceOptional.isPresent()) {
+			final DebuggerStaticMappingService mappingService = mappingServiceOptional.get();
 			Map<?, RegionMapProposal> maps = mappingService
 					.proposeRegionMaps(trace.getMemoryManager().getAllRegions(), programs);
-			Collection<RegionMapEntry> entries = MapProposal.flatten(maps.values());
-			entries = MapProposal.removeOverlapping(entries);
+			Collection<RegionMapEntry> entries = MapProposal.removeOverlapping(
+					MapProposal.flatten(maps.values())
+			);
 			mappingService.addRegionMappings(entries, monitor, false);
 		}
 	}

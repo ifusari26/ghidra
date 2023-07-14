@@ -41,7 +41,7 @@ class LoadPdbTask extends Task {
 	private final boolean useMsDiaParser;
 	private final PdbApplicatorControl control; // PDB Universal Parser only
 	private String resultMessages;
-	private Exception resultException;
+	private ReflectiveOperationException resultException;
 
 	LoadPdbTask(Program program, File pdbFile, boolean useMsDiaParser, PdbApplicatorControl control,
 			DataTypeManagerService service) {
@@ -99,8 +99,7 @@ class LoadPdbTask extends Task {
 		}
 		catch (InterruptedException | CancelledException e) {
 			// ignore
-		}
-		catch (InvocationTargetException e) {
+		} catch (InvocationTargetException e) {
 			resultException = e;
 		}
 		if (log.hasMessages()) {
@@ -113,7 +112,7 @@ class LoadPdbTask extends Task {
 		return resultMessages;
 	}
 
-	Exception getResultException() {
+	ReflectiveOperationException getResultException() {
 		return resultException;
 	}
 

@@ -46,6 +46,8 @@ import ghidra.util.ColorUtils;
 import ghidra.util.HelpLocation;
 import ghidra.util.task.SwingUpdateManager;
 
+import javax.annotation.Nullable;
+
 /**
  * A plugin to provider actions for manipulating the colors of the {@link CodeViewerService}.
  */
@@ -359,7 +361,9 @@ public class ColorizingPlugin extends ProgramPlugin implements DomainObjectListe
 		return service;
 	}
 
+	@Nullable
 	GoToService getGoToService() {
-		return tool.getService(GoToService.class);
+		return tool.getService(GoToService.class).orElse(null);
 	}
+
 }

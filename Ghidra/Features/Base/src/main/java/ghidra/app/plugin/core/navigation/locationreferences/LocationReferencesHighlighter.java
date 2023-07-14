@@ -111,7 +111,7 @@ class LocationReferencesHighlighter {
 
 		LocationDescriptor locationDescriptor = provider.getLocationDescriptor();
 		DataTypeManagerService dataTypeManagerService =
-			tool.getService(DataTypeManagerService.class);
+			tool.getService(DataTypeManagerService.class).orElseThrow();
 		if (isHighlighting) {
 			// we know that if the address set is the same, then the marking and highlighting
 			// have not changed
@@ -144,22 +144,19 @@ class LocationReferencesHighlighter {
 
 		clearMarkers();
 
-		MarkerService markerService = tool.getService(MarkerService.class);
-		if (markerService == null) {
-			return; // we still work without the marker service
-		}
+		tool.getService(MarkerService.class).ifPresent(service -> {
+			Program program = navigatable.getProgram();
 
-		Program program = navigatable.getProgram();
-
-		// creating the marker set adds it, so be sure to remove the marker set after we
-		// create it
-		MarkerSet currentMarkerSet =
-			markerService.createPointMarker("References To", MARKER_SET_DESCRIPTION, program,
-				MarkerService.HIGHLIGHT_PRIORITY, false, true, false, highlightColor, null);
-		markerService.removeMarker(currentMarkerSet, program);
-		markerService.setMarkerForGroup(MarkerService.HIGHLIGHT_GROUP, currentMarkerSet, program);
-		currentMarkerSet.add(addressSet);
-		markerRemover = new MarkerRemover(currentMarkerSet, markerService, program);
+			// creating the marker set adds it, so be sure to remove the marker set after we
+			// create it
+			MarkerSet currentMarkerSet =
+					service.createPointMarker("References To", MARKER_SET_DESCRIPTION, program,
+							MarkerService.HIGHLIGHT_PRIORITY, false, true, false, highlightColor, null);
+			service.removeMarker(currentMarkerSet, program);
+			service.setMarkerForGroup(MarkerService.HIGHLIGHT_GROUP, currentMarkerSet, program);
+			currentMarkerSet.add(addressSet);
+			markerRemover = new MarkerRemover(currentMarkerSet, service, program);
+		});
 	}
 
 	private void clearMarkers() {

@@ -22,6 +22,7 @@ import java.math.BigInteger;
 import java.util.*;
 import java.util.List;
 
+import javax.annotation.Nullable;
 import javax.swing.JComponent;
 
 import docking.action.ToggleDockingAction;
@@ -483,8 +484,9 @@ public abstract class ByteViewerComponentProvider extends ComponentProviderAdapt
 		return null;
 	}
 
+	@Nullable
 	public MarkerService getMarkerService() {
-		return tool.getService(MarkerService.class);
+		return tool.getService(MarkerService.class).orElse(null);
 	}
 
 	/**

@@ -51,7 +51,7 @@ public abstract class AbstractFollowFlowTest extends AbstractGhidraHeadedIntegra
 		program = builder.getProgram();
 		addressFactory = program.getAddressFactory();
 
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.openProgram(program.getDomainFile());
 	}
 

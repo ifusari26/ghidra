@@ -239,7 +239,7 @@ public abstract class AbstractUnwoundFrame<T> implements UnwoundFrame<T> {
 	 *            corresponds to the given coordinates.
 	 */
 	public AbstractUnwoundFrame(PluginTool tool, DebuggerCoordinates coordinates,
-			PcodeExecutorState<T> state) {
+								PcodeExecutorState<T> state) {
 		this.coordinates = coordinates;
 		this.trace = coordinates.getTrace();
 		this.platform = coordinates.getPlatform();
@@ -248,9 +248,8 @@ public abstract class AbstractUnwoundFrame<T> implements UnwoundFrame<T> {
 		this.language = platform.getLanguage();
 		this.codeSpace = language.getDefaultSpace();
 		this.pc = language.getProgramCounter();
-
 		this.state = state;
-		this.mappingService = tool.getService(DebuggerStaticMappingService.class);
+		this.mappingService = tool.getService(DebuggerStaticMappingService.class).orElseThrow();
 	}
 
 	/**

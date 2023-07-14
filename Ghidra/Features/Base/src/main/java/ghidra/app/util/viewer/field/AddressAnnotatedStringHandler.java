@@ -87,8 +87,8 @@ public class AddressAnnotatedStringHandler implements AnnotatedStringHandler {
 	@Override
 	public boolean handleMouseClick(String[] annotationParts, Navigatable sourceNavigatable,
 			ServiceProvider serviceProvider) {
-		GoToService goToService = serviceProvider.getService(GoToService.class);
-
+		// Service should exist, but if for some reason it doesn't, throw an error
+		GoToService goToService = serviceProvider.getService(GoToService.class).orElseThrow();
 		Program program = sourceNavigatable.getProgram();
 		String addressText = annotationParts[1];
 		Address address = program.getAddressFactory().getAddress(addressText);

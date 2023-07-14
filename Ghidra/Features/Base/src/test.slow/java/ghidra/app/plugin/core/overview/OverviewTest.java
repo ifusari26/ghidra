@@ -94,7 +94,7 @@ public class OverviewTest extends AbstractGhidraHeadedIntegrationTest {
 
 	private void loadProgram(String programName) throws Exception {
 		program = buildProgram(programName);
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.openProgram(program.getDomainFile());
 		addrFactory = program.getAddressFactory();
 

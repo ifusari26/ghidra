@@ -107,12 +107,11 @@ public class CodeBrowserSelectionPlugin extends Plugin {
 	}
 
 	private void createTable(CodeViewerProvider componentProvider) {
-		TableService tableService = tool.getService(TableService.class);
+		TableService tableService = tool.getService(TableService.class).orElse(null);
 		if (tableService == null) {
 			Msg.showWarn(this, null, "No Table Service", "Please add the TableServicePlugin.");
 			return;
 		}
-
 		Program program = componentProvider.getProgram();
 		Listing listing = program.getListing();
 		ProgramSelection selection = componentProvider.getSelection();

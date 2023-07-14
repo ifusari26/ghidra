@@ -93,8 +93,9 @@ public class AddressTableDialog extends ReusableDialogComponentProvider {
 		// create right side query results table with three columns
 		resultsTablePanel = new GhidraThreadedTablePanel<>(plugin.getModel());
 		resultsTable = resultsTablePanel.getTable();
-		GoToService goToService = plugin.getTool().getService(GoToService.class);
-		resultsTable.installNavigation(goToService, goToService.getDefaultNavigatable());
+		plugin.getTool().getService(GoToService.class).ifPresent(
+				service -> resultsTable.installNavigation(service, service.getDefaultNavigatable())
+		);
 
 		ListSelectionModel selModel = resultsTable.getSelectionModel();
 		selModel.addListSelectionListener(e -> {

@@ -76,7 +76,7 @@ public enum DebuggerPcodeUtils {
 		 */
 		public LabelBoundPcodeParser(PluginTool tool, DebuggerCoordinates coordinates) {
 			super((SleighLanguage) coordinates.getPlatform().getLanguage());
-			this.mappings = tool.getService(DebuggerStaticMappingService.class);
+			this.mappings = tool.getService(DebuggerStaticMappingService.class).orElseThrow();
 			this.coordinates = coordinates;
 		}
 

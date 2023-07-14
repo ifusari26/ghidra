@@ -227,7 +227,7 @@ public class AnalysisOptions2Test extends AbstractGhidraHeadedIntegrationTest {
 //==================================================================================================
 
 	private void openProgram() {
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.openProgram(program.getDomainFile());
 	}
 

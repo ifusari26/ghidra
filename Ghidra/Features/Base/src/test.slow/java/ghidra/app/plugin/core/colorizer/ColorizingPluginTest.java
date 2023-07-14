@@ -495,7 +495,7 @@ public class ColorizingPluginTest extends AbstractGhidraHeadedIntegrationTest {
 	}
 
 	private void assertNoMarkerColorAtAddress(Address address) {
-		MarkerService markerService = tool.getService(MarkerService.class);
+		MarkerService markerService = tool.getService(MarkerService.class).orElseThrow();
 		MarkerSet markerSet = getColorizingMarkerSet(markerService);
 		if (markerSet == null) {
 			return; // no markers
@@ -506,7 +506,7 @@ public class ColorizingPluginTest extends AbstractGhidraHeadedIntegrationTest {
 	}
 
 	private void assertMarkerColorAtAddress(Address address, Color color) {
-		MarkerService markerService = tool.getService(MarkerService.class);
+		MarkerService markerService = tool.getService(MarkerService.class).orElseThrow();
 		MarkerSet markerSet = getColorizingMarkerSet(markerService);
 		assertNotNull("No marker set for color at address: " + address, markerSet);
 
@@ -601,7 +601,7 @@ public class ColorizingPluginTest extends AbstractGhidraHeadedIntegrationTest {
 
 	private void loadProgram(String programName) throws Exception {
 		program = buildProgram();
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.openProgram(program.getDomainFile());
 		addrFactory = program.getAddressFactory();
 	}

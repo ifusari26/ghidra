@@ -347,7 +347,7 @@ public class NextPrevAddressPluginTest extends AbstractGhidraHeadedIntegrationTe
 	}
 
 	private void goTo(Address a) throws Exception {
-		GoToService goToService = tool.getService(GoToService.class);
+		GoToService goToService = tool.getService(GoToService.class).orElseThrow();
 		goToService.goTo(a);
 		cbPlugin.updateNow();
 		waitForSwing();

@@ -75,7 +75,7 @@ public class CreateLabelsFromEnumsTest extends AbstractGhidraHeadedIntegrationTe
 		builder.createMemory("mem", "0x100", 100);
 		program = builder.getProgram();
 
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.openProgram(program);
 
 		env.showTool();
@@ -98,7 +98,7 @@ public class CreateLabelsFromEnumsTest extends AbstractGhidraHeadedIntegrationTe
 		executeOnSwingWithoutBlocking(new Runnable() {
 			@Override
 			public void run() {
-				ProgramManager pm = tool.getService(ProgramManager.class);
+				ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 				pm.closeProgram();
 			}
 		});

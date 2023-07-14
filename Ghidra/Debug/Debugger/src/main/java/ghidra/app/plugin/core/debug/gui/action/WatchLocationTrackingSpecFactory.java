@@ -32,15 +32,18 @@ public class WatchLocationTrackingSpecFactory implements LocationTrackingSpecFac
 
 	@Override
 	public List<LocationTrackingSpec> getSuggested(PluginTool tool) {
-		DebuggerWatchesService watchesService = tool.getService(DebuggerWatchesService.class);
-		if (watchesService == null) {
-			return List.of();
-		}
-		return watchesService.getWatches()
-				.stream()
-				.filter(WatchLocationTrackingSpec::isTrackable)
-				.map(WatchLocationTrackingSpec::fromWatch)
-				.collect(Collectors.toList());
+		return tool
+				.getService(DebuggerWatchesService.class)
+				.map(
+						service -> service
+								.getWatches()
+								.stream()
+								.filter(WatchLocationTrackingSpec::isTrackable)
+								.map(WatchLocationTrackingSpec::fromWatch)
+								.map(LocationTrackingSpec.class::cast)
+								.collect(Collectors.toList())
+				)
+				.orElse(List.of());
 	}
 
 	@Override

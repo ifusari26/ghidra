@@ -541,23 +541,22 @@ public abstract class AbstractDebuggerProgramLaunchOffer implements DebuggerProg
 	}
 
 	protected TraceRecorder onTimedOutRecorder(TaskMonitor monitor, DebuggerModelService service,
-			TargetObject target) {
+											   TargetObject target) {
 		checkCancelled(monitor);
 		monitor.setMessage("Timed out waiting for recording. Invoking the recorder.");
 		TraceRecorder recorder = service.recordTargetPromptOffers(target);
 		if (recorder == null) {
 			throw new CancellationException("User cancelled at record dialog");
 		}
-		DebuggerTraceManagerService traceManager =
-			tool.getService(DebuggerTraceManagerService.class);
-		if (traceManager != null) {
-			Trace trace = recorder.getTrace();
+		tool.getService(DebuggerTraceManagerService.class).ifPresent(traceManager -> {
+			final Trace trace = recorder.getTrace();
 			Swing.runLater(() -> {
 				traceManager.openTrace(trace);
-				traceManager.activate(traceManager.resolveTrace(trace),
-					ActivationCause.START_RECORDING);
+				traceManager.activate(
+						traceManager.resolveTrace(trace), ActivationCause.START_RECORDING
+				);
 			});
-		}
+		});
 		return recorder;
 	}
 
@@ -587,9 +586,9 @@ public abstract class AbstractDebuggerProgramLaunchOffer implements DebuggerProg
 	@Override
 	public CompletableFuture<LaunchResult> launchProgram(TaskMonitor monitor, PromptMode mode,
 			LaunchConfigurator configurator) {
-		DebuggerModelService service = tool.getService(DebuggerModelService.class);
+		DebuggerModelService service = tool.getService(DebuggerModelService.class).orElseThrow();
 		DebuggerStaticMappingService mappingService =
-			tool.getService(DebuggerStaticMappingService.class);
+			tool.getService(DebuggerStaticMappingService.class).orElseThrow();
 		monitor.initialize(6);
 		monitor.setMessage("Connecting");
 		var locals = new Object() {

@@ -119,7 +119,7 @@ public class GoToAddressLabelPluginTest extends AbstractGhidraHeadedIntegrationT
 
 		actionContext = getActionContext();
 		assertTrue(CollectionUtils.any(actions).isEnabledForContext(actionContext));
-		final ProgramManager pm = tool.getService(ProgramManager.class);
+		final ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		runSwing(() -> pm.closeProgram(program, true));
 		actionContext = getActionContext();
 		assertFalse(CollectionUtils.any(actions).isEnabledForContext(actionContext));
@@ -911,7 +911,7 @@ public class GoToAddressLabelPluginTest extends AbstractGhidraHeadedIntegrationT
 		program = doLoadProgram(programName);
 		Assert.assertNotNull(program);
 
-		final ProgramManager pm = tool.getService(ProgramManager.class);
+		final ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		runSwing(() -> pm.openProgram(program.getDomainFile()));
 		program.release(this);
 		addrFactory = program.getAddressFactory();

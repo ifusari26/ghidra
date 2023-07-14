@@ -230,11 +230,10 @@ public class CParserPlugin extends ProgramPlugin {
 	private DataTypeManager[] getOpenDTMgrs() throws CancelledException {
 		DataTypeManager[] openDTmanagers = null;
 		
-		DataTypeManagerService dtService = tool.getService(DataTypeManagerService.class);
+		DataTypeManagerService dtService = tool.getService(DataTypeManagerService.class).orElse(null);
 		if (dtService == null) {
 			return openDTmanagers;
 		}
-		
 		openDTmanagers = dtService.getDataTypeManagers();
 
 		ArrayList<DataTypeManager> list = new ArrayList<>();

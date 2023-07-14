@@ -65,16 +65,12 @@ public abstract class AbstractMapDebuggerBot implements DebuggerBot {
 	@Override
 	public void enable(DebuggerWorkflowServicePlugin wp) {
 		this.plugin = wp;
-
-		listeners.enable(wp);
-		for (PluginTool t : plugin.getProxyingPluginTools()) {
-			DebuggerTraceManagerService traceManager =
-				t.getService(DebuggerTraceManagerService.class);
-			if (traceManager == null) {
-				continue;
-			}
-			queueTraces(traceManager.getOpenTraces());
-		}
+		this.listeners.enable(wp);
+		this.plugin.getProxyingPluginTools().forEach(
+				tool -> tool
+						.getService(DebuggerTraceManagerService.class)
+						.ifPresent(service -> queueTraces(service.getOpenTraces()))
+		);
 	}
 
 	@Override
@@ -102,11 +98,7 @@ public abstract class AbstractMapDebuggerBot implements DebuggerBot {
 
 	@Override
 	public void programOpened(PluginTool t, Program program) {
-		DebuggerTraceManagerService traceManager = t.getService(DebuggerTraceManagerService.class);
-		if (traceManager == null) {
-			return;
-		}
-		queueTraces(traceManager.getOpenTraces());
+		t.getService(DebuggerTraceManagerService.class).ifPresent(service -> queueTraces(service.getOpenTraces()));
 	}
 
 	private void queueTrace(Trace trace) {
@@ -133,21 +125,23 @@ public abstract class AbstractMapDebuggerBot implements DebuggerBot {
 		Map<Trace, Pair<PluginTool, Set<Program>>> toAnalyze = new HashMap<>();
 		for (Trace trace : traces) {
 			for (PluginTool tool : plugin.getProxyingPluginTools()) {
-				DebuggerTraceManagerService traceManager =
-					tool.getService(DebuggerTraceManagerService.class);
-				if (traceManager == null) {
+				Optional<DebuggerTraceManagerService> traceManager = tool.getService(
+						DebuggerTraceManagerService.class
+				);
+				Optional<ProgramManager> programManager = tool.getService(ProgramManager.class);
+				if (traceManager.isEmpty() || programManager.isEmpty()) {
 					continue;
 				}
-				ProgramManager programManager = tool.getService(ProgramManager.class);
-				if (programManager == null) {
+				final DebuggerTraceManagerService traceManagerService = traceManager.get();
+				final ProgramManager programManagerService = programManager.get();
+				if (!traceManagerService.getOpenTraces().contains(trace)) {
 					continue;
 				}
-				if (!traceManager.getOpenTraces().contains(trace)) {
-					continue;
-				}
-				Pair<PluginTool, Set<Program>> programs =
-					toAnalyze.computeIfAbsent(trace, t -> Pair.of(tool, new HashSet<>()));
-				programs.getRight().addAll(List.of(programManager.getAllOpenPrograms()));
+				Pair<PluginTool, Set<Program>> programs = toAnalyze.computeIfAbsent(
+						trace,
+						t -> Pair.of(tool, new HashSet<>())
+				);
+				programs.getRight().addAll(List.of(programManagerService.getAllOpenPrograms()));
 			}
 		}
 

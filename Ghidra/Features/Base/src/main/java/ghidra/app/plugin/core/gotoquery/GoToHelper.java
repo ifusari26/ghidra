@@ -15,6 +15,7 @@
  */
 package ghidra.app.plugin.core.gotoquery;
 
+import java.util.Optional;
 import java.util.Stack;
 
 import org.apache.commons.lang3.StringUtils;
@@ -130,10 +131,7 @@ public class GoToHelper {
 		if (navigatable.getProgram() == null) {
 			return;
 		}
-		NavigationHistoryService historyService = tool.getService(NavigationHistoryService.class);
-		if (historyService != null) {
-			historyService.addNewLocation(navigatable);
-		}
+		tool.getService(NavigationHistoryService.class).ifPresent(service -> service.addNewLocation(navigatable));
 	}
 
 	public ProgramLocation getLocation(Program program, Address currentAddress,
@@ -211,15 +209,15 @@ public class GoToHelper {
 				// popup list of all possible linkage locations
 				AddressArrayTableModel model = new AddressArrayTableModel("Goto: ", tool, program,
 					externalLinkageAddresses, null);
-				TableService service = tool.getService(TableService.class);
-				service.showTable("Goto " + externalSym.getName(true) + " linkage location", "Goto",
-					model, "Go To", nav);
+				tool.getService(TableService.class).ifPresent(service -> {
+					service.showTable("Goto " + externalSym.getName(true) + " linkage location", "Goto",
+							model, "Go To", nav);
+				});
 				return true;
 			}
 			tool.setStatusInfo(
 				"Multiple external linkage addresses found for " + externalSym.getName(true), true);
-		}
-		else if (popupAllowed) {
+		} else if (popupAllowed) {
 			ProgramLocation location = nav.getLocation();
 			if (location != null && externalLinkageAddresses[0].equals(location.getAddress())) {
 				// If current location is the linkage location and popupAllowed, ignore
@@ -288,7 +286,6 @@ public class GoToHelper {
 	}
 
 	private Program openExternalProgram(ExternalLocation externalLocation) {
-
 		if (externalLocation == null) {
 			return null;
 		}
@@ -299,17 +296,15 @@ public class GoToHelper {
 		if (pathName == null) {
 			return null;
 		}
-
 		ProjectData pd = tool.getProject().getProjectData();
 		DomainFile domainFile = pd.getFile(pathName);
-		ProgramManager service = tool.getService(ProgramManager.class);
-		if (domainFile == null || service == null) {
+		Optional<ProgramManager> programManager = tool.getService(ProgramManager.class);
+		if (domainFile == null || programManager.isEmpty()) {
 			tool.setStatusInfo("Unable to navigate to external location. " +
 				"Destination program [" + externalLocation + "] does not exist.");
 			return null;
 		}
-
-		return service.openProgram(domainFile, -1, ProgramManager.OPEN_VISIBLE);
+		return programManager.get().openProgram(domainFile, -1, ProgramManager.OPEN_VISIBLE);
 	}
 
 	private void performDefaultExternalProgramNavigation(Navigatable nav,
@@ -464,11 +459,10 @@ public class GoToHelper {
 		if (addr.isExternalAddress()) {
 			return currentProgram; // only consider current program for external address
 		}
-		ProgramManager service = tool.getService(ProgramManager.class);
-		if (service != null) {
-			return service.getProgram(addr);
-		}
-		else if (currentProgram != null && currentProgram.getMemory().contains(addr)) {
+		Optional<Program> program = tool.getService(ProgramManager.class).map(service -> service.getProgram(addr));
+		if (program.isPresent()) {
+			return program.get();
+		} else if (currentProgram != null && currentProgram.getMemory().contains(addr)) {
 			return currentProgram;
 		}
 		return null;

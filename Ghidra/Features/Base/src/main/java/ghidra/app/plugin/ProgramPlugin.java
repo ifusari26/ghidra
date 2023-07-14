@@ -268,11 +268,7 @@ public abstract class ProgramPlugin extends Plugin {
 	 * @return true if successful
 	 */
 	protected boolean goTo(Address addr) {
-		GoToService service = tool.getService(GoToService.class);
-		if (service != null) {
-			return service.goTo(addr);
-		}
-		return false;
+		return tool.getService(GoToService.class).map(service -> service.goTo(addr)).orElse(false);
 	}
 
 	protected boolean goTo(CodeUnit cu) {

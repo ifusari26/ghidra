@@ -246,11 +246,11 @@ public class CodeBrowserPlugin extends AbstractCodeBrowserPlugin<CodeViewerProvi
 
 	@Override
 	public void readDataState(SaveState saveState) {
-		ProgramManager programManagerService = tool.getService(ProgramManager.class);
-
+		ProgramManager programManagerService = tool.getService(ProgramManager.class).orElseThrow();
 		if (connectedProvider != null) {
 			connectedProvider.readDataState(saveState);
 		}
+
 		int numDisconnected = saveState.getInt("Num Disconnected", 0);
 		for (int i = 0; i < numDisconnected; i++) {
 			Element xmlElement = saveState.getXmlElement("Provider" + i);

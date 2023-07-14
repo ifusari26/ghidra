@@ -30,8 +30,7 @@ public class GhidraProgramUtilities {
 	 * @return the current program for the given tool or null if no program is open
 	 */
 	public static Program getCurrentProgram(PluginTool tool) {
-		ProgramManager pmService = tool.getService(ProgramManager.class);
-		return (pmService == null ? null : pmService.getCurrentProgram());
+		return tool.getService(ProgramManager.class).map(ProgramManager::getCurrentProgram).orElse(null);
 	}
 
 	/**

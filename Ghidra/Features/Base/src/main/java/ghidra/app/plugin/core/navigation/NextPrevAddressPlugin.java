@@ -93,7 +93,7 @@ public class NextPrevAddressPlugin extends Plugin {
 
 	@Override
 	protected void init() {
-		historyService = tool.getService(NavigationHistoryService.class);
+		historyService = tool.getService(NavigationHistoryService.class).orElseThrow();
 		codeUnitFormatter = new BrowserCodeUnitFormat(tool);
 	}
 
@@ -284,11 +284,10 @@ public class NextPrevAddressPlugin extends Plugin {
 				return navigatable;
 			}
 		}
-		GoToService service = tool.getService(GoToService.class);
-		if (service != null) {
-			return service.getDefaultNavigatable();
-		}
-		return null;
+		return tool
+				.getService(GoToService.class)
+				.map(GoToService::getDefaultNavigatable)
+				.orElse(null);
 	}
 
 //==================================================================================================

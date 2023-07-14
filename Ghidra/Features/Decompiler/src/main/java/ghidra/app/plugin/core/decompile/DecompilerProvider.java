@@ -20,7 +20,10 @@ import java.awt.event.MouseEvent;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.function.Supplier;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.Icon;
 import javax.swing.JComponent;
 
@@ -242,10 +245,9 @@ public class DecompilerProvider extends NavigatableComponentProviderAdapter
 			}
 		}
 
-		ProgramManager programManagerService = tool.getService(ProgramManager.class);
-		if (programManagerService != null) {
-			programManagerService.setCurrentProgram(gotoProgram);
-		}
+		tool.getService(ProgramManager.class).ifPresent(service -> {
+			service.setCurrentProgram(gotoProgram);
+		});
 
 		setLocation(location, null);
 		pendingViewerPosition = null;
@@ -563,97 +565,58 @@ public class DecompilerProvider extends NavigatableComponentProviderAdapter
 
 	@Override
 	public void goToLabel(String symbolName, boolean newWindow) {
-
-		GoToService service = tool.getService(GoToService.class);
-		if (service == null) {
-			return;
-		}
-
-		SymbolIterator symbolIterator = program.getSymbolTable().getSymbols(symbolName);
-		if (!symbolIterator.hasNext()) {
-			tool.setStatusInfo(symbolName + " not found.");
-			return;
-		}
-
-		Navigatable navigatable = this;
-		if (newWindow) {
-			DecompilerProvider newProvider = plugin.createNewDisconnectedProvider();
-			navigatable = newProvider;
-		}
-
-		QueryData queryData = new QueryData(symbolName, true);
-		service.goToQuery(navigatable, null, queryData, null, null);
+		tool.getService(GoToService.class).ifPresent(
+				service -> {
+					SymbolIterator symbolIterator = program.getSymbolTable().getSymbols(symbolName);
+					if (!symbolIterator.hasNext()) {
+						tool.setStatusInfo(symbolName + " not found.");
+						return;
+					}
+					Navigatable navigatable = this;
+					if (newWindow) {
+						navigatable = plugin.createNewDisconnectedProvider();
+					}
+					QueryData queryData = new QueryData(symbolName, true);
+					service.goToQuery(navigatable, null, queryData, null, null);
+				}
+		);
 	}
 
 	@Override
 	public void goToScalar(long value, boolean newWindow) {
-
-		GoToService service = tool.getService(GoToService.class);
-		if (service == null) {
-			return;
-		}
-
-		try {
-			// try space/overlay which contains function
-			AddressSpace space = controller.getFunction().getEntryPoint().getAddressSpace();
-			goToAddress(space.getAddress(value), newWindow);
-			return;
-		}
-		catch (AddressOutOfBoundsException e) {
-			// ignore
-		}
-		try {
-			AddressSpace space = controller.getFunction().getEntryPoint().getAddressSpace();
-			space.getAddress(value);
-			goToAddress(program.getAddressFactory().getDefaultAddressSpace().getAddress(value),
-				newWindow);
-		}
-		catch (AddressOutOfBoundsException e) {
-			tool.setStatusInfo("Invalid address: " + value);
-		}
+		tool.getService(GoToService.class).ifPresent(service -> tryGoToScalar(value, newWindow));
 	}
 
 	@Override
 	public void goToAddress(Address address, boolean newWindow) {
-
-		GoToService service = tool.getService(GoToService.class);
-		if (service == null) {
-			return;
-		}
-
-		Navigatable navigatable = this;
-		if (newWindow) {
-			DecompilerProvider newProvider = plugin.createNewDisconnectedProvider();
-			navigatable = newProvider;
-		}
-
-		service.goTo(navigatable, new ProgramLocation(program, address), program);
+		tool.getService(GoToService.class).ifPresent(
+				service -> {
+					Navigatable navigatable = this;
+					if (newWindow) {
+						navigatable = plugin.createNewDisconnectedProvider();
+					}
+					service.goTo(navigatable, new ProgramLocation(program, address), program);
+				}
+		);
 	}
 
 	@Override
 	public void goToFunction(Function function, boolean newWindow) {
-
-		GoToService service = tool.getService(GoToService.class);
-		if (service == null) {
-			return;
-		}
-
-		Navigatable navigatable = this;
-		if (newWindow) {
-			DecompilerProvider newProvider = plugin.createNewDisconnectedProvider();
-			navigatable = newProvider;
-		}
-
-		if (function.isExternal()) {
-			Symbol symbol = function.getSymbol();
-			ExternalManager externalManager = program.getExternalManager();
-			ExternalLocation externalLocation = externalManager.getExternalLocation(symbol);
-			service.goToExternalLocation(navigatable, externalLocation, true);
-		}
-		else {
-			Address address = function.getEntryPoint();
-			service.goTo(navigatable, new ProgramLocation(program, address), program);
-		}
+		tool.getService(GoToService.class).ifPresent(service -> {
+			Navigatable navigatable = this;
+			if (newWindow) {
+				navigatable = plugin.createNewDisconnectedProvider();
+			}
+			if (function.isExternal()) {
+				Symbol symbol = function.getSymbol();
+				ExternalManager externalManager = program.getExternalManager();
+				ExternalLocation externalLocation = externalManager.getExternalLocation(symbol);
+				service.goToExternalLocation(navigatable, externalLocation, true);
+			} else {
+				Address address = function.getEntryPoint();
+				service.goTo(navigatable, new ProgramLocation(program, address), program);
+			}
+		});
 	}
 
 	@Override
@@ -737,6 +700,56 @@ public class DecompilerProvider extends NavigatableComponentProviderAdapter
 
 		ToolOptions codeBrowserOptions = tool.getOptions(GhidraOptions.CATEGORY_BROWSER_FIELDS);
 		codeBrowserOptions.addOptionsChangeListener(this);
+	}
+
+	private void tryGoToScalar(final long value, final boolean newWindow) {
+		final Address address = trySupplyOrElse(
+				() -> {
+					final AddressSpace space = controller.getFunction().getEntryPoint().getAddressSpace();
+					return space.getAddress(value);
+				},
+				() -> {
+					final AddressSpace space = program.getAddressFactory().getDefaultAddressSpace();
+					return space.getAddress(value);
+				}
+		);
+		// Couldn't get the address.
+		if (address == null) {
+			tool.setStatusInfo("Invalid address: " + value);
+			return;
+		}
+		this.goToAddress(address, newWindow);
+	}
+
+	/**
+	 * Try to supply a value or else.
+	 * @param function function
+	 * @param orElse alternate function
+	 * @return value
+	 * @param <T> type constraint
+	 */
+	@Nullable
+	private static <T> T trySupplyOrElse(
+			@Nonnull final Supplier<T> function,
+			@Nonnull final Supplier<T> orElse) {
+		return trySupply(function)
+				.orElseGet(
+						() -> trySupply(orElse).orElse(null)
+				);
+	}
+
+	/**
+	 * Try to supply a value
+	 * @param function function
+	 * @return value
+	 * @param <T> type constraint
+	 */
+	private static <T> Optional<T> trySupply(@Nonnull final Supplier<T> function) {
+		try {
+			return Optional.ofNullable(function.get());
+		} catch (Exception e) {
+			return Optional.empty();
+		}
 	}
 
 	private void createActions(boolean isConnected) {
@@ -1069,13 +1082,17 @@ public class DecompilerProvider extends NavigatableComponentProviderAdapter
 	}
 
 	private void graphServiceAdded() {
-		GraphDisplayBroker service = tool.getService(GraphDisplayBroker.class);
-		if (service != null && service.getDefaultGraphDisplayProvider() != null) {
-			pcodeGraphAction = new PCodeCfgAction();
-			addLocalAction(pcodeGraphAction);
-			astGraphAction = new PCodeDfgAction();
-			addLocalAction(astGraphAction);
-		}
+		tool.getService(GraphDisplayBroker.class).ifPresent(
+				service -> {
+					if (service.getDefaultGraphDisplayProvider() == null) {
+						return;
+					}
+					pcodeGraphAction = new PCodeCfgAction();
+					astGraphAction = new PCodeDfgAction();
+					addLocalAction(pcodeGraphAction);
+					addLocalAction(astGraphAction);
+				}
+		);
 	}
 
 	@Override

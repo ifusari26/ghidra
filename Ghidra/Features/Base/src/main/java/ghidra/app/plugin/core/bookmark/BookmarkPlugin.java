@@ -222,9 +222,11 @@ public class BookmarkPlugin extends ProgramPlugin
 	 */
 	@Override
 	protected void init() {
-		goToService = tool.getService(GoToService.class);
-		provider.setGoToService(goToService);
-		markerService = tool.getService(MarkerService.class);
+		tool.getService(GoToService.class).ifPresent(service -> {
+			this.goToService = service;
+			provider.setGoToService(service);
+		});
+		markerService = tool.getService(MarkerService.class).orElse(null);
 
 		tool.addPopupActionProvider(this);
 

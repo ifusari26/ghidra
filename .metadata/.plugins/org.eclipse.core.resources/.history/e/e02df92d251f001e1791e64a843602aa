@@ -1,0 +1,22 @@
+package tools.ghidra.marshmallows.loaders;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.function.Function;
+
+public interface Loader<T> {
+
+	@SuppressWarnings("unchecked")
+	void load(final T... srcs);
+
+	default T[] transformAll(final String... strings, final Function<String, T> transformer) {
+		return (T[]) Arrays.stream(strings).map((s) -> this.transform(s, transformer)).toArray();
+	}
+
+	default Optional<T> transform(final String path, final Function<String, T> transformer) {
+		return Optional.ofNullable(transformer.apply(path));
+	}
+
+}

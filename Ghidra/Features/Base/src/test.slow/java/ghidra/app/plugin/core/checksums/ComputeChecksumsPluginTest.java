@@ -371,7 +371,7 @@ public class ComputeChecksumsPluginTest extends AbstractGhidraHeadedIntegrationT
 
 	private void goTo(String addr) {
 		Address a = addr(addr);
-		GoToService goTo = tool.getService(GoToService.class);
+		GoToService goTo = tool.getService(GoToService.class).orElseThrow();
 		goTo.goTo(a);
 	}
 

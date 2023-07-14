@@ -18,6 +18,7 @@ package ghidra.app.plugin.core.debug.platform.dbgeng;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
@@ -51,20 +52,36 @@ public class DbgengX64DisassemblyInject implements DisassemblyInject {
 	}
 
 	@Override
-	public void pre(PluginTool tool, TraceDisassembleCommand command, Trace trace,
-			Language language, long snap, TraceThread thread, AddressSetView startSet,
-			AddressSetView restricted) {
-		AddressRange first = startSet.getFirstRange();
+	public void pre(
+			final PluginTool tool,
+			final TraceDisassembleCommand command,
+			final Trace trace,
+			final Language language,
+			final long snap,
+			final TraceThread thread,
+			final AddressSetView startSet,
+			final AddressSetView restricted
+	) {
+		final AddressRange first = startSet.getFirstRange();
 		if (first == null) {
 			return;
 		}
-		DebuggerModelService modelService = tool.getService(DebuggerModelService.class);
-		TraceRecorder recorder = modelService == null ? null : modelService.getRecorder(trace);
-		Collection<? extends TraceModule> modules =
-			trace.getModuleManager().getModulesAt(snap, first.getMinAddress());
-		Msg.debug(this, "Disassembling in modules: " +
-			modules.stream().map(TraceModule::getName).collect(Collectors.joining(",")));
-		Set<Mode> modes = modules.stream()
+		final TraceRecorder recorder = tool
+				.getService(DebuggerModelService.class)
+				.map(service -> service.getRecorder(trace))
+				.orElse(null);
+		Collection<? extends TraceModule> modules = trace
+				.getModuleManager()
+				.getModulesAt(snap, first.getMinAddress());
+		Msg.debug(
+				this,
+				"Disassembling in modules: " + modules
+						.stream()
+						.map(TraceModule::getName)
+						.collect(Collectors.joining(","))
+		);
+		Set<Mode> modes = modules
+				.stream()
 				.map(m -> modeForModule(recorder, trace, snap, m))
 				.filter(m -> m != Mode.UNK)
 				.collect(Collectors.toSet());
@@ -76,16 +93,17 @@ public class DbgengX64DisassemblyInject implements DisassemblyInject {
 		Register longModeReg = language.getRegister("longMode");
 		Register addrsizeReg = language.getRegister("addrsize");
 		Register opsizeReg = language.getRegister("opsize");
+
 		ProgramContextImpl context = new ProgramContextImpl(language);
 		language.applyContextSettings(context);
+
 		RegisterValue ctxVal = context.getDisassemblyContext(first.getMinAddress());
 		if (mode == Mode.X64) {
 			command.setInitialContext(ctxVal
 					.assign(longModeReg, BigInteger.ONE)
 					.assign(addrsizeReg, BigInteger.TWO)
 					.assign(opsizeReg, BigInteger.ONE));
-		}
-		else if (mode == Mode.X86) {
+		} else if (mode == Mode.X86) {
 			command.setInitialContext(ctxVal
 					.assign(longModeReg, BigInteger.ZERO)
 					.assign(addrsizeReg, BigInteger.ONE)

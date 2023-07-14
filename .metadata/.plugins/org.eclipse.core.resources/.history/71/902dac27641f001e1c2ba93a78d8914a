@@ -1,0 +1,125 @@
+package tools.ghidra.marshmallows.providers;
+
+import java.awt.BorderLayout;
+
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+
+import org.jetbrains.annotations.NotNull;
+
+import docking.ActionContext;
+import docking.ComponentProvider;
+import docking.action.DockingAction;
+import docking.action.ToolBarData;
+import docking.action.builder.ActionBuilder;
+import ghidra.framework.plugintool.Plugin;
+import ghidra.framework.plugintool.PluginInfo;
+import ghidra.util.HelpLocation;
+import ghidra.util.Msg;
+import lombok.Getter;
+import resources.Icons;
+
+public final class MarshmallowsPluginProvider extends ComponentProvider implements Initializable {
+
+	@Getter
+	private final FileProvider fileProvider;
+	
+	@Getter
+	private final PanelProvider panelProvider;
+	private final ToolBarData toolbar;
+	private final String topic;
+
+	private final String anchor;
+
+	private JTextArea area;
+
+	public MarshmallowsPluginProvider(final Plugin plugin, final String owner) {
+		super(plugin.getTool(), owner, owner);
+		// Set information based off of plugin information.
+		PluginInfo info = PluginInfoProvider.getPluginInfo(plugin);
+		this.topic = info.category();
+		this.anchor = info.packageName();
+		this.toolbar = new ToolBarData(Icons.ADD_ICON, this.anchor);
+		this.fileProvider = new FileProvider();
+		JPanel panel = PanelProvider.panel(BorderLayout.class);
+		this.panelProvider = new PanelProvider(panel);
+		Msg.info(this, "Did the panel? " + panel.toString());
+	}
+
+	// Customize GUI
+	private void buildPanel() {
+		area = new JTextArea(5, 25);
+		area.setEditable(false);
+		area.setName(this.anchor);
+		area.setEnabled(true);
+		area.setVisible(true);
+		this.panelProvider.getPanel().add(area);
+	}
+
+	private void createActions() {
+		ActionBuilder builder = new ActionBuilder("Toggle sources", anchor);
+		builder
+			.description("Toggle sources")
+			.onAction(System.out::println)
+			.enabled(true)
+			.buildAndInstallLocal(this);
+//		action.setToolBarData(this.toolbar);
+//		action.setEnabled(true);
+//		this.dockingTool.addAction(action);
+		
+//		DockingAction action = new DockingAction("Toggle sources", "not untitled") {
+//			// Access filesystem?
+//			@Override
+//			public void actionPerformed(ActionContext context) {
+//				fileProvider.getBundles()
+//					.stream()
+//					.map(ResourceFile::getAbsolutePath)
+//					.forEach((path) -> {
+//						Msg.info(this, path);
+//						ActionBuilder builder = new ActionBuilder(path, anchor);
+//						builder
+//							.popupMenuPath(path)
+//							.toolBarGroup(null)
+//							.enabledWhen(ctx -> {
+//								Object contextObject = context.getContextObject();
+//								return (contextObject instanceof GTable) ||
+//									(contextObject instanceof ResourceFile);
+//							})
+//							.onAction(ctx -> System.out.println(path))
+//							.buildAndInstallLocal(MarshmallowsPluginProvider.this);
+//					});
+//			}
+//		};
+//		action.setToolBarData(this.toolbar);
+//		action.setEnabled(true);
+//		action.markHelpUnnecessary();
+//		dockingTool.addLocalAction(this, action);
+	}
+
+	@Override
+	@NotNull
+	public JComponent getComponent() {
+		// In this case, this should NEVER be null.
+		return this.getPanelProvider().getParent().get();
+	}
+
+	@Override
+	public void initialize() {
+		Msg.info(this, "Initializing...");
+		HelpLocation helpLocation = new HelpLocation(this.topic, this.anchor);
+		this.setHelpLocation(helpLocation);
+		buildPanel();
+		createActions();
+		this.panelProvider.show();
+	}
+	
+	@Override
+	public void deinitialize() {
+		Msg.info(this, "Deinitializing...");
+		this.panelProvider.hide();
+		this.panelProvider.clear();
+		this.removeAllLocalActions();
+	}
+	
+}

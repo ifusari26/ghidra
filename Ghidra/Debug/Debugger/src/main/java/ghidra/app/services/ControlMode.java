@@ -326,17 +326,19 @@ public enum ControlMode {
 						PatchStep.generateSleigh(language, address, data));
 
 			DebuggerCoordinates withTime = coordinates.time(time);
-			DebuggerTraceManagerService traceManager =
-				Objects.requireNonNull(tool.getService(DebuggerTraceManagerService.class),
-					"No trace manager service");
+			DebuggerTraceManagerService traceManager = tool
+					.getService(DebuggerTraceManagerService.class)
+					.orElseThrow(() -> new NullPointerException("No trace manager service"));
+
 			Long found = traceManager.findSnapshot(withTime);
 			// Materialize it on the same thread (even if swing)
 			// It shouldn't take long, since we're only appending one step.
 			if (found == null) {
 				// TODO: Could still do it async on another thread, no?
 				// Not sure it buys anything, since program view will call .get on swing thread
-				DebuggerEmulationService emulationService = Objects.requireNonNull(
-					tool.getService(DebuggerEmulationService.class), "No emulation service");
+				DebuggerEmulationService emulationService = tool
+						.getService(DebuggerEmulationService.class)
+						.orElseThrow(() -> new NullPointerException("No emulation service"));
 				try {
 					emulationService.emulate(coordinates.getPlatform(), time,
 						TaskMonitor.DUMMY);

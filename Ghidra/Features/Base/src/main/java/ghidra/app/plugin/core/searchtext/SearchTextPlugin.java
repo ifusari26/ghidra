@@ -204,7 +204,7 @@ public class SearchTextPlugin extends ProgramPlugin implements OptionsChangeList
 
 	@Override
 	protected void init() {
-		goToService = tool.getService(GoToService.class);
+		goToService = tool.getService(GoToService.class).orElseThrow();
 	}
 
 	private void setNavigatable(Navigatable newNavigatable) {
@@ -305,8 +305,7 @@ public class SearchTextPlugin extends ProgramPlugin implements OptionsChangeList
 
 	private void showQueryData(GhidraProgramTableModel<ProgramLocation> model,
 			SearchOptions searchOptions, Program searchProgram, Navigatable searchNavigatable) {
-
-		TableService query = tool.getService(TableService.class);
+		TableService query = tool.getService(TableService.class).orElseThrow();
 		String matchType = "Listing Display Match";
 		if (model instanceof ProgramDatabaseSearchTableModel) {
 			matchType = "Program Database";

@@ -188,8 +188,7 @@ public class ProgramStartingLocationPlugin extends ProgramPlugin {
 	}
 
 	private void gotoLocation(ProgramLocation location) {
-		GoToService gotoService = tool.getService(GoToService.class);
-		gotoService.goTo(location);
+		tool.getService(GoToService.class).ifPresent(service -> service.goTo(location));
 	}
 
 	private boolean isProgramAtStartingLocation() {

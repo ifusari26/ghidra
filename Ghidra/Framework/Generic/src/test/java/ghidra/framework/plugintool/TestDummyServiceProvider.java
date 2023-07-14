@@ -18,10 +18,12 @@ package ghidra.framework.plugintool;
 
 import ghidra.framework.plugintool.util.ServiceListener;
 
+import java.util.Optional;
+
 public class TestDummyServiceProvider implements ServiceProvider {
 
 	@Override
-	public <T> T getService(Class<T> serviceClass) {
+	public <T> Optional<T> getService(Class<T> serviceClass) {
 		return null;
 	}
 

@@ -96,9 +96,9 @@ public class DebuggerBreakpointMarkerPluginTest extends AbstractGhidraHeadedDebu
 		listingPlugin = addPlugin(tool, DebuggerListingPlugin.class);
 		codeBrowserPlugin = addPlugin(tool, CodeBrowserPlugin.class);
 
-		mappingService = tool.getService(DebuggerStaticMappingService.class);
-		breakpointService = tool.getService(DebuggerLogicalBreakpointService.class);
-		markerService = tool.getService(MarkerService.class);
+		mappingService = tool.getService(DebuggerStaticMappingService.class).orElseThrow();
+		breakpointService = tool.getService(DebuggerLogicalBreakpointService.class).orElseThrow();
+		markerService = tool.getService(MarkerService.class).orElseThrow();
 	}
 
 	protected void prepareDecompiler() throws Throwable {

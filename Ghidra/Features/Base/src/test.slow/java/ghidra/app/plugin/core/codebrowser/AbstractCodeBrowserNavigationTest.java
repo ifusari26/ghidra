@@ -78,7 +78,7 @@ public class AbstractCodeBrowserNavigationTest extends AbstractGhidraHeadedInteg
 
 	protected void loadProgram() throws Exception {
 		program = buildProgram();
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.openProgram(program.getDomainFile());
 		addrFactory = program.getAddressFactory();
 	}

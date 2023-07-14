@@ -96,11 +96,11 @@ public class GoToAddressLabelPlugin extends Plugin implements OptionsChangeListe
 
 	@Override
 	public void init() {
-		GoToService gotoService = tool.getService(GoToService.class);
-		goToDialog = new GoToAddressLabelDialog(gotoService, this);
+		tool.getService(GoToService.class).ifPresent(service -> {
+			goToDialog = new GoToAddressLabelDialog(service, GoToAddressLabelPlugin.this);
+		});
 		maximumGotoEntries = DEFAULT_MAX_GOTO_ENTRIES;
 		initOptions();
-
 		tool.addAction(action);
 	}
 

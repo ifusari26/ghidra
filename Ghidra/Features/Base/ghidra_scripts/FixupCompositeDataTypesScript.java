@@ -24,6 +24,7 @@
 // This script can be run multiple times without harm
 //@category Data Types
 import java.util.ArrayList;
+import java.util.Optional;
 
 import ghidra.app.script.GhidraScript;
 import ghidra.app.services.DataTypeManagerService;
@@ -43,17 +44,18 @@ public class FixupCompositeDataTypesScript extends GhidraScript {
 		PluginTool tool = state.getTool();
 		if (tool == null) {
 			print("This script does not support headless use");
+			return;
 		}
 
-		DataTypeManagerService service = tool.getService(DataTypeManagerService.class);
-		if (service == null) {
+		Optional<DataTypeManagerService> service = tool.getService(DataTypeManagerService.class);
+		if (service.isEmpty()) {
 			popup("This script requires the DataTypeManagerService");
 			return;
 		}
 		
 		ArrayList<DTMWrapper> dtms = new ArrayList<>();
 
-		for (DataTypeManager dtm : service.getDataTypeManagers()) {
+		for (DataTypeManager dtm : service.get().getDataTypeManagers()) {
 			if (dtm instanceof BuiltInDataTypeManager) {
 				continue;
 			}

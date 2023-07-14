@@ -67,10 +67,7 @@ public class PatternEvalTableProvider extends ComponentProviderAdapter {
 			new GhidraThreadedTablePanel<>(patternEvalModel, 1000);
 		GhidraTable table = threadedPanel.getTable();
 
-		GoToService goToService = tool.getService(GoToService.class);
-		if (goToService != null) {
-			table.installNavigation(goToService, goToService.getDefaultNavigatable());
-		}
+		tool.getService(GoToService.class).ifPresent(service -> table.installNavigation(service, service.getDefaultNavigatable()));
 		table.setRowSelectionAllowed(true);
 		table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);

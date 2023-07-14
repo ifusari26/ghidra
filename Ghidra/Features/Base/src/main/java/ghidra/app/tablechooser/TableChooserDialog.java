@@ -106,7 +106,7 @@ public class TableChooserDialog extends DialogComponentProvider
 		TableChooserDialogPanel tablePanel = new TableChooserDialogPanel(model);
 
 		table = tablePanel.getTable();
-		GoToService goToService = tool.getService(GoToService.class);
+		GoToService goToService = tool.getService(GoToService.class).orElse(null);
 		if (goToService != null) {
 			navigatable = navigatable == null ? goToService.getDefaultNavigatable() : navigatable;
 			navigatable.addNavigatableListener(this);

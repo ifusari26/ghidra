@@ -45,23 +45,28 @@ public class PCodeCfgAction extends AbstractDecompilerAction {
 	@Override
 	protected void decompilerActionPerformed(DecompilerActionContext context) {
 		PluginTool tool = context.getTool();
-		GraphDisplayBroker service = tool.getService(GraphDisplayBroker.class);
-		if (service == null) {
-			Msg.showError(this, tool.getToolFrame(), "AST Graph Failed",
-				"Graph consumer not found: Please add a graph consumer provider to your tool");
-			return;
-		}
-
-		// TODO: Options should really be obtained from graph service
-		Options options = tool.getOptions("Graph");
-		boolean reuseGraph = options.getBoolean("Reuse Graph", false);
-		int codeLimitPerBlock = options.getInt("Max Code Lines Displayed", 10);
-		HighFunction highFunction = context.getHighFunction();
-		Address locationAddr = context.getLocation().getAddress();
-		PCodeCfgGraphTask task =
-			new PCodeCfgGraphTask(tool, service, !reuseGraph, codeLimitPerBlock,
-				locationAddr, highFunction, CONTROL_FLOW_GRAPH);
-		new TaskLauncher(task, tool.getToolFrame());
+		tool.getService(GraphDisplayBroker.class).ifPresentOrElse(
+				service -> {
+					// TODO: Options should really be obtained from graph service
+					Options options = tool.getOptions("Graph");
+					boolean reuseGraph = options.getBoolean("Reuse Graph", false);
+					int codeLimitPerBlock = options.getInt("Max Code Lines Displayed", 10);
+					HighFunction highFunction = context.getHighFunction();
+					Address locationAddr = context.getLocation().getAddress();
+					PCodeCfgGraphTask task = new PCodeCfgGraphTask(
+							tool,
+							service,
+							!reuseGraph,
+							codeLimitPerBlock,
+							locationAddr,
+							highFunction,
+							CONTROL_FLOW_GRAPH
+					);
+					new TaskLauncher(task, tool.getToolFrame());
+				},
+				() -> Msg.showError(this, tool.getToolFrame(), "AST Graph Failed",
+						"Graph consumer not found: Please add a graph consumer provider to your tool")
+		);
 	}
 
 }

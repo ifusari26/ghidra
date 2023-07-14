@@ -19,6 +19,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import ghidra.framework.options.OptionsChangeListener;
 import ghidra.framework.options.ToolOptions;
@@ -84,7 +85,7 @@ public class BrowserLoader {
 	}
 
 	private static void displayBrowser(URL url, URL fileURL, ServiceProvider serviceProvider) {
-		OptionsService service = serviceProvider.getService(OptionsService.class);
+		OptionsService service = serviceProvider.getService(OptionsService.class).orElseThrow();
 		ToolOptions options =
 			service.getOptions(ManualViewerCommandWrappedOption.OPTIONS_CATEGORY_NAME);
 

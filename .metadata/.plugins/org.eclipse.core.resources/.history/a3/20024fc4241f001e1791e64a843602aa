@@ -1,0 +1,54 @@
+package tools.ghidra.marshmallows.loaders;
+
+import lombok.Getter;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+
+public class JarLoader implements Loader<URL> {
+
+    @Getter
+    private final URLClassLoader loader;
+
+    public JarLoader() {
+        this(new URL[0]);
+    }
+
+    public JarLoader(final String... paths) {
+        this(Loader.getUrlsFromStrings(paths));
+    }
+
+    public JarLoader(final File... files) {
+        this((String[]) Arrays.stream(files).map(File::getAbsolutePath).toArray());
+    }
+
+    public JarLoader(final URL... urls) {
+        this.loader = URLClassLoader.newInstance(urls);
+    }
+
+    public void load(final URL... urls) {
+        Arrays.stream(urls).forEach(url -> {
+            try (JarFile file = new JarFile(url.getFile())) {
+                file.stream().forEach(this::loadJarEntry);
+            } catch (IOException ignored) {
+                // todo
+            }
+        });
+    }
+    private void loadJarEntry(final JarEntry entry) {
+        try {
+            this.loader.loadClass(entry.getName());
+        } catch (ClassNotFoundException e) {
+            // TODO: log probably
+        }
+    }
+
+
+}

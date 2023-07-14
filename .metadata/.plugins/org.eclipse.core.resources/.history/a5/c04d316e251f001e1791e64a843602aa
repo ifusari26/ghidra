@@ -1,0 +1,16 @@
+package tools.ghidra.marshmallows.loaders;
+
+import java.util.Arrays;
+import java.util.function.Function;
+
+public interface Loader<T> {
+
+	@SuppressWarnings("unchecked")
+	void load(final T... srcs);
+
+	@SuppressWarnings("unchecked")
+	default T[] transform(final Function<String, T> transformer, final String... strings) {
+		return (T[]) Arrays.stream(strings).map(transformer::apply).toArray();
+	}
+
+}

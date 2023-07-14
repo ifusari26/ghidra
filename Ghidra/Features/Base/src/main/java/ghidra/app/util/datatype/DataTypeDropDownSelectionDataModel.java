@@ -47,11 +47,9 @@ public class DataTypeDropDownSelectionDataModel implements DropDownTextFieldData
 	}
 
 	private DataTypeManagerService getDataTypeService(ServiceProvider serviceProvider) {
-		DataTypeManagerService service = serviceProvider.getService(DataTypeManagerService.class);
-		if (service == null) {
-			throw new AssertException("Unable to find required DataTypeManagerService.");
-		}
-		return service;
+		return serviceProvider
+				.getService(DataTypeManagerService.class)
+				.orElseThrow(() -> new AssertException("Unable to find required DataTypeManagerService."));
 	}
 
 	@Override

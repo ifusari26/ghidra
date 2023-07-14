@@ -63,7 +63,7 @@ public abstract class AbstractProgramTreePluginTest extends AbstractGhidraHeaded
 		env.showTool(program);
 
 		tool.addPlugin(ProgramTreePlugin.class.getName());
-		ProgramTreeService service = tool.getService(ProgramTreeService.class);
+		ProgramTreeService service = tool.getService(ProgramTreeService.class).orElseThrow();
 		plugin = (ProgramTreePlugin) service;
 		tool.addPlugin(CodeBrowserPlugin.class.getName());
 		cbPlugin = env.getPlugin(CodeBrowserPlugin.class);
@@ -76,7 +76,7 @@ public abstract class AbstractProgramTreePluginTest extends AbstractGhidraHeaded
 		actionMgr = plugin.getActionManager();
 		actions = actionMgr.getActions();
 		root = (ProgramNode) tree.getModel().getRoot();
-		viewMgrService = tool.getService(ViewManagerService.class);
+		viewMgrService = tool.getService(ViewManagerService.class).orElseThrow();
 	}
 
 	protected abstract ProgramDB buildProgram() throws Exception;

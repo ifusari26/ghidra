@@ -60,7 +60,7 @@ public class InstructionInfoTest extends AbstractGhidraHeadedIntegrationTest {
 		builder.setBytes(startAddressString, BYTES);
 		builder.disassemble(startAddressString, BYTES.length);
 		program = builder.getProgram();
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.openProgram(program);
 		env.getPlugin(NextPrevAddressPlugin.class);
 	}

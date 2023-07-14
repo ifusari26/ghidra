@@ -369,22 +369,20 @@ public class DisassembleAtPcDebuggerBot implements DebuggerBot {
 	 * @param cls the class of the service
 	 * @return the service, or null
 	 */
-	protected <T> T findService(Class<T> cls) {
+	protected <T> T findService(final Class<T> cls) {
 		Collection<PluginTool> proxied = plugin.getProxyingPluginTools();
 		List<DockingWindowManager> all = DockingWindowManager.getAllDockingWindowManagers();
 		Collections.reverse(all);
-		for (DockingWindowManager dwm : all) {
-			Tool tool = dwm.getTool();
-			if (!proxied.contains(tool)) {
-				continue;
-			}
-			T t = tool.getService(cls);
-			if (t == null) {
-				continue;
-			}
-			return t;
-		}
-		return null;
+		return all
+				.stream()
+				.map(DockingWindowManager::getTool)
+				.map(PluginTool.class::cast)
+				.filter(proxied::contains)
+				.map(tool -> tool.getService(cls))
+				.filter(Optional::isPresent)
+				.map(Optional::get)
+				.findFirst()
+				.orElse(null);
 	}
 
 	@Override

@@ -20,6 +20,7 @@ import java.util.*;
 import docking.action.DockingActionIf;
 import docking.widgets.EventTrigger;
 import ghidra.app.services.GraphDisplayBroker;
+import ghidra.app.util.bin.format.golang.GoFunctionMultiReturn;
 import ghidra.framework.plugintool.PluginTool;
 import ghidra.service.graph.*;
 import ghidra.util.Swing;
@@ -71,11 +72,10 @@ class ExportAttributedGraphDisplay implements GraphDisplay {
 	}
 
 	private List<AttributedGraphExporter> findGraphExporters() {
-		GraphDisplayBroker service = tool.getService(GraphDisplayBroker.class);
-		if (service != null) {
-			return service.getGraphExporters();
-		}
-		return Collections.emptyList();
+		return tool
+				.getService(GraphDisplayBroker.class)
+				.map(GraphDisplayBroker::getGraphExporters)
+				.orElse(Collections.emptyList());
 	}
 
 	@Override

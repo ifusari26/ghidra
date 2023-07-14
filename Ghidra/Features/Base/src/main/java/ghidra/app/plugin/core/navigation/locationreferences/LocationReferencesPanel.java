@@ -58,9 +58,9 @@ public class LocationReferencesPanel extends JPanel {
 		setLayout(new BorderLayout(10, 10));
 
 		PluginTool tool = locationReferencesProvider.getTool();
-		GoToService goToService = tool.getService(GoToService.class);
-		table.installNavigation(goToService, goToService.getDefaultNavigatable());
-
+		tool.getService(GoToService.class).ifPresent(
+				service -> table.installNavigation(service, service.getDefaultNavigatable())
+		);
 		GhidraTableFilterPanel<LocationReference> tableFilterPanel =
 			new GhidraTableFilterPanel<>(table, tableModel);
 		add(tablePanel, BorderLayout.CENTER);

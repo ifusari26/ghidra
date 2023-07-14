@@ -940,7 +940,7 @@ public class NextPrevCodeUnitPluginTest extends AbstractGhidraHeadedIntegrationT
 	}
 
 	private void goTo(Address a) throws Exception {
-		GoToService goToService = tool.getService(GoToService.class);
+		GoToService goToService = tool.getService(GoToService.class).orElseThrow();
 		goToService.goTo(a);
 		cb.updateNow();
 		waitForSwing();

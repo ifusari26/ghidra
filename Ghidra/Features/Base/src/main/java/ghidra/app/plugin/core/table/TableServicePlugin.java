@@ -4,9 +4,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -134,11 +134,12 @@ public class TableServicePlugin extends ProgramPlugin
 	}
 
 	@Override
-	public <T> TableComponentProvider<T> showTable(String title, String tableTypeName,
-			GhidraProgramTableModel<T> model, String windowSubMenu, Navigatable navigatable) {
-
-		GoToService gotoService = tool.getService(GoToService.class);
-
+	public <T> TableComponentProvider<T> showTable(String title,
+												   String tableTypeName,
+												   GhidraProgramTableModel<T> model,
+												   String windowSubMenu,
+												   Navigatable navigatable) {
+		GoToService gotoService = tool.getService(GoToService.class).orElse(null);
 		if (gotoService != null && navigatable == null) {
 			navigatable = gotoService.getDefaultNavigatable();
 		}
@@ -156,13 +157,13 @@ public class TableServicePlugin extends ProgramPlugin
 			GhidraProgramTableModel<T> model, Color markerColor, Icon markerIcon,
 			String windowSubMenu, Navigatable navigatable) {
 
-		GoToService gotoService = tool.getService(GoToService.class);
+		GoToService gotoService = tool.getService(GoToService.class).orElse(null);
 
 		if (gotoService != null && navigatable == null) {
 			navigatable = gotoService.getDefaultNavigatable();
 		}
 
-		MarkerService markerService = tool.getService(MarkerService.class);
+		MarkerService markerService = tool.getService(MarkerService.class).orElseThrow();
 		Program program = model.getProgram();
 
 		TableComponentProvider<T> cp = new TableComponentProvider<>(this, title, tableTypeName,
@@ -251,7 +252,7 @@ public class TableServicePlugin extends ProgramPlugin
 	public TableChooserDialog createTableChooserDialog(TableChooserExecutor executor,
 			Program program, String title, Navigatable navigatable, boolean isModal) {
 
-		GoToService gotoService = tool.getService(GoToService.class);
+		GoToService gotoService = tool.getService(GoToService.class).orElse(null);
 
 		if (gotoService != null && navigatable == null) {
 			navigatable = gotoService.getDefaultNavigatable();

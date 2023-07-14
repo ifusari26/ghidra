@@ -71,8 +71,8 @@ public class DebuggerBreakpointsProviderTest extends AbstractGhidraHeadedDebugge
 	public void setUpBreakpointsProviderTest() throws Exception {
 		breakpointsPlugin = addPlugin(tool, DebuggerBreakpointsPlugin.class);
 		breakpointsProvider = waitForComponentProvider(DebuggerBreakpointsProvider.class);
-		mappingService = tool.getService(DebuggerStaticMappingService.class);
-		breakpointService = tool.getService(DebuggerLogicalBreakpointService.class);
+		mappingService = tool.getService(DebuggerStaticMappingService.class).orElseThrow();
+		breakpointService = tool.getService(DebuggerLogicalBreakpointService.class).orElseThrow();
 	}
 
 	protected void waitAndFlush(TraceRecorder recorder) throws Throwable {

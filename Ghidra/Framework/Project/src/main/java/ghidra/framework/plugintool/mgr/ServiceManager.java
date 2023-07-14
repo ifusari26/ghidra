@@ -139,13 +139,13 @@ public class ServiceManager {
 	 * @param interfaceClass interface class for the service
 	 * @return null if the interfaceClass was not registered
 	 */
-	public <T> T getService(Class<T> interfaceClass) {
+	public <T> Optional<T> getService(Class<T> interfaceClass) {
 		List<Object> list = servicesByInterface.get(interfaceClass);
 		if (list == null) {
-			return null;
+			return Optional.empty();
 		}
 		Object object = list.get(0);
-		return interfaceClass.cast(object);
+		return Optional.of(interfaceClass.cast(object));
 	}
 
 	/**

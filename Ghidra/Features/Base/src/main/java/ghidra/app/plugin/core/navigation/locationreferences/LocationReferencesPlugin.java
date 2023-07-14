@@ -114,27 +114,24 @@ public class LocationReferencesPlugin extends Plugin
 				.description("Show the Xrefs to the code unit containing the cursor")
 				.validContextWhen(context -> context instanceof ListingActionContext)
 				.helpLocation(new HelpLocation("CodeBrowserPlugin", "Show_Xrefs"))
-				.onAction(context -> showXrefs(context))
+				.onAction(this::showXrefs)
 				.buildAndInstall(tool);
 
 	}
 
 	private void showXrefs(ActionContext context) {
-
-		TableService service = tool.getService(TableService.class);
-		if (service == null) {
-			Msg.showWarn(this, null, "No Table Service", "Please add the TableServicePlugin.");
-			return;
-		}
-
-		ListingActionContext lac = (ListingActionContext) context;
-		ProgramLocation location = lac.getLocation();
-		if (location == null) {
-			return; // not sure if this can happen
-		}
-
-		Set<Reference> refs = XReferenceUtils.getAllXrefs(location);
-		XReferenceUtils.showXrefs(lac.getNavigatable(), tool, service, location, refs);
+		tool.getService(TableService.class).ifPresentOrElse(
+				service -> {
+					ListingActionContext lac = (ListingActionContext) context;
+					ProgramLocation location = lac.getLocation();
+					if (location == null) {
+						return; // not sure if this can happen
+					}
+					Set<Reference> refs = XReferenceUtils.getAllXrefs(location);
+					XReferenceUtils.showXrefs(lac.getNavigatable(), tool, service, location, refs);
+				},
+				() -> Msg.showWarn(this, null, "No Table Service", "Please add the TableServicePlugin.")
+		);
 	}
 
 	void displayProvider(ListingActionContext context) {
@@ -304,8 +301,8 @@ public class LocationReferencesPlugin extends Plugin
 	public void findAndDisplayAppliedDataTypeAddresses(DataType dataType,
 			FieldMatcher fieldMatcher) {
 
-		ProgramManager programManagerService = tool.getService(ProgramManager.class);
-		GoToService goToService = tool.getService(GoToService.class);
+		ProgramManager programManagerService = tool.getService(ProgramManager.class).orElseThrow();
+		GoToService goToService = tool.getService(GoToService.class).orElseThrow();
 		Program program = programManagerService.getCurrentProgram();
 		if (program == null) {
 			Msg.showInfo(this, null, "Find References To...",

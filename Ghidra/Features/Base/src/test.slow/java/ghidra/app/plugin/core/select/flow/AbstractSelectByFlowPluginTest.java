@@ -84,7 +84,7 @@ public abstract class AbstractSelectByFlowPluginTest extends AbstractGhidraHeade
 		program = builder.getProgram();
 		addressFactory = program.getAddressFactory();
 
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.openProgram(program.getDomainFile());
 	}
 

@@ -972,17 +972,13 @@ public abstract class GhidraScript extends FlatProgramAPI {
 			return;
 		}
 
-		ConsoleService console = tool.getService(ConsoleService.class);
-		if (console == null) {
-			return;
-		}
-
-		try {
-			console.addMessage(getScriptName(), message);
-		}
-		catch (Exception e) {
-			Msg.error(this, "Script Message: " + message, e);
-		}
+		tool.getService(ConsoleService.class).ifPresent(console -> {
+			try {
+				console.addMessage(getScriptName(), message);
+			} catch (Exception e) {
+				Msg.error(this, "Script Message: " + message, e);
+			}
+		});
 	}
 
 	/**
@@ -1054,17 +1050,13 @@ public abstract class GhidraScript extends FlatProgramAPI {
 			return;
 		}
 
-		ConsoleService console = tool.getService(ConsoleService.class);
-		if (console == null) {
-			return;
-		}
-
-		try {
-			console.print(message);
-		}
-		catch (Exception e) {
-			Msg.error(this, "Script Message: " + message, e);
-		}
+		tool.getService(ConsoleService.class).ifPresent(console -> {
+			try {
+				console.print(message);
+			} catch (Exception e) {
+				Msg.error(this, "Script Message: " + message, e);
+			}
+		});
 	}
 
 	/**
@@ -1085,17 +1077,13 @@ public abstract class GhidraScript extends FlatProgramAPI {
 			return;
 		}
 
-		ConsoleService console = tool.getService(ConsoleService.class);
-		if (console == null) {
-			return;
-		}
-
-		try {
-			console.addErrorMessage(getScriptName(), message);
-		}
-		catch (Exception e) {
-			Msg.error(this, "Script Message: " + message, e);
-		}
+		tool.getService(ConsoleService.class).ifPresent(console -> {
+			try {
+				console.addErrorMessage(getScriptName(), message);
+			} catch (Exception e) {
+				Msg.error(this, "Script Message: " + message, e);
+			}
+		});
 	}
 
 	/**
@@ -1611,14 +1599,12 @@ public abstract class GhidraScript extends FlatProgramAPI {
 		}
 
 		PluginTool tool = state.getTool();
-		ColorizingService service = tool.getService(ColorizingService.class);
-		if (service == null) {
-			printerr("Cannot set background colors without the " +
-				ColorizingService.class.getSimpleName() + " installed");
-			return;
-		}
-
-		service.setBackgroundColor(address, address, color);
+		tool.getService(ColorizingService.class)
+				.ifPresentOrElse(
+						service -> service.setBackgroundColor(address, address, color),
+						() -> printerr("Cannot set background colors without the " +
+						ColorizingService.class.getSimpleName() + " installed")
+				);
 	}
 
 	/**
@@ -1647,14 +1633,10 @@ public abstract class GhidraScript extends FlatProgramAPI {
 		}
 
 		PluginTool tool = state.getTool();
-		ColorizingService service = tool.getService(ColorizingService.class);
-		if (service == null) {
-			printerr("Cannot set background colors without the " +
-				ColorizingService.class.getSimpleName() + " installed");
-			return;
-		}
-
-		service.setBackgroundColor(addresses, color);
+		tool.getService(ColorizingService.class).ifPresentOrElse(
+				service -> service.setBackgroundColor(addresses, color),
+				() -> printerr("Cannot set background colors without the " + ColorizingService.class.getSimpleName() + " installed")
+		);
 	}
 
 	/**
@@ -1681,14 +1663,12 @@ public abstract class GhidraScript extends FlatProgramAPI {
 		}
 
 		PluginTool tool = state.getTool();
-		ColorizingService service = tool.getService(ColorizingService.class);
-		if (service == null) {
-			printerr("Cannot clear background colors without the " +
-				ColorizingService.class.getSimpleName() + " installed");
-			return;
-		}
-
-		service.clearBackgroundColor(address, address);
+		tool
+				.getService(ColorizingService.class)
+				.ifPresentOrElse(service -> service.clearBackgroundColor(address, address),
+						() -> printerr("Cannot clear background colors without the " +
+								ColorizingService.class.getSimpleName() + " installed")
+				);
 	}
 
 	/**
@@ -1715,14 +1695,13 @@ public abstract class GhidraScript extends FlatProgramAPI {
 		}
 
 		PluginTool tool = state.getTool();
-		ColorizingService service = tool.getService(ColorizingService.class);
-		if (service == null) {
-			printerr("Cannot clear background colors without the " +
-				ColorizingService.class.getSimpleName() + " installed");
-			return;
-		}
-
-		service.clearBackgroundColor(addresses);
+		tool
+				.getService(ColorizingService.class)
+				.ifPresentOrElse(
+						(service) -> service.clearBackgroundColor(addresses),
+						() -> printerr("Cannot clear background colors without the " +
+						ColorizingService.class.getSimpleName() + " installed")
+				);
 	}
 
 	/**
@@ -1774,7 +1753,7 @@ public abstract class GhidraScript extends FlatProgramAPI {
 		}
 
 		Program program = state.getCurrentProgram();
-		TableService service = tool.getService(TableService.class);
+		TableService service = tool.getService(TableService.class).orElseThrow();
 		return service.createTableChooserDialog(executor, program, title, null, isModal);
 	}
 
@@ -2718,7 +2697,7 @@ public abstract class GhidraScript extends FlatProgramAPI {
 			return (Program) choice.getDomainObject(this, false, false, monitor);
 		}
 
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		return pm.openProgram(choice);
 	}
 
@@ -3452,11 +3431,7 @@ public abstract class GhidraScript extends FlatProgramAPI {
 			return false;
 		}
 
-		GoToService gotoService = tool.getService(GoToService.class);
-		if (gotoService != null) {
-			return gotoService.goTo(address);
-		}
-		return false;
+		return tool.getService(GoToService.class).map(service -> service.goTo(address)).orElse(false);
 	}
 
 	/**
@@ -3543,7 +3518,7 @@ public abstract class GhidraScript extends FlatProgramAPI {
 		if (tool == null) {
 			return;
 		}
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.openProgram(program);
 		end(true);
 		GhidraState newState = new GhidraState(tool, tool.getProject(), program, null, null, null);
@@ -3561,8 +3536,7 @@ public abstract class GhidraScript extends FlatProgramAPI {
 		if (tool == null) {
 			return;
 		}
-		ProgramManager pm = tool.getService(ProgramManager.class);
-		pm.closeProgram(program, false);
+		tool.getService(ProgramManager.class).ifPresent(service -> service.closeProgram(program, false));
 	}
 
 	/**
@@ -3667,13 +3641,12 @@ public abstract class GhidraScript extends FlatProgramAPI {
 			return;
 		}
 
-		TableService ts = tool.getService(TableService.class);
-		if (ts == null) {
-			println("Unable to show addresses, no table service exists.");
-		}
-		else {
-			show("Addresses", ts, addresses);
-		}
+		tool
+				.getService(TableService.class)
+				.ifPresentOrElse(
+						service -> show("Addresses", service, addresses),
+						() -> println("Unable to show addresses, no table service exists.")
+				);
 	}
 
 	/**
@@ -3697,12 +3670,12 @@ public abstract class GhidraScript extends FlatProgramAPI {
 			return;
 		}
 
-		TableService ts = tool.getService(TableService.class);
-		if (ts == null) {
-			println("Unable to show addresses, no table service exists.");
-			return;
-		}
-		show(title, ts, addresses);
+		tool
+				.getService(TableService.class)
+				.ifPresentOrElse(
+						(service) -> show(title, service, addresses),
+						() -> println("Unable to show addresses, no table service exists.")
+				);
 	}
 
 	/**

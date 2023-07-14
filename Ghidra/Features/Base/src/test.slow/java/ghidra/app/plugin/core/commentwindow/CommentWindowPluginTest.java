@@ -86,7 +86,7 @@ public class CommentWindowPluginTest extends AbstractGhidraHeadedIntegrationTest
 		builder.createComment("010018a0", "test Plate comment", CodeUnit.PLATE_COMMENT);
 		builder.createComment("010018cf", "test Repeatable comment", CodeUnit.REPEATABLE_COMMENT);
 
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.openProgram(program.getDomainFile());
 		builder.dispose();
 		waitForSwing();
@@ -107,7 +107,7 @@ public class CommentWindowPluginTest extends AbstractGhidraHeadedIntegrationTest
 	}
 
 	private void closeProgram() {
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.closeProgram(program, true);
 	}
 

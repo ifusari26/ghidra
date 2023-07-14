@@ -51,7 +51,7 @@ public class AutoRenameLabelsScriptTest extends AbstractGhidraHeadedIntegrationT
 		tool.addPlugin(CodeBrowserPlugin.class.getName());
 
 		program = buildProgram();
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.openProgram(program.getDomainFile());
 
 		env.showTool();

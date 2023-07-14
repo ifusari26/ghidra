@@ -56,14 +56,12 @@ public class PcodeFieldMouseHandler implements FieldMouseHandlerExtension {
 		}
 
 		ProgramLocation location = sourceNavigatable.getLocation();
-		GoToService goToService = serviceProvider.getService(GoToService.class);
-		if (goToService == null) {
-			return false;
-		}
-
-		QueryData queryData = new QueryData(wordString, false);
-		return goToService.goToQuery(sourceNavigatable, location.getAddress(), queryData, null,
-			null);
+		return serviceProvider.getService(GoToService.class)
+				.map(service -> {
+					QueryData data = new QueryData(wordString, false);
+					return service.goToQuery(sourceNavigatable, location.getAddress(), data, null, null);
+				})
+				.orElse(false);
 	}
 
 	@Override

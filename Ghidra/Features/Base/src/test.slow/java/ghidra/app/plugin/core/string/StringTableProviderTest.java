@@ -472,7 +472,7 @@ public class StringTableProviderTest extends AbstractGhidraHeadedIntegrationTest
 		// create a pascal unicode
 		builder.setBytes("0x400", "06 00, 61, 00, 62, 00, 63, 00, 64, 00, 65, 00, 66, 00");
 		program = builder.getProgram();
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.openProgram(program.getDomainFile());
 		space = program.getAddressFactory().getDefaultAddressSpace();
 	}

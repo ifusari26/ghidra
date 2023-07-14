@@ -60,7 +60,7 @@ public class StructureEditorArchiveTest extends AbstractStructureEditorTest {
 		env.showFrontEndTool();
 
 		tool.addPlugin(DataTypeManagerPlugin.class.getName());
-		dtmService = tool.getService(DataTypeManagerService.class);
+		dtmService = tool.getService(DataTypeManagerService.class).orElseThrow();
 		plugin = (DataTypeManagerPlugin) dtmService;
 		manageDts = getAction(plugin, "DataTypes Provider");
 		DataTypesProvider dataTypesProvider = plugin.getProvider();

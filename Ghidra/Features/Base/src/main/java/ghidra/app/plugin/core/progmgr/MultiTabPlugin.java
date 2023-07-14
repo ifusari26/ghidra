@@ -272,8 +272,8 @@ public class MultiTabPlugin extends Plugin implements DomainObjectListener {
 	@Override
 	protected void init() {
 		tabPanel = new MultiTabPanel(this);
-		progService = tool.getService(ProgramManager.class);
-		cvService = tool.getService(CodeViewerService.class);
+		progService = tool.getService(ProgramManager.class).orElseThrow();
+		cvService = tool.getService(CodeViewerService.class).orElseThrow();
 		cvService.setNorthComponent(tabPanel);
 	}
 

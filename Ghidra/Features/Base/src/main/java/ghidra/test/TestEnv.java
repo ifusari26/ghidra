@@ -834,15 +834,9 @@ public class TestEnv {
 		}
 
 		AbstractGuiTest.runSwing(() -> {
-			tool = launchDefaultTool();
-			ProgramManager pm = tool.getService(ProgramManager.class);
-			pm.openProgram(program.getDomainFile());
+			tool = Objects.requireNonNull(launchDefaultTool(), "Unable to launch the default tool: " + ToolServices.DEFAULT_TOOLNAME);
+			tool.getService(ProgramManager.class).ifPresent(service -> service.openProgram(program.getDomainFile()));
 		});
-
-		if (tool == null) {
-			throw new NullPointerException(
-				"Unable to launch the default tool: " + ToolServices.DEFAULT_TOOLNAME);
-		}
 
 		AbstractGuiTest.waitForSwing();
 

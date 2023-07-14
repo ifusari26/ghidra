@@ -1,0 +1,80 @@
+/* ###
+ * IP: GHIDRA
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package tools.ghidra.marshmallows;
+
+import ghidra.app.plugin.ProgramPlugin;
+import ghidra.framework.plugintool.PluginInfo;
+import ghidra.framework.plugintool.PluginTool;
+import ghidra.framework.plugintool.util.PluginStatus;
+import ghidra.util.Msg;
+import tools.ghidra.marshmallows.data.Constants;
+import tools.ghidra.marshmallows.loaders.JarLoader;
+import tools.ghidra.marshmallows.providers.MarshmallowsPluginProvider;
+import tools.ghidra.marshmallows.providers.PluginComponentProvider;
+
+/**
+ * TODO: Provide class-level documentation that describes what this plugin does.
+ */
+@PluginInfo(
+        status = PluginStatus.STABLE,
+        packageName = Constants.Plugin.NAME,
+        category = Constants.Plugin.CATEGORY,
+        shortDescription = Constants.Plugin.DESCRIPTION,
+        description = Constants.Plugin.VERBOSE
+)
+public final class MarshmallowsPlugin extends ProgramPlugin {
+	
+	public static final MarshmallowsPluginPackage PACKAGE = new MarshmallowsPluginPackage();
+    private final PluginComponentProvider componentProvider;
+
+    private final JarLoader loader;
+
+    /**
+     * Plugin constructor.
+     * @param tool The plugin tool that this plugin is added to.
+     */
+    public MarshmallowsPlugin(final PluginTool tool) {
+        super(tool);
+        this.componentProvider = new PluginComponentProvider(this);
+        this.loader = new JarLoader();
+    }
+
+    @Override
+    public void init() {
+        super.init();
+        // In this initialization phase + configuration, we want to load custom scripts
+        // and libraries.
+        // From here, we can have specific analysis tools run as auto-analysis, and
+        // potentially pass it through to our "tool" to export data / play around with.
+		this
+				.componentProvider
+				.get(MarshmallowsPluginProvider.class)
+				.ifPresent(MarshmallowsPluginProvider::initialize);
+		// TODO: Load default utilities?
+        this.loader.load();
+        Msg.info(this, String.format("Loaded plugin \"%s\"", Constants.Plugin.NAME));
+    }
+    
+    @Override
+    public void dispose() {
+    	super.dispose();
+    	this
+    		.componentProvider
+    		.get(MarshmallowsPluginProvider.class)
+    		.ifPresent(MarshmallowsPluginProvider::deinitialize);
+    }
+
+}

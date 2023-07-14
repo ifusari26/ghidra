@@ -889,8 +889,8 @@ public class SymbolTreePlugin1Test extends AbstractGhidraHeadedIntegrationTest {
 	}
 
 	private void closeProgram() throws Exception {
-		final ProgramManager pm = tool.getService(ProgramManager.class);
-		SwingUtilities.invokeAndWait(() -> pm.closeProgram());
+		final ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
+		SwingUtilities.invokeAndWait(pm::closeProgram);
 	}
 
 	private void showSymbolTree() throws Exception {

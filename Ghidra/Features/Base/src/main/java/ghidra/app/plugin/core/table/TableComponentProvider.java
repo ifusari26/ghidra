@@ -274,10 +274,7 @@ public class TableComponentProvider<T> extends ComponentProviderAdapter
 	}
 
 	private void gotoExternalAddress(Address extAddr) {
-		GoToService gotoSvc = tool.getService(GoToService.class);
-		if (gotoSvc != null) {
-			gotoSvc.goTo(extAddr, model.getProgram());
-		}
+		tool.getService(GoToService.class).ifPresent(service -> service.goTo(extAddr, model.getProgram()));
 	}
 
 	@Override

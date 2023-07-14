@@ -15,9 +15,11 @@
  */
 package ghidra.file.formats.ext4;
 
+import java.util.Arrays;
 import java.util.List;
 
 import java.io.IOException;
+import java.util.function.Predicate;
 
 import ghidra.app.cmd.comments.SetCommentCmd;
 import ghidra.app.plugin.core.analysis.AutoAnalysisManager;
@@ -176,18 +178,23 @@ public class NewExt4Analyzer extends FileFormatAnalyzer {
 	 * This method allows for EXT4 files larger than 2GB to be imported as 2 (or 3) separate programs.
 	 * Then if both programs are opened (and have the same base name), then both will be analyzed. 
 	 */
-	private Program findOtherProgram( Program program, String suffix ) {
-		AutoAnalysisManager manager = AutoAnalysisManager.getAnalysisManager( program );
-		ProgramManager programManager = manager.getAnalysisTool( ).getService( ProgramManager.class );
-		Program [] openPrograms = programManager.getAllOpenPrograms( );
-		for ( Program otherProgram : openPrograms ) {
-			if ( program != otherProgram ) {
-				if ( otherProgram.getName( ).startsWith( program.getName( ) ) && otherProgram.getName( ).endsWith( suffix ) ) {
-					return otherProgram;
-				}
-			}
-		}
-		return null;// not using a 2nd program
+	private Program findOtherProgram(Program program, String suffix) {
+		AutoAnalysisManager manager = AutoAnalysisManager.getAnalysisManager(program);
+		Predicate<Program> predicate = (p) -> {
+			final String name = p.getName();
+			return name.startsWith(program.getName()) && name.endsWith(suffix);
+		};
+		return manager
+				.getAnalysisTool()
+				.getService(ProgramManager.class)
+				.flatMap(
+						service -> Arrays
+								.stream(service.getAllOpenPrograms())
+								.filter(otherProgram -> program != otherProgram && predicate.test(otherProgram))
+								.findFirst()
+				)
+				// No second program OR no program manager
+				.orElse(null);
 	}
 
 	@Override

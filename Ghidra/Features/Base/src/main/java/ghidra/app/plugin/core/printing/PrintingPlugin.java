@@ -73,7 +73,7 @@ public class PrintingPlugin extends ProgramPlugin {
 	@Override
 	public void init() {
 		super.init();
-		cvService = tool.getService(CodeViewerService.class);
+		cvService = tool.getService(CodeViewerService.class).orElseThrow();
 	}
 
 	@Override

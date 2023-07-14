@@ -189,7 +189,7 @@ public class FunctionPlugin extends Plugin implements DataService {
 	 * Initialize services used
 	 */
 	private void initializeServices() {
-		dtmService = tool.getService(DataTypeManagerService.class);
+		dtmService = tool.getService(DataTypeManagerService.class).orElseThrow();
 		adapter = new DataTypeManagerChangeListenerAdapter() {
 			@Override
 			public void favoritesChanged(DataTypeManager dtm, DataTypePath path,

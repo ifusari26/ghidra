@@ -19,6 +19,7 @@ import java.awt.Component;
 import java.awt.event.ItemEvent;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.swing.*;
 
@@ -394,13 +395,15 @@ public abstract class AbstractEditFunctionSignatureDialog extends DialogComponen
 	 */
 	protected final FunctionDefinitionDataType parseSignature() throws CancelledException {
 		setFunctionInfo(); // needed for testing which never shows dialog
-		FunctionSignatureParser parser = new FunctionSignatureParser(
-			getDataTypeManager(), tool.getService(DataTypeManagerService.class));
-		try {
-			return parser.parse(getFunctionSignature(), getSignature());
-		}
-		catch (ParseException e) {
-			setStatusText("Invalid Signature: " + e.getMessage());
+		final Optional<DataTypeManagerService> dtmServiceOptional = tool.getService(DataTypeManagerService.class);
+		if (dtmServiceOptional.isPresent()) {
+			final DataTypeManagerService dataTypeManagerService = dtmServiceOptional.get();
+			final FunctionSignatureParser parser = new FunctionSignatureParser(getDataTypeManager(), dataTypeManagerService);
+			try {
+				return parser.parse(getFunctionSignature(), getSignature());
+			} catch (ParseException e) {
+				setStatusText("Invalid Signature: " + e.getMessage());
+			}
 		}
 		return null;
 	}

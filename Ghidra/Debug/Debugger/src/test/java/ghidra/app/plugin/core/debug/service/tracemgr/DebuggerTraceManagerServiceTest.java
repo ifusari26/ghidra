@@ -52,7 +52,7 @@ public class DebuggerTraceManagerServiceTest extends AbstractGhidraHeadedDebugge
 	@Before
 	public void setUpTraceManagerTest() throws Exception {
 		addPlugin(tool, DebuggerControlServicePlugin.class);
-		editingService = tool.getService(DebuggerControlService.class);
+		editingService = tool.getService(DebuggerControlService.class).orElseThrow();
 	}
 
 	@Test

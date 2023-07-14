@@ -270,7 +270,7 @@ public class MemSearchPlugin extends Plugin implements OptionsChangeListener,
 
 	@Override
 	protected void init() {
-		goToService = tool.getService(GoToService.class);
+		tool.getService(GoToService.class).ifPresent(service -> goToService = service);
 	}
 
 	private void invokeSearchDialog(NavigatableActionContext context) {
@@ -453,7 +453,7 @@ public class MemSearchPlugin extends Plugin implements OptionsChangeListener,
 
 		Program program = navigatable.getProgram();
 
-		TableService query = tool.getService(TableService.class);
+		TableService query = tool.getService(TableService.class).orElseThrow();
 
 		searchDialog.setStatusText("Searching...");
 

@@ -97,8 +97,7 @@ public class DataTypePreviewPlugin extends ProgramPlugin {
 	@Override
 	protected void init() {
 		super.init();
-
-		goToService = tool.getService(GoToService.class);
+		goToService = tool.getService(GoToService.class).orElseThrow();
 
 		model = new DTPPTableModel();
 		table = new DTPPTable(model);

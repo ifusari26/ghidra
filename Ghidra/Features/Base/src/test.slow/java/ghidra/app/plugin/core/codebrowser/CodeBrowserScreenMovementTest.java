@@ -746,7 +746,7 @@ public class CodeBrowserScreenMovementTest extends AbstractProgramBasedTest {
 	}
 
 	private void closeProgram() {
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.closeProgram();
 	}
 
@@ -812,10 +812,9 @@ public class CodeBrowserScreenMovementTest extends AbstractProgramBasedTest {
 	}
 
 	private PluginTool showSecondTool() throws Exception {
-
 		PluginTool tool2 = env.launchAnotherDefaultTool();
 		setUpCodeBrowserTool(tool2);
-		ProgramManager pm = tool2.getService(ProgramManager.class);
+		ProgramManager pm = tool2.getService(ProgramManager.class).orElseThrow();
 		pm.openProgram(program.getDomainFile());
 		showTool(tool2);
 		return tool2;

@@ -1,0 +1,5 @@
+name=tools.ghidra.marshmallows.Marshmallows
+description=The extension description can be customized by editing the extension.properties file.
+author=
+createdOn=
+version=@extversion@

@@ -61,10 +61,9 @@ public class AllFunctionsPanel extends JPanel {
 		add(tablePanel, BorderLayout.CENTER);
 		add(filterPanel, BorderLayout.SOUTH);
 
-		GoToService goToService = provider.getTool().getService(GoToService.class);
-		if (goToService != null) {
-			table.installNavigation(goToService, goToService.getDefaultNavigatable());
-		}
+		provider.getTool().getService(GoToService.class).ifPresent(
+				service -> table.installNavigation(service, service.getDefaultNavigatable())
+		);
 	}
 
 	/**

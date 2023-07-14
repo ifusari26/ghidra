@@ -516,7 +516,7 @@ public class DebuggerModulesProviderLegacyTest extends AbstractGhidraHeadedDebug
 		addPlugin(tool, DebuggerListingPlugin.class);
 		waitForComponentProvider(DebuggerListingProvider.class);
 		// TODO: Should I hide the action if this service is missing?
-		DebuggerListingService listing = tool.getService(DebuggerListingService.class);
+		DebuggerListingService listing = tool.getService(DebuggerListingService.class).orElseThrow();
 		createAndOpenTrace();
 
 		addModules();

@@ -45,21 +45,18 @@ abstract class AbstractFileListFlavorHandler
 	protected void doImport(DomainFolder folder, List<File> files, PluginTool tool,
 			Component component) {
 
-		Swing.runLater(() -> {
-			FileImporterService im = tool.getService(FileImporterService.class);
-			if (im == null) {
-				Msg.showError(AbstractFileListFlavorHandler.class, component, "Could Not Import",
-					"Could not find importer service.");
-				return;
-			}
-
-			if (files.size() == 1 && files.get(0).isFile()) {
-				im.importFile(folder, files.get(0));
-			}
-			else {
-				im.importFiles(folder, files);
-			}
-		});
+		Swing.runLater(() -> tool.getService(FileImporterService.class).ifPresentOrElse(
+			   service -> {
+				   if (files.size() == 1 && files.get(0).isFile()) {
+					   service.importFile(folder, files.get(0));
+				   }
+				   else {
+					   service.importFiles(folder, files);
+				   }
+			   },
+				() -> Msg.showError(AbstractFileListFlavorHandler.class, component, "Could Not Import",
+						"Could not find importer service.")
+		));
 	}
 
 	protected DomainFolder getDomainFolder(GTreeNode destinationNode) {

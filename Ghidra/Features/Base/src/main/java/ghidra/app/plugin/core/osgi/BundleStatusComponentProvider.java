@@ -282,10 +282,10 @@ public class BundleStatusComponentProvider extends ComponentProviderAdapter {
 
 			TaskLauncher.launchNonModal("Activating new bundles", (monitor) -> {
 				try {
-					bundleHost.activateAll(bundles, monitor,
-						getTool().getService(ConsoleService.class).getStdErr());
-				}
-				catch (Exception e) {
+					getTool().getService(ConsoleService.class).ifPresent(
+							service -> bundleHost.activateAll(bundles, monitor, service.getStdErr())
+					);
+				} catch (Exception e) {
 					if (!isDisposed) {
 						Msg.showError(this, bundleStatusTable, "Error Activating Bundles",
 							"Unexpected error activating new bundles", e);
@@ -447,7 +447,8 @@ public class BundleStatusComponentProvider extends ComponentProviderAdapter {
 			}
 			notifyTableDataChanged();
 
-			PrintWriter writer = getTool().getService(ConsoleService.class).getStdErr();
+			final ConsoleService consoleService = getTool().getService(ConsoleService.class).orElseThrow();
+			final PrintWriter writer = consoleService.getStdErr();
 			if (inStages) {
 				bundleHost.activateInStages(bundles, monitor, writer);
 			}
@@ -517,7 +518,7 @@ public class BundleStatusComponentProvider extends ComponentProviderAdapter {
 
 		@Override
 		public void run(TaskMonitor monitor) throws CancelledException {
-			ConsoleService console = getTool().getService(ConsoleService.class);
+			ConsoleService console = getTool().getService(ConsoleService.class).orElseThrow();
 			try {
 				GhidraBundle bundle = bundleHost.getExistingGhidraBundle(status.getFile());
 				if (activate) {
@@ -530,8 +531,7 @@ public class BundleStatusComponentProvider extends ComponentProviderAdapter {
 				else { // deactivate
 					bundleHost.deactivateSynchronously(bundle.getLocationIdentifier());
 				}
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				if (isDisposed) {
 					return; // the tool is being closed
 				}

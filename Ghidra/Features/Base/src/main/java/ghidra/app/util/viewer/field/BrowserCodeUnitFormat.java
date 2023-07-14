@@ -4,9 +4,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -52,7 +52,7 @@ public class BrowserCodeUnitFormat extends CodeUnitFormat {
 	 * This constructor must be used by the field factory since an OptionsService may
 	 * not obtainable at the time they are constructed.
 	 * @param fieldOptions field options
-	 * @param autoUpdate if true format will auto update if associated options are changed, in 
+	 * @param autoUpdate if true format will auto update if associated options are changed, in
 	 * addition any listeners will be notified when this format is updated.
 	 */
 	BrowserCodeUnitFormat(ToolOptions fieldOptions, boolean autoUpdate) {
@@ -60,10 +60,9 @@ public class BrowserCodeUnitFormat extends CodeUnitFormat {
 	}
 
 	private static ToolOptions getFieldOptions(ServiceProvider serviceProvider) {
-		OptionsService optionsService = serviceProvider.getService(OptionsService.class);
-		if (optionsService == null) {
-			throw new IllegalArgumentException("Options service provider not found");
-		}
+		OptionsService optionsService = serviceProvider.getService(OptionsService.class).orElseThrow(
+				() -> new IllegalArgumentException("Options service provider not found")
+		);
 		return optionsService.getOptions(GhidraOptions.CATEGORY_BROWSER_FIELDS);
 	}
 

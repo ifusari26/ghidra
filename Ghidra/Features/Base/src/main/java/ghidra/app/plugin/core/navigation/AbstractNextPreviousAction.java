@@ -114,12 +114,10 @@ public abstract class AbstractNextPreviousAction extends NavigatableContextActio
 			return;
 		}
 		tool.clearStatusInfo();
-
-		GoToService service = tool.getService(GoToService.class);
-		if (service != null) {
-			Navigatable navigatable = actionContext.getNavigatable();
-			gotoAddress(service, navigatable, address);
-		}
+		tool.getService(GoToService.class).ifPresent(service -> {
+			 final Navigatable navigatable = actionContext.getNavigatable();
+			 gotoAddress(service, navigatable, address);
+		});
 
 	}
 

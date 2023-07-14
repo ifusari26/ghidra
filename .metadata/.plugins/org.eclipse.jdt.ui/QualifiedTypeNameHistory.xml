@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+    <fullyQualifiedTypeName name="ghidra.framework.plugintool.Plugin"/>
+    <fullyQualifiedTypeName name="java.util.function.Function"/>
+    <fullyQualifiedTypeName name="tools.ghidra.marshmallows.transformers.Utilities"/>
+    <fullyQualifiedTypeName name="java.net.URL"/>
+    <fullyQualifiedTypeName name="java.net.MalformedURLException"/>
+    <fullyQualifiedTypeName name="org.jheaps.Constants"/>
+    <fullyQualifiedTypeName name="tools.ghidra.marshmallows.data.Constants"/>
+    <fullyQualifiedTypeName name="resources.ResourceManager"/>
+    <fullyQualifiedTypeName name="java.util.logging.Logger"/>
+    <fullyQualifiedTypeName name="tools.ghidra.marshmallows.data.Constants.Plugin"/>
+    <fullyQualifiedTypeName name="resources.Icons"/>
+    <fullyQualifiedTypeName name="docking.ComponentProvider"/>
+    <fullyQualifiedTypeName name="tools.ghidra.marshmallows.MarshmallowsPlugin"/>
+    <fullyQualifiedTypeName name="ghidra.app.script.GhidraScriptUtil"/>
+    <fullyQualifiedTypeName name="ghidra.app.plugin.core.script.ScriptList"/>
+    <fullyQualifiedTypeName name="ghidra.app.plugin.core.osgi.BundleHost"/>
+    <fullyQualifiedTypeName name="java.util.Collection"/>
+    <fullyQualifiedTypeName name="docking.action.MenuData"/>
+    <fullyQualifiedTypeName name="java.awt.GridLayout"/>
+    <fullyQualifiedTypeName name="javax.swing.JLabel"/>
+    <fullyQualifiedTypeName name="org.jetbrains.annotations.Nullable"/>
+    <fullyQualifiedTypeName name="javax.swing.JPanel"/>
+    <fullyQualifiedTypeName name="java.awt.LayoutManager2"/>
+    <fullyQualifiedTypeName name="java.util.Optional"/>
+    <fullyQualifiedTypeName name="java.util.Arrays"/>
+    <fullyQualifiedTypeName name="java.util.stream.Collectors"/>
+    <fullyQualifiedTypeName name="java.lang.reflect.Constructor"/>
+    <fullyQualifiedTypeName name="utilities.Accessors"/>
+    <fullyQualifiedTypeName name="lombok.Getter"/>
+    <fullyQualifiedTypeName name="java.util.List"/>
+    <fullyQualifiedTypeName name="javax.swing.JComponent"/>
+    <fullyQualifiedTypeName name="java.util.ArrayList"/>
+    <fullyQualifiedTypeName name="org.jetbrains.annotations.NotNull"/>
+    <fullyQualifiedTypeName name="docking.action.DockingAction"/>
+    <fullyQualifiedTypeName name="docking.ActionContext"/>
+    <fullyQualifiedTypeName name="generic.jar.ResourceFile"/>
+    <fullyQualifiedTypeName name="docking.widgets.table.GTable"/>
+    <fullyQualifiedTypeName name="ghidra.util.Msg"/>
+</qualifiedTypeNameHistroy>

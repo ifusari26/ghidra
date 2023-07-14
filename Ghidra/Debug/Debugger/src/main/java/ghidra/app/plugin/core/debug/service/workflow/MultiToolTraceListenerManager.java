@@ -16,9 +16,12 @@
 package ghidra.app.plugin.core.debug.service.workflow;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
+import docking.Tool;
 import ghidra.app.services.DebuggerTraceManagerService;
+import ghidra.framework.plugintool.Plugin;
 import ghidra.framework.plugintool.PluginTool;
 import ghidra.trace.model.Trace;
 
@@ -31,21 +34,18 @@ public class MultiToolTraceListenerManager<L extends AbstractMultiToolTraceListe
 	}
 
 	public synchronized void enable(DebuggerWorkflowServicePlugin wp) {
-		for (PluginTool tool : wp.getProxyingPluginTools()) {
-			DebuggerTraceManagerService traceManager =
-				tool.getService(DebuggerTraceManagerService.class);
-			if (traceManager == null) {
-				continue;
-			}
-			for (Trace trace : traceManager.getOpenTraces()) {
-				L listener = listenersByTrace.computeIfAbsent(trace, t -> {
-					L l = listenerFactory.apply(t);
-					l.init();
-					return l;
-				});
-				listener.openedBy(tool);
-			}
-		}
+		final Consumer<PluginTool> consumer = (tool) -> tool
+				.getService(DebuggerTraceManagerService.class)
+				.map(DebuggerTraceManagerService::getOpenTraces)
+				.ifPresent(traces -> traces.forEach(trace -> {
+					final L listener = listenersByTrace.computeIfAbsent(trace, t -> {
+						L l = listenerFactory.apply(t);
+						l.init();
+						return l;
+					});
+					listener.openedBy(tool);
+				}));
+		wp.getProxyingPluginTools().forEach(consumer);
 	}
 
 	public synchronized void disable() {

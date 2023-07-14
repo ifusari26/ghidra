@@ -111,15 +111,16 @@ public class NavigationHistoryPlugin extends Plugin
 		if (dataSaveState == null) {
 			return;
 		}
-		ProgramManager pm = tool.getService(ProgramManager.class);
-		Program[] programs = pm.getAllOpenPrograms();
-		int count = dataSaveState.getInt(LIST_COUNT, 0);
-		for (int i = 0; i < count; i++) {
-			Element xmlElement = dataSaveState.getXmlElement(HISTORY_LIST + i);
-			restoreHistoryList(xmlElement, programs);
-		}
-		dataSaveState = null;
-		notifyHistoryChange();
+		tool.getService(ProgramManager.class).ifPresent(service -> {
+			Program[] programs = service.getAllOpenPrograms();
+			int count = dataSaveState.getInt(LIST_COUNT, 0);
+			for (int i = 0; i < count; i++) {
+				Element xmlElement = dataSaveState.getXmlElement(HISTORY_LIST + i);
+				restoreHistoryList(xmlElement, programs);
+			}
+			dataSaveState = null;
+			notifyHistoryChange();
+		});
 	}
 
 	private void initOptions() {
@@ -405,11 +406,10 @@ public class NavigationHistoryPlugin extends Plugin
 			return navigatable;
 		}
 
-		GoToService service = tool.getService(GoToService.class);
-		if (service != null) {
-			return service.getDefaultNavigatable();
-		}
-		return null;
+		return tool
+				.getService(GoToService.class)
+				.map(GoToService::getDefaultNavigatable)
+				.orElse(null);
 	}
 
 	@Override

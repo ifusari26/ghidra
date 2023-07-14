@@ -161,7 +161,8 @@ public class ViewStringsProvider extends ComponentProviderAdapter {
 
 		stringRepCol.setCellEditor(new StringRepCellEditor());
 
-		GoToService goToService = tool.getService(GoToService.class);
+		// This should exist and is required. If it doesnt exist, throw.
+		GoToService goToService = tool.getService(GoToService.class).orElseThrow();
 		table.installNavigation(goToService, goToService.getDefaultNavigatable());
 
 		filterPanel = new GhidraTableFilterPanel<>(table, stringModel);

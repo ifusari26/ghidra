@@ -95,11 +95,13 @@ public class DataTypeSelectionDialogTest extends AbstractGhidraHeadedIntegration
 		ProgramBuilder builder = new ProgramBuilder(testName.getMethodName(), ProgramBuilder._TOY);
 		program = builder.getProgram();
 
-		ProgramManager pm = tool.getService(ProgramManager.class);
-		pm.openProgram(program.getDomainFile());
+		tool.getService(ProgramManager.class).ifPresent(
+				service -> service.openProgram(program.getDomainFile())
+		);
 
-		DataTypeManagerService service = tool.getService(DataTypeManagerService.class);
-		service.addDataTypeManagerChangeListener(reportingListener);
+		tool.getService(DataTypeManagerService.class).ifPresent(
+				service -> service.addDataTypeManagerChangeListener(reportingListener)
+		);
 
 		waitForSwing();
 		waitForBusyTool(tool);
@@ -169,8 +171,9 @@ public class DataTypeSelectionDialogTest extends AbstractGhidraHeadedIntegration
 
 		tool.setConfigChanged(false);// we don't want a save dialog to show
 
-		DataTypeManagerService service = tool.getService(DataTypeManagerService.class);
-		service.removeDataTypeManagerChangeListener(reportingListener);
+		tool.getService(DataTypeManagerService.class).ifPresent(
+				service -> service.removeDataTypeManagerChangeListener(reportingListener)
+		);
 
 		// close any windows that may have been left open in error, like a data type chooser
 		closeAllWindows();
@@ -388,7 +391,7 @@ public class DataTypeSelectionDialogTest extends AbstractGhidraHeadedIntegration
 		assertTrue("The dialog was not made visible when tool.showDialog() was called.",
 			isVisible(dialog));
 
-		DataTypeManagerService dataTypeService = tool.getService(DataTypeManagerService.class);
+		DataTypeManagerService dataTypeService = tool.getService(DataTypeManagerService.class).orElseThrow();
 
 		// not shown when no matches
 		String crazyName = "crazyName";

@@ -1,0 +1,7 @@
+package marshmallows.providers;
+
+public interface Initializable {
+
+    void initialize();
+
+}

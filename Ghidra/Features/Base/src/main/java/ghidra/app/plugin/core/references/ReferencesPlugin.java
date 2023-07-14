@@ -96,8 +96,8 @@ public class ReferencesPlugin extends Plugin {
 
 	@Override
 	protected void init() {
-		goToService = tool.getService(GoToService.class);
-		programMgr = tool.getService(ProgramManager.class);
+		tool.getService(GoToService.class).ifPresent(service -> goToService = service);
+		tool.getService(ProgramManager.class).ifPresent(service -> programMgr = service);
 		cuFormat = new BrowserCodeUnitFormat(tool);
 		symbolInspector = new SymbolInspector(tool, null);
 	}

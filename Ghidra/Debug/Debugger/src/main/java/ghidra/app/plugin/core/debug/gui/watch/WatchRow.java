@@ -198,10 +198,9 @@ public class WatchRow {
 		}
 		// Either we have no trace, or the trace doesn't have the type.
 		// Try built-ins
-		DataTypeManagerService dtms = provider.getTool().getService(DataTypeManagerService.class);
-		if (dtms != null) {
-			dataType = dtms.getBuiltInDataTypesManager().getDataType(typePath);
-		}
+		provider.getTool().getService(DataTypeManagerService.class).ifPresent(
+				service -> dataType = service.getBuiltInDataTypesManager().getDataType(typePath)
+		);
 		// We're out of things to try, let null be null
 	}
 

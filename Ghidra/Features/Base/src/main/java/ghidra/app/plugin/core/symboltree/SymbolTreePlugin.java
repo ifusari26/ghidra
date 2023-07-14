@@ -81,7 +81,7 @@ public class SymbolTreePlugin extends Plugin {
 
 	@Override
 	protected void init() {
-		goToService = tool.getService(GoToService.class);
+		tool.getService(GoToService.class).ifPresent(service -> goToService = service);
 	}
 
 	@Override

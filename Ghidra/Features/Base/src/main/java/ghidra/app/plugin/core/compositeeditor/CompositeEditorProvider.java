@@ -128,11 +128,9 @@ public abstract class CompositeEditorProvider extends ComponentProviderAdapter
 	 * Initialize services used
 	 */
 	protected void initializeServices() {
-
-		dtmService = tool.getService(DataTypeManagerService.class);
-		if (dtmService == null) {
-			throw new AssertException("DataTypeManagerService was not found!");
-		}
+		dtmService = tool
+				.getService(DataTypeManagerService.class)
+				.orElseThrow(() ->  new AssertException("DataTypeManagerService was not found!"));
 	}
 
 	protected String getCompositeName() {

@@ -1,0 +1,46 @@
+package tools.ghidra.marshmallows.providers;
+
+import java.lang.reflect.Constructor;
+import java.util.HashMap;
+import java.util.Optional;
+
+import docking.ComponentProvider;
+import ghidra.framework.plugintool.Plugin;
+import ghidra.util.Msg;
+import lombok.Getter;
+
+public final class PluginComponentProvider {
+
+	@Getter
+	private final HashMap<Class<?>, ComponentProvider> providers;
+	
+	@Getter
+	private final Plugin plugin;
+
+	/**
+	 * Get a plugin component provider.
+	 * @param plugin plugin
+	 */
+	public PluginComponentProvider(final Plugin plugin) {
+		this.plugin = plugin;
+		this.providers = new HashMap<>();
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T extends ComponentProvider> Optional<T> get(final Class<T> type) {
+		if (providers.containsKey(type)) {
+			return Optional.of((T) providers.get(type));
+		}
+		try {
+			final Constructor<T> constructor = type.getDeclaredConstructor(Plugin.class, String.class);
+			final T instance = constructor.newInstance(this.plugin, this.plugin.getName());
+			// Add to map
+			this.providers.put(type, instance);
+			return Optional.of(instance);
+		} catch (SecurityException | ReflectiveOperationException e) {
+			Msg.error(this, "OH NO");			
+			return Optional.empty();
+		}
+	}
+
+}

@@ -149,8 +149,8 @@ public class DebuggerLogicalBreakpointServiceTest extends AbstractGhidraHeadedDe
 		ListenerMap.clearErr();
 
 		addPlugin(tool, DebuggerLogicalBreakpointServicePlugin.class);
-		breakpointService = tool.getService(DebuggerLogicalBreakpointService.class);
-		mappingService = tool.getService(DebuggerStaticMappingService.class);
+		breakpointService = tool.getService(DebuggerLogicalBreakpointService.class).orElseThrow();
+		mappingService = tool.getService(DebuggerStaticMappingService.class).orElseThrow();
 
 		breakpointService.addChangeListener(changeListener);
 		mappingService.addChangeListener(mappingChangeListener);

@@ -1257,20 +1257,29 @@ public class StackUnwinderTest extends AbstractGhidraHeadedDebuggerGUITest {
 	}
 
 	protected Instruction copyToDynamic(Instruction stIns) throws Throwable {
-		DebuggerStaticMappingService mappingService =
-			tool.getService(DebuggerStaticMappingService.class);
+		DebuggerStaticMappingService mappingService = tool
+				.getService(DebuggerStaticMappingService.class)
+				.orElseThrow();
 		DebuggerCoordinates current = traceManager.getCurrent();
-		TraceLocation dynLoc = mappingService.getOpenMappedLocation(tb.trace,
-			new ProgramLocation(program, stIns.getAddress()), current.getSnap());
+		TraceLocation dynLoc = mappingService.getOpenMappedLocation(
+				tb.trace,
+				new ProgramLocation(program, stIns.getAddress()),
+				current.getSnap()
+		);
 		Address dynamicAddress = dynLoc.getAddress();
 		try (Transaction tx = tb.startTransaction()) {
 			int length = stIns.getLength();
-			assertEquals(length, tb.trace.getMemoryManager()
-					.putBytes(current.getSnap(), dynamicAddress,
-						ByteBuffer.wrap(stIns.getBytes())));
-			new TraceDisassembleCommand(current.getPlatform(), dynamicAddress,
-				new AddressSet(dynamicAddress, dynamicAddress.add(length - 1)))
-						.applyToTyped(current.getView(), monitor);
+			assertEquals(
+					length,
+					tb.trace.getMemoryManager().putBytes(
+							current.getSnap(), dynamicAddress, ByteBuffer.wrap(stIns.getBytes())
+					)
+			);
+			new TraceDisassembleCommand(
+					current.getPlatform(),
+					dynamicAddress,
+					new AddressSet(dynamicAddress, dynamicAddress.add(length - 1))
+			).applyToTyped(current.getView(), monitor);
 		}
 		waitForDomainObject(tb.trace);
 		return Objects.requireNonNull(tb.trace.getCodeManager()

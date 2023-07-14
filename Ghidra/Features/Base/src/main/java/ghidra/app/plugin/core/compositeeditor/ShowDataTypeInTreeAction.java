@@ -42,11 +42,12 @@ public class ShowDataTypeInTreeAction extends CompositeEditorTableAction {
 
 	@Override
 	public void actionPerformed(ActionContext context) {
-		DataTypeManagerService dtmService = tool.getService(DataTypeManagerService.class);
-		DataTypeManager dtm = provider.getDataTypeManager();
-		DataTypePath path = provider.getDtPath();
-		DataType dt = dtm.getDataType(path);
-		dtmService.setDataTypeSelected(dt);
+		tool.getService(DataTypeManagerService.class).ifPresent(service -> {
+			DataTypeManager dtm = provider.getDataTypeManager();
+			DataTypePath path = provider.getDtPath();
+			DataType dt = dtm.getDataType(path);
+			service.setDataTypeSelected(dt);
+		});
 	}
 
 	@Override

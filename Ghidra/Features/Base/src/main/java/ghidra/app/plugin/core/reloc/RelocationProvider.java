@@ -76,7 +76,7 @@ class RelocationProvider extends ComponentProviderAdapter {
 		threadedPanel = new GhidraThreadedTablePanel<>(tableModel);
 		table = threadedPanel.getTable();
 
-		GoToService goToService = serviceProvider.getService(GoToService.class);
+		GoToService goToService = serviceProvider.getService(GoToService.class).orElseThrow();
 		table.installNavigation(goToService, goToService.getDefaultNavigatable());
 
 		table.setPreferredScrollableViewportSize(new Dimension(300, 200));

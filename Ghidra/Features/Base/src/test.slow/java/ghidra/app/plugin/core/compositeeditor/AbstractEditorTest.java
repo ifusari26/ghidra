@@ -99,7 +99,7 @@ public abstract class AbstractEditorTest extends AbstractGhidraHeadedIntegration
 		builder = new ProgramBuilder("Test", languageName, compilerSpecID, this);
 		program = builder.getProgram();
 		env.open(program);
-		dtmService = tool.getService(DataTypeManagerService.class);
+		dtmService = tool.getService(DataTypeManagerService.class).orElseThrow();
 		assertNotNull(dtmService);
 
 		runSwing(() -> {

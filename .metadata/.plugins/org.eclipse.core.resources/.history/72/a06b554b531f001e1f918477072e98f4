@@ -1,0 +1,83 @@
+package tools.ghidra.marshmallows.providers;
+
+import java.awt.LayoutManager2;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+
+import org.jetbrains.annotations.Nullable;
+
+import lombok.Getter;
+import utilities.Accessors;
+
+/**
+ * Provides a {@link JPanel JPanel}.
+ */
+public class PanelProvider {
+	
+	/**
+	 * Get a JPanel with the specified layout.
+	 * @param layout layout type
+	 * @return panel
+	 */
+	public static JPanel panel(final Class<? extends LayoutManager2> layout) {
+		Optional<? extends LayoutManager2> type = Accessors.createInstanceOf(layout);
+		if (type.isPresent()) {
+			return new JPanel(type.get());
+		}
+		return null;
+	}
+	
+	/**
+	 * Parent object.
+	 */
+	@Getter
+	private final Optional<JPanel> parent;
+	
+	@Getter
+	private final List<JComponent> components;
+	
+	
+	/**
+	 * Create a panel provider for a parent.
+	 * If the <b>parent</b> object is not present, then this instance
+	 * will provide un-owned {@link JPanel `JPanel`s}.
+	 * @param parent parent.
+	 */
+	public PanelProvider(@Nullable final JPanel parent) {
+		this.parent = Optional.ofNullable(parent);
+		this.components = new ArrayList<>();
+	}
+	
+	
+	/**
+	 * Get a panel.
+	 * @return panel
+	 */
+	public JPanel getPanel() {
+		JPanel child = new JPanel();
+		this.parent.ifPresent((panel) -> panel.add(child));
+		return child;
+	}
+	
+	/**
+	 * Add a JComponent to the provider/parent.
+	 * @param component component to add.
+	 * @return index.
+	 */
+	public int add(final JComponent component) {
+		this.components.add(component);
+		this.parent.ifPresent((panel) -> panel.add(component));
+		// Potentially useful if we want to track index.
+		return this.components.size() - 1;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <T extends JComponent> T getComponent(final int index) {
+		return(T) this.components.get(index);
+	}
+
+}

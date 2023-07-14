@@ -64,7 +64,7 @@ public class MnemonicSearchPluginTest extends AbstractGhidraHeadedIntegrationTes
 		cb = env.getPlugin(CodeBrowserPlugin.class);
 		program = (ProgramDB) buildProgram();
 
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.openProgram(program.getDomainFile());
 
 		searchMnemonicOperandsNoConstAction =

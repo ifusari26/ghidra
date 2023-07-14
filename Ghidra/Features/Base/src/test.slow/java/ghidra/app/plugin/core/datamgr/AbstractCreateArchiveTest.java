@@ -212,7 +212,7 @@ public abstract class AbstractCreateArchiveTest extends AbstractGhidraHeadedInte
 		plugin = env.getPlugin(DataTypeManagerPlugin.class);
 
 		program = buildProgram();
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.openProgram(program.getDomainFile());
 
 		env.showTool();
@@ -231,15 +231,12 @@ public abstract class AbstractCreateArchiveTest extends AbstractGhidraHeadedInte
 	 */
 	@After
 	public void tearDown() throws Exception {
-
 		if (tool != null) {
-			SwingUtilities.invokeLater(() -> {
-				ProgramManager pm = tool.getService(ProgramManager.class);
-				pm.closeProgram();
-			});
+			SwingUtilities.invokeLater(
+					() -> tool.getService(ProgramManager.class).ifPresent(ProgramManager::closeProgram)
+			);
 		}
 		waitForSwing();
-
 		// this handles the save changes dialog and potential analysis dialogs
 		closeAllWindows();
 		env.release(program);

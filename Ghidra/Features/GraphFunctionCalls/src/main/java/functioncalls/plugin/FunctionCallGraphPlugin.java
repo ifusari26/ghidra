@@ -121,16 +121,10 @@ public class FunctionCallGraphPlugin extends ProgramPlugin implements OptionsCha
 //		if (provider != connectedProvider) {
 //			return;
 //		}
-
-		GoToService goTo = tool.getService(GoToService.class);
-		if (goTo == null) {
-			return;
-		}
-
-		// do later so the current event processing can finish
-		SystemUtilities.runSwingLater(() -> {
-			goTo.goTo(location);
-		});
+		tool.getService(GoToService.class).ifPresent(
+				// do later so the current event processing can finish
+				service -> SystemUtilities.runSwingLater(() -> service.goTo(location))
+		);
 	}
 
 	@Override

@@ -213,8 +213,10 @@ public class FlowArrowPlugin extends Plugin implements MarginProvider, OptionsCh
 
 	@Override
 	protected void init() {
-		codeViewerService = tool.getService(CodeViewerService.class);
-		codeViewerService.addMarginProvider(this);
+		tool.getService(CodeViewerService.class).ifPresent(service ->{
+			codeViewerService = service;
+			codeViewerService.addMarginProvider(FlowArrowPlugin.this);
+		});
 	}
 
 	Address getCurrentAddress() {
@@ -737,30 +739,33 @@ public class FlowArrowPlugin extends Plugin implements MarginProvider, OptionsCh
 	}
 
 	void goTo(Address address) {
-		CodeViewerService codeViewer = tool.getService(CodeViewerService.class);
-		ListingPanel listingPanel = codeViewer.getListingPanel();
-		ProgramLocation location = new ProgramLocation(program, address);
-		listingPanel.goTo(location, false);
+		tool.getService(CodeViewerService.class).ifPresent(service -> {
+			ListingPanel listingPanel = service.getListingPanel();
+			ProgramLocation location = new ProgramLocation(program, address);
+			listingPanel.goTo(location, false);
+		});
 	}
 
 	void scrollTo(Address address) {
-		CodeViewerService codeViewer = tool.getService(CodeViewerService.class);
-		ListingPanel listingPanel = codeViewer.getListingPanel();
-		ProgramLocation location = new ProgramLocation(program, address);
+		tool.getService(CodeViewerService.class).ifPresent(service -> {
+			ListingPanel listingPanel = service.getListingPanel();
+			ProgramLocation location = new ProgramLocation(program, address);
 //		listingPanel.setCursorPosition(location);
 //		listingPanel.goTo(location, true);
-		listingPanel.scrollTo(location);
+			listingPanel.scrollTo(location);
+		});
 	}
 
 	void scrollToCenter(Address address) {
-		CodeViewerService codeViewer = tool.getService(CodeViewerService.class);
-		ListingPanel listingPanel = codeViewer.getListingPanel();
-		ProgramLocation location = new ProgramLocation(program, address);
-		listingPanel.center(location);
+		tool.getService(CodeViewerService.class).ifPresent(service -> {
+			ListingPanel listingPanel = service.getListingPanel();
+			ProgramLocation location = new ProgramLocation(program, address);
+			listingPanel.center(location);
+		});
 	}
 
 	Address getAddressAtPoint(Point p) {
-		CodeViewerService codeViewer = tool.getService(CodeViewerService.class);
+		CodeViewerService codeViewer = tool.getService(CodeViewerService.class).orElseThrow();
 		ListingPanel listingPanel = codeViewer.getListingPanel();
 		ProgramLocation location = listingPanel.getProgramLocation(p);
 		if (location == null) {
@@ -776,11 +781,12 @@ public class FlowArrowPlugin extends Plugin implements MarginProvider, OptionsCh
 		return screenBottom;
 	}
 
-	public void forwardMouseEventToListing(MouseWheelEvent e) {
-		CodeViewerService codeViewer = tool.getService(CodeViewerService.class);
-		ListingPanel listingPanel = codeViewer.getListingPanel();
-		FieldPanel fieldPanel = listingPanel.getFieldPanel();
-		KeyboardFocusManager.getCurrentKeyboardFocusManager().redispatchEvent(fieldPanel, e);
+	public void forwardMouseEventToListing(final MouseWheelEvent e) {
+		tool.getService(CodeViewerService.class).ifPresent(service -> {
+			ListingPanel listingPanel = service.getListingPanel();
+			FieldPanel fieldPanel = listingPanel.getFieldPanel();
+			KeyboardFocusManager.getCurrentKeyboardFocusManager().redispatchEvent(fieldPanel, e);
+		});
 	}
 
 }

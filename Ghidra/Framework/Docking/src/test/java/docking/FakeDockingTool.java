@@ -17,6 +17,7 @@ package docking;
 
 import java.awt.Image;
 import java.util.List;
+import java.util.Optional;
 
 import javax.swing.ImageIcon;
 
@@ -65,7 +66,7 @@ public class FakeDockingTool extends AbstractDockingTool {
 	}
 
 	@Override
-	public <T> T getService(Class<T> serviceClass) {
+	public <T> Optional<T> getService(Class<T> serviceClass) {
 		return null;
 	}
 

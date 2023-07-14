@@ -39,10 +39,7 @@ public abstract class PreviousRangeAction extends NavigatableContextAction {
 	@Override
 	public void actionPerformed(NavigatableActionContext context) {
 		Address goToAddress = getGoToAddress(context);
-		GoToService service = tool.getService(GoToService.class);
-		if (service != null) {
-			service.goTo(context.getNavigatable(), goToAddress);
-		}
+		tool.getService(GoToService.class).ifPresent(service -> service.goTo(context.getNavigatable(), goToAddress));
 	}
 
 	private Address getGoToAddress(NavigatableActionContext context) {

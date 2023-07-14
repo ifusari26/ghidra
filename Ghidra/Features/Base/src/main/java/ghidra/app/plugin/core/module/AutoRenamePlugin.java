@@ -100,7 +100,7 @@ public class AutoRenamePlugin extends ProgramPlugin {
 
     @Override
     protected void init() {
-        treeService = tool.getService(ProgramTreeService.class);
+        tool.getService(ProgramTreeService.class).ifPresent(service -> treeService = service);
     }
 
     /**

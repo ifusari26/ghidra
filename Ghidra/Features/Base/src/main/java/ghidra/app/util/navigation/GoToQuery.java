@@ -100,7 +100,7 @@ public class GoToQuery {
 	}
 
 	private ProgramGroup getAllPrograms() {
-		ProgramManager progService = plugin.getTool().getService(ProgramManager.class);
+		ProgramManager progService = plugin.getTool().getService(ProgramManager.class).orElseThrow();
 		return new ProgramGroup(progService.getAllOpenPrograms(), navigatable.getProgram());
 	}
 
@@ -629,14 +629,15 @@ public class GoToQuery {
 				return; // this can happen if a search is taking place when the tool is closed
 			}
 
-			TableService service = tool.getService(TableService.class);
-			TableComponentProvider<?> provider = service.showTable(
-				"Goto " + queryData.getQueryString(), "Goto", model, "Go To", navigatable);
-			if (model.getRowCount() >= maxHits) {
-				showMaxSearchWarning(provider.getComponent(), model.getRowCount());
-			}
+			tool.getService(TableService.class).ifPresent(service -> {
+				TableComponentProvider<?> provider = service.showTable(
+						"Goto " + queryData.getQueryString(), "Goto", model, "Go To", navigatable);
+				if (model.getRowCount() >= maxHits) {
+					showMaxSearchWarning(provider.getComponent(), model.getRowCount());
+				}
 
-			notifyListener(true);
+				notifyListener(true);
+			});
 		}
 
 		private void showMaxSearchWarning(final Component parent, final int matchCount) {

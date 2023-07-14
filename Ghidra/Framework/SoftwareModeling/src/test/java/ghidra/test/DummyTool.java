@@ -410,7 +410,7 @@ public class DummyTool extends PluginTool {
 	}
 
 	@Override
-	public <T> T getService(Class<T> serviceClass) {
+	public <T> Optional<T> getService(Class<T> serviceClass) {
 		return null;
 	}
 

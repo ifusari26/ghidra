@@ -16,6 +16,7 @@
 package ghidra.app.plugin.prototype.MicrosoftCodeAnalyzerPlugin;
 
 import java.io.PrintWriter;
+import java.util.Optional;
 
 import generic.jar.ResourceFile;
 import ghidra.app.plugin.core.analysis.AutoAnalysisManager;
@@ -132,13 +133,10 @@ public class WindowsResourceReferenceAnalyzer extends AbstractAnalyzer {
 	}
 
 	private PrintWriter getOutputMsgStream(PluginTool tool) {
-		if (tool != null) {
-			ConsoleService console = tool.getService(ConsoleService.class);
-			if (console != null) {
-				return console.getStdOut();
-			}
-		}
-		return new PrintWriter(System.out);
+		return Optional.ofNullable(tool)
+				.flatMap(t -> t.getService(ConsoleService.class))
+				.map(ConsoleService::getStdOut)
+				.orElse(new PrintWriter(System.out));
 	}
 
 	@Override

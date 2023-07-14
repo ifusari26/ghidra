@@ -79,7 +79,7 @@ public class StackUnwinder {
 	public static final int BASE_OP_INDEX = 0;
 
 	private static DebuggerStaticMappingService getMappings(PluginTool tool) {
-		return tool.getService(DebuggerStaticMappingService.class);
+		return tool.getService(DebuggerStaticMappingService.class).orElseThrow();
 	}
 
 	private static WatchValuePcodeExecutorState getState(PluginTool tool,

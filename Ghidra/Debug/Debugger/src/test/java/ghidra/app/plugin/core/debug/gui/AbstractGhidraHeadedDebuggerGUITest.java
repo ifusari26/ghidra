@@ -587,16 +587,15 @@ public abstract class AbstractGhidraHeadedDebuggerGUITest
 		env = new TestEnv();
 		tool = env.getTool();
 
-		DebuggerModelServiceProxyPlugin modelPlugin =
-			addPlugin(tool, DebuggerModelServiceProxyPlugin.class);
-		modelService = tool.getService(DebuggerModelService.class);
+		DebuggerModelServiceProxyPlugin modelPlugin = addPlugin(tool, DebuggerModelServiceProxyPlugin.class);
+		modelService = tool.getService(DebuggerModelService.class).orElseThrow();
 		assertEquals(modelPlugin, modelService);
 		modelServiceInternal = modelPlugin;
 
 		addPlugin(tool, DebuggerTraceManagerServicePlugin.class);
-		traceManager = tool.getService(DebuggerTraceManagerService.class);
+		traceManager = tool.getService(DebuggerTraceManagerService.class).orElseThrow();
 
-		programManager = tool.getService(ProgramManager.class);
+		programManager = tool.getService(ProgramManager.class).orElseThrow();
 
 		env.showTool();
 

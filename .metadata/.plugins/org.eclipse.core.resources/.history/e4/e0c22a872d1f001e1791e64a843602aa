@@ -1,0 +1,17 @@
+package marshmallows;
+
+import javax.swing.Icon;
+
+import ghidra.framework.plugintool.util.PluginPackage;
+import resources.ResourceManager;
+import tools.ghidra.marshmallows.data.Constants;
+
+public class MarshmallowsPluginPackage extends PluginPackage {
+	
+	private static final Icon ICON = ResourceManager.loadImage("images/marshmallows.png");
+
+	public MarshmallowsPluginPackage() {
+		super(Constants.Plugin.NAME, ICON, Constants.Plugin.VERBOSE);
+	}
+
+}

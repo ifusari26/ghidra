@@ -94,7 +94,7 @@ public class DebuggerListingProviderTest extends AbstractGhidraHeadedDebuggerGUI
 		listingPlugin = addPlugin(tool, DebuggerListingPlugin.class);
 		listingProvider = waitForComponentProvider(DebuggerListingProvider.class);
 
-		mappingService = tool.getService(DebuggerStaticMappingService.class);
+		mappingService = tool.getService(DebuggerStaticMappingService.class).orElseThrow();
 	}
 
 	protected void goToDyn(Address address) {

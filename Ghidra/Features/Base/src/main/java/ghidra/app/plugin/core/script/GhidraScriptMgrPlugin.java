@@ -96,7 +96,8 @@ public class GhidraScriptMgrPlugin extends ProgramPlugin implements GhidraScript
 	}
 
 	ConsoleService getConsoleService() {
-		return tool.getService(ConsoleService.class);
+		// Required
+		return tool.getService(ConsoleService.class).orElseThrow();
 	}
 
 	@Override
@@ -120,7 +121,7 @@ public class GhidraScriptMgrPlugin extends ProgramPlugin implements GhidraScript
 
 	@Override
 	public boolean tryToEditFileInEclipse(ResourceFile file) {
-		EclipseIntegrationService service = tool.getService(EclipseIntegrationService.class);
+		EclipseIntegrationService service = tool.getService(EclipseIntegrationService.class).orElseThrow();
 		ToolOptions options = service.getEclipseIntegrationOptions();
 		int port = options.getInt(EclipseIntegrationOptionsPlugin.SCRIPT_EDITOR_PORT_OPTION, -1);
 		if (port < 0 || port > Short.MAX_VALUE) {

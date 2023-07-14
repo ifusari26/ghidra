@@ -58,7 +58,7 @@ public class NavigateToFunctionAction extends ToggleDockingAction {
 	public NavigateToFunctionAction(MultiFunctionComparisonProvider provider) {
 		super("Navigate To Selected Function", provider.getName());
 
-		goToService = provider.getTool().getService(GoToService.class);
+		goToService = provider.getTool().getService(GoToService.class).orElseThrow();
 
 		setEnabled(true);
 		setSelected(false);

@@ -741,7 +741,7 @@ public class CommentsPluginTest extends AbstractGhidraHeadedIntegrationTest {
 		addFunction("TestFunc", 0x1008040, 0x20);
 
 		Address startAddress = addr(0x01006420);
-		GoToService service = tool.getService(GoToService.class);
+		GoToService service = tool.getService(GoToService.class).orElseThrow();
 
 		// make sure we are starting on a known address
 		service.goTo(startAddress);

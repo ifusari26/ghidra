@@ -101,13 +101,10 @@ public class DecompilePlugin extends Plugin {
 
 	@Override
 	protected void init() {
-		ClipboardService clipboardService = tool.getService(ClipboardService.class);
-		if (clipboardService != null) {
-			connectedProvider.setClipboardService(clipboardService);
-			for (DecompilerProvider provider : disconnectedProviders) {
-				provider.setClipboardService(clipboardService);
-			}
-		}
+		tool.getService(ClipboardService.class).ifPresent(service -> {
+			connectedProvider.setClipboardService(service);
+			disconnectedProviders.forEach(provider -> provider.setClipboardService(service));
+		});
 	}
 
 	@Override
@@ -134,8 +131,7 @@ public class DecompilePlugin extends Plugin {
 
 	@Override
 	public void readDataState(SaveState saveState) {
-		ProgramManager programManagerService = tool.getService(ProgramManager.class);
-
+		Optional<ProgramManager> programManagerService = tool.getService(ProgramManager.class);
 		if (connectedProvider != null) {
 			connectedProvider.readDataState(saveState);
 		}
@@ -148,18 +144,21 @@ public class DecompilePlugin extends Plugin {
 			if (file == null) {
 				continue;
 			}
-			Program program = programManagerService.openProgram(file);
-			if (program != null) {
-				DecompilerProvider provider = createNewDisconnectedProvider();
-				provider.doSetProgram(program);
-				provider.readDataState(providerSaveState);
-			}
+			programManagerService.ifPresent(service -> {
+				Program program = service.openProgram(file);
+				if (program != null) {
+					DecompilerProvider provider = createNewDisconnectedProvider();
+					provider.doSetProgram(program);
+					provider.readDataState(providerSaveState);
+				}
+			});
 		}
 	}
 
 	DecompilerProvider createNewDisconnectedProvider() {
 		DecompilerProvider decompilerProvider = new DecompilerProvider(this, false);
-		decompilerProvider.setClipboardService(tool.getService(ClipboardService.class));
+		// If the clipboard service isn't present, this provider will have no clipboard service!
+		tool.getService(ClipboardService.class).ifPresent(decompilerProvider::setClipboardService);
 		disconnectedProviders.add(decompilerProvider);
 		tool.showComponentProvider(decompilerProvider, true);
 		return decompilerProvider;
@@ -181,10 +180,9 @@ public class DecompilePlugin extends Plugin {
 	}
 
 	void exportLocation(Program program, ProgramLocation location) {
-		GoToService service = tool.getService(GoToService.class);
-		if (service != null) {
+		tool.getService(GoToService.class).ifPresent(service -> {
 			service.goTo(location, program);
-		}
+		});
 	}
 
 	void updateSelection(DecompilerProvider provider, Program selProgram,

@@ -95,6 +95,9 @@ public enum PluginToolUtils {
 	 */
 	public static <T> T getServiceFromRunningCompatibleTool(PluginTool tool,
 			Class<T> serviceClass) {
-		return inRunningToolsPreferringActive(tool, pt -> pt.getService(serviceClass));
+		return inRunningToolsPreferringActive(
+				tool,
+				pt -> pt.getService(serviceClass).orElse(null)
+		);
 	}
 }

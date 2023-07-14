@@ -30,6 +30,8 @@ import ghidra.program.util.ProgramSelection;
 import ghidra.util.HelpLocation;
 import ghidra.util.Msg;
 
+import javax.annotation.Nonnull;
+
 /**
  * Defines a set of actions that can be performed on a selection to initiate a memory search.  All
  * actions will ultimately open the {@code MemSearchDialog} with the search string field 
@@ -110,13 +112,16 @@ public class MnemonicSearchPlugin extends Plugin {
 		// dialog with the proper search string.
 		if (mask != null) {
 			maskedBitString = createMaskedBitString(mask.getValue(), mask.getMask());
+			// TODO: Honestly, this shouldn't ever end up null.
+			// An optional fix would be to have `createMaskedBitString` return an empty string versus `null`.
+			// However, this seems to be a one-off so an assertion works fine.
+			assert maskedBitString != null;
 			byte[] maskedBytes = maskedBitString.getBytes();
-
-			MemorySearchService memorySearchService =
-				tool.getService(MemorySearchService.class);
-			memorySearchService.setIsMnemonic(true);
-			memorySearchService.search(maskedBytes, newContext);
-			memorySearchService.setSearchText(maskedBitString);
+			tool.getService(MemorySearchService.class).ifPresent(service -> {
+				service.setIsMnemonic(true);
+				service.search(maskedBytes, newContext);
+				service.setSearchText(maskedBitString);
+			});
 		}
 	}
 
@@ -214,12 +219,11 @@ public class MnemonicSearchPlugin extends Plugin {
 	/*
 	 * Returns a single string based on the masked bits
 	 */
-	private String createMaskedBitString(byte values[], byte masks[]) {
-
+	private String createMaskedBitString(byte[] values, byte[] masks) {
 		String bitString = new String();
-
 		//check that value and mask lengths are equal
 		if (values.length != masks.length) {
+			// Empty string
 			return null;
 		}
 

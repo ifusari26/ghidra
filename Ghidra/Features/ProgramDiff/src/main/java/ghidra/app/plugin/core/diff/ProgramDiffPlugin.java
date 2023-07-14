@@ -593,9 +593,9 @@ public class ProgramDiffPlugin extends ProgramPlugin
 
 	@Override
 	protected void init() {
-		codeViewerService = tool.getService(CodeViewerService.class);
-		goToService = tool.getService(GoToService.class);
-		programManagerService = tool.getService(ProgramManager.class);
+		codeViewerService = tool.getService(CodeViewerService.class).orElseThrow();
+		goToService = tool.getService(GoToService.class).orElseThrow();
+		programManagerService = tool.getService(ProgramManager.class).orElseThrow();
 
 		FormatManager formatManager = codeViewerService.getFormatManager();
 		ServiceProvider diffServiceProvider =
@@ -610,8 +610,7 @@ public class ProgramDiffPlugin extends ProgramPlugin
 		diffFieldNavigator = new FieldNavigator(diffServiceProvider, diffNavigatable);
 		diffListingPanel.addButtonPressedListener(diffFieldNavigator);
 		help.registerHelp(diffListingPanel, new HelpLocation("Diff", "Program_Differences"));
-		GoToService diffMarkerGoToService = diffServiceProvider.getService(GoToService.class);
-		markerManager.setGoToService(diffMarkerGoToService);
+		diffServiceProvider.getService(GoToService.class).ifPresent(markerManager::setGoToService);
 
 		actionManager.setCodeViewerService(codeViewerService);
 		setupOptions();
@@ -1223,8 +1222,9 @@ public class ProgramDiffPlugin extends ProgramPlugin
 	}
 
 	void activeProgram(Program program) {
-		ProgramManager programManager = tool.getService(ProgramManager.class);
-		programManager.setCurrentProgram(program);
+		tool.getService(ProgramManager.class).ifPresent(
+				service -> service.setCurrentProgram(program)
+		);
 	}
 
 	void addDiffDetails(Address p1Address, StyledDocument doc) {
@@ -1470,18 +1470,22 @@ public class ProgramDiffPlugin extends ProgramPlugin
 	}
 
 	private MarkerSet getCodeViewerMarkers() {
-		MarkerService markerService = tool.getService(MarkerService.class);
-		if (markerService == null) {
-			return null;
-		}
-
 		// already created
 		if (p1DiffMarkers != null) {
 			return p1DiffMarkers;
 		}
-
-		p1DiffMarkers = markerService.createAreaMarker("Difference", "Diff Display", primaryProgram,
-			MarkerService.DIFF_PRIORITY, false, true, true, diffHighlightColor);
+		tool.getService(MarkerService.class).ifPresent(service ->
+				p1DiffMarkers = service.createAreaMarker(
+						"Difference",
+						"Diff Display",
+						primaryProgram,
+						MarkerService.DIFF_PRIORITY,
+						false,
+						true,
+						true,
+						diffHighlightColor
+				)
+		);
 		return p1DiffMarkers;
 	}
 
@@ -1523,14 +1527,12 @@ public class ProgramDiffPlugin extends ProgramPlugin
 		if (p1DiffMarkers == null) {
 			return;
 		}
-
-		MarkerService markerService = tool.getService(MarkerService.class);
-		if (markerService == null) {
-			return;
-		}
-
-		markerService.removeMarker(p1DiffMarkers, primaryProgram);
-		p1DiffMarkers = null;
+		tool.getService(MarkerService.class).ifPresent(
+				service -> {
+					service.removeMarker(p1DiffMarkers, primaryProgram);
+					p1DiffMarkers = null;
+				}
+		);
 	}
 
 	private boolean openSecondProgram(DomainFile df) {

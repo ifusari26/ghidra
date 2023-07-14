@@ -161,8 +161,7 @@ public class VariableValueHoverService extends AbstractConfigurableHover
 			this.tool = tool;
 			this.current = current;
 			this.warnings = warnings;
-
-			this.mappingService = tool.getService(DebuggerStaticMappingService.class);
+			this.mappingService = tool.getService(DebuggerStaticMappingService.class).orElseThrow();
 			this.eval = eval;
 		}
 

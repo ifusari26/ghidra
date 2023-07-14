@@ -109,12 +109,16 @@ public interface FlatDebuggerAPI {
 	 * @throws IllegalStateException if the service is missing
 	 */
 	default <T> T requireService(Class<T> cls) {
-		T service = getState().getTool().getService(cls);
-		if (service == null) {
-			throw new IllegalStateException("Tool does not have service " + cls +
-				"! This script should be run from the Debugger tool");
-		}
-		return service;
+		return getState()
+				.getTool()
+				.getService(cls)
+				.orElseThrow(
+						() -> new IllegalStateException(
+								"Tool does not have service "
+										+ cls
+										+ "! This script should be run from the Debugger tool"
+						)
+				);
 	}
 
 	/**

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="FeatureExportWizard">
+		<item key="exportType" value="1"/>
+		<item key="destination0" value="/Users/isabella.fusari/software/ghidra/GhidraBuild/EclipsePlugins/GhidraDev.zip"/>
+		<item key="destination1" value="/Users/isabella.fusari/software/ghidra/GhidraBuild/EclipsePlugins/GhidraDev"/>
+		<item key="exportUpdate" value="true"/>
+		<item key="exportSource" value="false"/>
+		<item key="exportSourceFormat" value="Generate source bundles"/>
+		<item key="saveAsAnt" value="false"/>
+		<item key="qualifier" value="false"/>
+		<item key="qualifierName" value="GhidraDev.zip"/>
+		<item key="allowBinaryCycles" value="true"/>
+		<item key="useWorkspaceCompiledClasses" value="false"/>
+		<item key="p2metadata" value="true"/>
+		<item key="create_categories" value="true"/>
+		<item key="category_file" value="/Users/isabella.fusari/software/ghidra/GhidraBuild/EclipsePlugins/GhidraDev/GhidraDevFeature/category.xml"/>
+		<item key="signJAR" value="false"/>
+		<item key="jnlp" value="false"/>
+		<item key="siteURL" value=""/>
+		<item key="jre" value=""/>
+		<item key="destination2" value="/Users/isabella.fusari/.config/eclipse/plugins"/>
+	</section>
+	<section name="UpdateBuildpathWizard">
+	</section>
+	<section name="quick_assist_proposal_size">
+	</section>
+	<section name="PDEFormActionManager">
+	</section>
+	<section name="org.eclipse.pde.ui.dialogs.FilteredPluginArtifactsSelectionDialog">
+		<item key="ShowStatusLine" value="true"/>
+		<item key="History" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#x0A;&lt;History&gt;&#x0A;&lt;historyRootNode/&gt;&#x0A;&lt;/History&gt;"/>
+		<item key="showExtensions" value="true"/>
+		<item key="showExtensionPoints" value="true"/>
+		<item key="showExportedPackages" value="true"/>
+		<item key="showFeatures" value="true"/>
+		<section name="DialogBoundsSettings">
+			<item key="DIALOG_HEIGHT" value="500"/>
+			<item key="DIALOG_WIDTH" value="600"/>
+			<item key="DIALOG_X_ORIGIN" value="511"/>
+			<item key="DIALOG_Y_ORIGIN" value="151"/>
+			<item key="DIALOG_FONT_NAME" value="1|.AppleSystemUIFont|11.0|0|COCOA|1|.AppleSystemUIFont"/>
+		</section>
+	</section>
+</section>

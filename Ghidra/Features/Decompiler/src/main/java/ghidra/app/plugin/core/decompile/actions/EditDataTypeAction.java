@@ -44,8 +44,12 @@ public class EditDataTypeAction extends AbstractDecompilerAction {
 
 	private boolean hasCustomEditorForBaseDataType(PluginTool tool, DataType dataType) {
 		DataType baseDataType = DataTypeUtils.getBaseDataType(dataType);
-		final DataTypeManagerService service = tool.getService(DataTypeManagerService.class);
-		return baseDataType != null && service.isEditable(baseDataType);
+		if (baseDataType == null) {
+			return false;
+		}
+		return tool.getService(DataTypeManagerService.class)
+				.map(service -> service.isEditable(baseDataType))
+				.orElse(false);
 	}
 
 	@Override
@@ -66,7 +70,6 @@ public class EditDataTypeAction extends AbstractDecompilerAction {
 
 	@Override
 	protected void decompilerActionPerformed(DecompilerActionContext context) {
-
 		DataType dataType = DecompilerUtils.getDataType(context);
 		DataType baseDataType = DataTypeUtils.getBaseDataType(dataType);
 		DataTypeManager dataTypeManager = context.getProgram().getDataTypeManager();
@@ -74,9 +77,11 @@ public class EditDataTypeAction extends AbstractDecompilerAction {
 		if (baseDtDTM != dataTypeManager) {
 			baseDataType = baseDataType.clone(dataTypeManager);
 		}
-		final DataTypeManagerService service =
-			context.getTool().getService(DataTypeManagerService.class);
-		service.edit(baseDataType);
+
+		final DataType baseData = baseDataType.clone(dataTypeManager);
+		context.getTool().getService(DataTypeManagerService.class).ifPresent(service -> {
+			service.edit(baseData);
+		});
 	}
 
 }

@@ -1,0 +1,19 @@
+package marshmallows.providers;
+
+import ghidra.framework.plugintool.Plugin;
+import ghidra.framework.plugintool.PluginInfo;
+
+public final class PluginInfoProvider {
+
+    private PluginInfoProvider() {
+    }
+
+    public static <T extends Plugin> PluginInfo getPluginInfo(final T plugin) {
+        return PluginInfoProvider.getPluginInfo(plugin.getClass());
+    }
+
+    public static PluginInfo getPluginInfo(final Class<? extends Plugin> plugin) {
+        return plugin.getAnnotation(PluginInfo.class);
+    }
+
+}

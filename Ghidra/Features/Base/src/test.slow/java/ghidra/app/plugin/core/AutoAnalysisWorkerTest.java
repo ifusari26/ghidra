@@ -84,7 +84,7 @@ public class AutoAnalysisWorkerTest extends AbstractGhidraHeadedIntegrationTest 
 		builder.addBytesReturn("0x100110a");
 		program = builder.getProgram();
 
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.openProgram(program.getDomainFile());
 		addrFactory = program.getAddressFactory();
 	}
@@ -391,7 +391,7 @@ public class AutoAnalysisWorkerTest extends AbstractGhidraHeadedIntegrationTest 
 
 	@SuppressWarnings("unused")
 	private void closeProgram() {
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.closeProgram();
 	}
 

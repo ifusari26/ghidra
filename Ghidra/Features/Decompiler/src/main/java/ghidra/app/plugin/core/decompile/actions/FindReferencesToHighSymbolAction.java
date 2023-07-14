@@ -66,7 +66,6 @@ public class FindReferencesToHighSymbolAction extends AbstractDecompilerAction {
 			return false;
 		}
 		HighSymbol highSymbol = token.getHighSymbol(context.getHighFunction());
-
 		if (highSymbol == null || highSymbol.getStorage().isBadStorage() ||
 			!highSymbol.isGlobal()) {
 			return false;
@@ -77,26 +76,35 @@ public class FindReferencesToHighSymbolAction extends AbstractDecompilerAction {
 
 	@Override
 	protected void decompilerActionPerformed(DecompilerActionContext context) {
-		LocationReferencesService service =
-			context.getTool().getService(LocationReferencesService.class);
-		if (service == null) {
-			Msg.showError(this, null, "Missing Plugin",
-				"The " + LocationReferencesService.class.getSimpleName() + " is not installed.\n" +
-					"Please add the plugin implementing this service.");
-			return;
-		}
-		LabelFieldLocation location = null;
-		Function function = getFunction(context);
-		if (function != null && !(function instanceof UndefinedFunction)) {
-			location = new LabelFieldLocation(function.getSymbol());
-		}
-		else {
-			HighSymbol highSymbol =
-				context.getTokenAtCursor().getHighSymbol(context.getHighFunction());
-			location = new LabelFieldLocation(context.getProgram(),
-				highSymbol.getStorage().getMinAddress(), highSymbol.getName());
-		}
-		DecompilerProvider provider = context.getComponentProvider();
-		service.showReferencesToLocation(location, provider);
+		context.getTool().getService(LocationReferencesService.class).ifPresentOrElse(
+				service -> {
+					LabelFieldLocation location = null;
+					Function function = getFunction(context);
+					if (function != null && !(function instanceof UndefinedFunction)) {
+						location = new LabelFieldLocation(function.getSymbol());
+					} else {
+						HighSymbol highSymbol = context
+								.getTokenAtCursor()
+								.getHighSymbol(context.getHighFunction());
+						location = new LabelFieldLocation(
+								context.getProgram(),
+								highSymbol.getStorage().getMinAddress(),
+								highSymbol.getName()
+						);
+					}
+					DecompilerProvider provider = context.getComponentProvider();
+					service.showReferencesToLocation(location, provider);
+				},
+				() -> Msg.showError(
+						this,
+						null,
+						"Missing Plugin",
+						"The "
+								+ LocationReferencesService.class.getSimpleName()
+								+ " is not installed.\n"
+								+  "Please add the plugin implementing this service."
+				)
+		);
 	}
+
 }

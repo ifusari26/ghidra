@@ -78,21 +78,22 @@ class TraceBreakpointSet {
 	}
 
 	private ControlMode getControlMode() {
-		DebuggerControlService service = tool.getService(DebuggerControlService.class);
-		return service == null ? ControlMode.DEFAULT : service.getCurrentMode(trace);
+		return tool
+				.getService(DebuggerControlService.class)
+				.map(service -> service.getCurrentMode(trace))
+				.orElse(ControlMode.DEFAULT);
 	}
 
 	private long getSnap() {
-		/**
+		/*
 		 * TODO: Not exactly ideal.... It'd be nice to have it passed in, but that's infecting a lot
 		 * of methods and putting a burden on the caller, when in most cases, it's going to be the
 		 * "current snap" anyway.
 		 */
-		DebuggerTraceManagerService service = tool.getService(DebuggerTraceManagerService.class);
-		if (service == null) {
-			return trace.getProgramView().getViewport().getReversedSnaps().get(0);
-		}
-		return service.getCurrentFor(trace).getSnap();
+		return tool
+				.getService(DebuggerTraceManagerService.class)
+				.map(service -> service.getCurrentFor(trace).getSnap())
+				.orElse(trace.getProgramView().getViewport().getReversedSnaps().get(0));
 	}
 
 	/**

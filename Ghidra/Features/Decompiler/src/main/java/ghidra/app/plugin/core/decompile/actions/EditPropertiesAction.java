@@ -37,13 +37,14 @@ public class EditPropertiesAction extends DockingAction {
 	
 	@Override
 	public boolean isEnabledForContext(ActionContext context) {
-		return tool.getService(OptionsService.class) != null;
+		return tool.getService(OptionsService.class).isPresent();
 	}
 	
 	@Override
 	public void actionPerformed(ActionContext context) {
-        OptionsService service = tool.getService( OptionsService.class );
-        service.showOptionsDialog( OPTIONS_TITLE  + ".Display", "Decompiler" );
+        tool.getService(OptionsService.class).ifPresent(service -> {
+			service.showOptionsDialog( OPTIONS_TITLE  + ".Display", "Decompiler" );
+		});
 	}
 	
 }

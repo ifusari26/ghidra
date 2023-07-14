@@ -1,0 +1,18 @@
+package tools.ghidra.marshmallows.providers;
+
+import ghidra.app.plugin.core.osgi.BundleHost;
+import ghidra.app.script.GhidraScriptUtil;
+import tools.ghidra.marshmallows.MarshmallowsPlugin;
+
+/**
+ * Provides serializable configuration(s)/configurable menus 
+ */
+public final class ConfigurationProvider {
+	
+	private final BundleHost bundleHost;
+	
+	public ConfigurationProvider(final MarshmallowsPlugin plugin) {
+		this.bundleHost = GhidraScriptUtil.acquireBundleHostReference();
+	}
+
+}

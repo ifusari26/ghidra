@@ -62,8 +62,7 @@ public class EquateTablePlugin extends ProgramPlugin implements DomainObjectList
 	@Override
 	public void init() {
 		super.init();
-
-		goToService = tool.getService(GoToService.class);
+		goToService = tool.getService(GoToService.class).orElseThrow();
 	}
 
 	@Override

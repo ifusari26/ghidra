@@ -72,7 +72,7 @@ public class CodeBrowserTest extends AbstractGhidraHeadedIntegrationTest {
 		program = buildProgram();
 		addrFactory = program.getAddressFactory();
 
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.openProgram(program.getDomainFile());
 
 		NextPrevAddressPlugin np = env.getPlugin(NextPrevAddressPlugin.class);
@@ -323,7 +323,7 @@ public class CodeBrowserTest extends AbstractGhidraHeadedIntegrationTest {
 	public void testSelectionConnectedBrowsers() throws Exception {
 		PluginTool tool2 = env.launchAnotherDefaultTool();
 		setUpCodeBrowserTool(tool2);
-		ProgramManager pm = tool2.getService(ProgramManager.class);
+		ProgramManager pm = tool2.getService(ProgramManager.class).orElseThrow();
 		pm.openProgram(program.getDomainFile());
 
 		CodeBrowserPlugin cb2 = getPlugin(tool2, CodeBrowserPlugin.class);
@@ -581,7 +581,7 @@ public class CodeBrowserTest extends AbstractGhidraHeadedIntegrationTest {
 
 		});
 
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.openProgram(program.getDomainFile());
 		CodeBrowserPlugin cbPlugin = env.getPlugin(CodeBrowserPlugin.class);
 		fp = cbPlugin.getFieldPanel();
@@ -589,7 +589,7 @@ public class CodeBrowserTest extends AbstractGhidraHeadedIntegrationTest {
 		runSwing(() -> cbPlugin.readDataState(saveState));
 
 		cbPlugin.updateNow();
-		assertEquals("01007000", runSwing(() -> cbPlugin.getCurrentFieldText()));
+		assertEquals("01007000", runSwing(cbPlugin::getCurrentFieldText));
 
 		assertEquals(vp, runSwing(() -> fp.getViewerPosition()));
 	}

@@ -106,9 +106,10 @@ class ListingDisplaySearcher implements Searcher {
 		results = new ArrayList<>();
 		locationIterator = results.listIterator();
 
-		CodeViewerService service = tool.getService(CodeViewerService.class);
-		listingModel = service.getListingModel();
-
+		tool.getService(CodeViewerService.class).ifPresent(service -> {
+			listingModel = service.getListingModel();
+		});
+		
 		monitor.initialize(searchAddresses.getNumAddresses());
 	}
 

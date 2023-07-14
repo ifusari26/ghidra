@@ -369,7 +369,7 @@ public abstract class PluginTool extends AbstractDockingTool {
 	}
 
 	@Override
-	public <T> T getService(Class<T> c) {
+	public <T> Optional<T> getService(Class<T> c) {
 		return serviceMgr.getService(c);
 	}
 

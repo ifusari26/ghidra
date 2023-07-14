@@ -136,7 +136,7 @@ public class FlatDebuggerAPITest extends AbstractGhidraHeadedDebuggerGUITest {
 	@Before
 	public void setUpFlatAPITest() throws Throwable {
 		breakpointService = addPlugin(tool, DebuggerLogicalBreakpointServicePlugin.class);
-		mappingService = tool.getService(DebuggerStaticMappingService.class);
+		mappingService = tool.getService(DebuggerStaticMappingService.class).orElseThrow();
 		emulationService = addPlugin(tool, DebuggerEmulationServicePlugin.class);
 		listingService = addPlugin(tool, DebuggerListingPlugin.class);
 		editingService = addPlugin(tool, DebuggerControlServicePlugin.class);

@@ -130,7 +130,7 @@ public class DataTypeSelectionTextFieldTest extends AbstractDropDownTextFieldTes
 
 		assertTrue("The text field is not showing as expected.", textField.isShowing());
 
-		DataTypeManagerService service = tool.getService(DataTypeManagerService.class);
+		DataTypeManagerService service = tool.getService(DataTypeManagerService.class).orElseThrow();
 		List<DataType> dataTypeList = service.getSortedDataTypeList();
 
 		// this should return at least two 'double's, one from the BuiltIns and one from the program

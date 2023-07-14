@@ -87,7 +87,7 @@ public class CreateEnumFromSelectionTest extends AbstractGhidraHeadedIntegration
 
 		plugin.getEditorManager().dismissEditors(null);// Close all editors that might be open.
 		executeOnSwingWithoutBlocking(() -> {
-			ProgramManager pm = tool.getService(ProgramManager.class);
+			ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 			pm.closeProgram();
 		});
 

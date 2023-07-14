@@ -168,13 +168,10 @@ public class SpecifyCPrototypeAction extends AbstractDecompilerAction {
 	protected void decompilerActionPerformed(DecompilerActionContext context) {
 		Function function = getFunction(context.getFunction(), context);
 		PluginTool tool = context.getTool();
-		DataTypeManagerService service = tool.getService(DataTypeManagerService.class);
-
+		DataTypeManagerService service = tool.getService(DataTypeManagerService.class).orElseThrow();
 		FunctionEditorModel model = new FunctionEditorModel(service, function);
-
 		HighFunction hf = context.getHighFunction();
 		FunctionPrototype functionPrototype = hf.getFunctionPrototype();
-
 		// If editing the decompiled function (i.e., not a subfunction) and function
 		// is not fully locked update the model to reflect the decompiled results
 		if (function.getEntryPoint().equals(hf.getFunction().getEntryPoint())) {
@@ -182,16 +179,14 @@ public class SpecifyCPrototypeAction extends AbstractDecompilerAction {
 				model.setUseCustomizeStorage(false);
 				model.setFunctionData(buildSignature(hf));
 				verifyDynamicEditorModel(hf, model);
-			}
-			else if (function.getReturnType() == DataType.DEFAULT) {
+			} else if (function.getReturnType() == DataType.DEFAULT) {
 				model.setFormalReturnType(functionPrototype.getReturnType());
 				if (model.canCustomizeStorage()) {
 					model.setReturnStorage(functionPrototype.getReturnStorage());
 				}
 			}
 		}
-
-		// make the model think it is not changed, so if the user doesn't change anything, 
+		// make the model think it is not changed, so if the user doesn't change anything,
 		// we don't save the changes made above.
 		model.setModelChanged(false);
 

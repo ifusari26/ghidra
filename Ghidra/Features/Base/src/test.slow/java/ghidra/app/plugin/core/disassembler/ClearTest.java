@@ -86,7 +86,7 @@ public class ClearTest extends AbstractGhidraHeadedIntegrationTest {
 	}
 
 	private void closeProgram() {
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.closeProgram();
 		waitForSwing();
 	}
@@ -168,7 +168,7 @@ public class ClearTest extends AbstractGhidraHeadedIntegrationTest {
 		builder.disassemble(new AddressSet(addr("0x01002cf5"), addr("0x01002d6b")));
 		builder.createFunction("0x01002cf5");
 
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.openProgram(program.getDomainFile());
 	}
 

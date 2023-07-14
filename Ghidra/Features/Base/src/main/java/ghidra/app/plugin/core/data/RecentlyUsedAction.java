@@ -17,6 +17,7 @@ package ghidra.app.plugin.core.data;
 
 import java.awt.event.KeyEvent;
 
+import javax.annotation.Nullable;
 import javax.swing.KeyStroke;
 
 import docking.ActionContext;
@@ -67,12 +68,13 @@ public class RecentlyUsedAction extends DataAction {
 		return enabled;
 	}
 
+	@Nullable
 	private DataType getRecentDataType() {
-		DataTypeManagerService service = plugin.getTool().getService(DataTypeManagerService.class);
-		if (service == null) {
-			return null;
-		}
-		return service.getRecentlyUsed();
+		return plugin
+				.getTool()
+				.getService(DataTypeManagerService.class)
+				.map(DataTypeManagerService::getRecentlyUsed)
+				.orElse(null);
 	}
 
 	private void updatePopupMenu(DataType dt) {

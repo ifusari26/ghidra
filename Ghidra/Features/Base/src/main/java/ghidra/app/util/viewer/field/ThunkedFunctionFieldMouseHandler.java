@@ -42,7 +42,7 @@ public class ThunkedFunctionFieldMouseHandler implements FieldMouseHandlerExtens
 			return false;
 		}
 		
-		GoToService goToService = serviceProvider.getService(GoToService.class);
+		GoToService goToService = serviceProvider.getService(GoToService.class).orElse(null);
 		if (goToService == null) {
 			return false;
 		}

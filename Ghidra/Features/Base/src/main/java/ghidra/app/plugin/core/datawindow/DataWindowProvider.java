@@ -132,8 +132,9 @@ class DataWindowProvider extends ComponentProviderAdapter {
 			setSubTitle(buffy.toString());
 		});
 
-		GoToService goToService = tool.getService(GoToService.class);
-		dataTable.installNavigation(goToService, goToService.getDefaultNavigatable());
+		tool.getService(GoToService.class).ifPresent(
+				service -> dataTable.installNavigation(service, service.getDefaultNavigatable())
+		);
 
 		JTableHeader dataHeader = dataTable.getTableHeader();
 		dataHeader.setUpdateTableInRealTime(true);

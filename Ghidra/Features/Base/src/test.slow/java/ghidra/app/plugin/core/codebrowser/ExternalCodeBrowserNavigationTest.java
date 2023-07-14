@@ -67,7 +67,7 @@ public class ExternalCodeBrowserNavigationTest extends AbstractCodeBrowserNaviga
 			}
 		};
 
-		GoToServiceImpl goToServiceImpl = (GoToServiceImpl) tool.getService(GoToService.class);
+		GoToServiceImpl goToServiceImpl = (GoToServiceImpl) tool.getService(GoToService.class).orElseThrow();
 		setInstanceField("helper", goToServiceImpl, spyGoToHelper);
 
 		Project project = getTool().getProject();

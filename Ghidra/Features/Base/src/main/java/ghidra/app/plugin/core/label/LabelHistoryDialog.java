@@ -54,9 +54,10 @@ public class LabelHistoryDialog extends DialogComponentProvider implements Label
 
 	@Override
 	public void addressSelected(Program program, Address addr) {
-		GoToService service = tool.getService(GoToService.class);
-		if (service != null) {
-			service.goTo(new CodeUnitLocation(program, addr, null, 0, 0, 0));
-		}
+		tool.getService(GoToService.class).ifPresent(service -> {
+			CodeUnitLocation codeUnitLocation = new CodeUnitLocation(program, addr, null, 0, 0, 0);
+			service.goTo(codeUnitLocation);
+		});
 	}
+
 }

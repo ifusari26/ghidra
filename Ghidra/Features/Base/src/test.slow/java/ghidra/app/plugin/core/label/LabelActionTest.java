@@ -91,7 +91,7 @@ public class LabelActionTest extends AbstractGhidraHeadedIntegrationTest
 	@Test
 	public void testSetLabelActionEnabled() {
 		Address addr = program.getMinAddress().getNewAddress(0x0100416c);
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.openProgram(program);
 		ReferenceManager refMgr = program.getReferenceManager();
 

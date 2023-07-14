@@ -1,0 +1,5 @@
+package tools.ghidra.marshmallows.transformers;
+
+public final class Utilities {
+
+}

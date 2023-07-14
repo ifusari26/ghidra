@@ -354,12 +354,12 @@ class SymbolTreeTestUtils {
 		assertNotNull(goToToggleAction);
 	}
 
-	void setGoToNavigationSelected(boolean selected) {
-		runSwing(() -> goToToggleAction.setSelected(true));
+	void setGoToNavigationSelected(final boolean selected) {
+		runSwing(() -> goToToggleAction.setSelected(selected));
 	}
 
 	void closeProgram() throws Exception {
-		final ProgramManager pm = plugin.getTool().getService(ProgramManager.class);
+		final ProgramManager pm = plugin.getTool().getService(ProgramManager.class).orElseThrow();
 		runSwing(() -> pm.closeProgram());
 	}
 
@@ -368,7 +368,7 @@ class SymbolTreeTestUtils {
 	}
 
 	void openProgram() {
-		ProgramManager pm = plugin.getTool().getService(ProgramManager.class);
+		ProgramManager pm = plugin.getTool().getService(ProgramManager.class).orElseThrow();
 		pm.openProgram(program.getDomainFile());
 	}
 

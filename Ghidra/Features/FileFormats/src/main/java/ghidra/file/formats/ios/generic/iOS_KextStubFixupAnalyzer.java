@@ -34,6 +34,8 @@ import ghidra.util.exception.DuplicateNameException;
 import ghidra.util.exception.InvalidInputException;
 import ghidra.util.task.TaskMonitor;
 
+import java.util.Optional;
+
 public class iOS_KextStubFixupAnalyzer extends FileFormatAnalyzer {
 
 	@Override
@@ -76,25 +78,13 @@ public class iOS_KextStubFixupAnalyzer extends FileFormatAnalyzer {
 	@Override
 	public boolean analyze(Program program, AddressSetView set, TaskMonitor monitor, MessageLog log)
 			throws Exception {
-
-		//attempt to get the program manager service
-		//we can keep working without it, but the analysis will run much slower
-		ProgramManager programManager = null;
-		AutoAnalysisManager autoAnalysisManager = AutoAnalysisManager.getAnalysisManager(program);
-		if (autoAnalysisManager != null) {
-			PluginTool tool = autoAnalysisManager.getAnalysisTool();
-			if (tool != null) {
-				programManager = tool.getService(ProgramManager.class);
-			}
-		}
-
 		Listing listing = program.getListing();
 		SymbolTable symbolTable = program.getSymbolTable();
 		Memory memory = program.getMemory();
 		ReferenceManager referenceManager = program.getReferenceManager();
 		ExternalManager externalManager = program.getExternalManager();
-
 		MemoryBlock stubBlock = memory.getBlock("__stub");
+
 		if (stubBlock == null) {
 			stubBlock = memory.getBlock("__stubs");
 		}
@@ -117,51 +107,63 @@ public class iOS_KextStubFixupAnalyzer extends FileFormatAnalyzer {
 		DataIterator dataIterator =
 			program.getListing().getData(toAddressSet(destinationBlock), true);
 		while (dataIterator.hasNext()) {
-
 			if (monitor.isCancelled()) {
 				break;
 			}
-
 			Data data = dataIterator.next();
-
 			if (data.getMinAddress().compareTo(destinationBlock.getEnd()) > 0) {
 				break;
 			}
-
 			monitor.setMessage("Fixing STUB section at " + data.getMinAddress());
-
 			Object value = data.getValue();
-
-			if (!(value instanceof Address)) {
+			if (!(value instanceof Address destinationAddress)) {
 				continue;
 			}
-
-			Address destinationAddress = (Address) value;
-
 			if (memory.contains(destinationAddress)) {
 				continue;
 			}
-
 			if ((destinationAddress.getOffset() % 2) != 0) {
 				destinationAddress =
-					destinationAddress.getNewAddress(destinationAddress.getOffset() - 1);
+						destinationAddress.getNewAddress(destinationAddress.getOffset() - 1);
 			}
-
-			DestinationProgramInfo destinationProgramInfo =
-				findDestinationProgram(program, programManager, destinationAddress, monitor);
-
-			if (destinationProgramInfo == null) {
-				continue;
+			final Address destination = destinationAddress;
+			//attempt to get the program manager service
+			//we can keep working without it, but the analysis will run much slower
+			AutoAnalysisManager autoAnalysisManager = AutoAnalysisManager.getAnalysisManager(program);
+			PluginTool tool = autoAnalysisManager.getAnalysisTool();
+			if (tool != null) {
+				tool.getService(ProgramManager.class).ifPresent(
+						service -> {
+							Optional<DestinationProgramInfo> destinationProgramInfo = Optional.ofNullable(
+									findDestinationProgram(program, service, destination, monitor)
+							);
+							destinationProgramInfo.ifPresent(
+									info -> {
+										createSymbolInNonLazySymbolPointerSection(
+												symbolTable,
+												nlSymbolPtrNameSpace,
+												data,
+												info
+										);
+										createExternalReferenceInNonLazySymbolPointerSection(
+												referenceManager,
+												externalManager,
+												data,
+												destination,
+												info
+										);
+										createSymbolInStubSection(
+												listing,
+												symbolTable,
+												referenceManager,
+												stubNameSpace,
+												data,
+												info,
+												monitor
+										);
+									});
+						});
 			}
-
-			createSymbolInNonLazySymbolPointerSection(symbolTable, nlSymbolPtrNameSpace, data,
-				destinationProgramInfo);
-
-			createExternalReferenceInNonLazySymbolPointerSection(referenceManager, externalManager,
-				data, destinationAddress, destinationProgramInfo);
-
-			createSymbolInStubSection(listing, symbolTable, referenceManager, stubNameSpace, data,
-				destinationProgramInfo, monitor);
 		}
 
 		return true;
@@ -213,8 +215,7 @@ public class iOS_KextStubFixupAnalyzer extends FileFormatAnalyzer {
 		try {
 			symbolTable.createLabel(data.getMinAddress(), destinationProgramInfo.symbolName,
 				nlSymbolPtrNameSpace, SourceType.ANALYSIS);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 		}
 	}
 

@@ -71,7 +71,7 @@ public class PlateFieldFactoryTest extends AbstractGhidraHeadedIntegrationTest {
 
 		fieldOptions = cb.getFormatManager().getFieldOptions();
 		resetOptions();
-		goToService = tool.getService(GoToService.class);
+		goToService = tool.getService(GoToService.class).orElseThrow();
 	}
 
 	private ProgramDB buildProgram() throws Exception {

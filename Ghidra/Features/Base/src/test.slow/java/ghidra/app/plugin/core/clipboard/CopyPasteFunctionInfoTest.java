@@ -112,10 +112,10 @@ public class CopyPasteFunctionInfoTest extends AbstractGhidraHeadedIntegrationTe
 		programOne = buildNotepad("notepad");
 		programTwo = buildTaskman("taskman");
 
-		pmOne = toolOne.getService(ProgramManager.class);
+		pmOne = toolOne.getService(ProgramManager.class).orElseThrow();
 		SwingUtilities.invokeAndWait(() -> pmOne.openProgram(programOne.getDomainFile()));
 
-		pmTwo = toolTwo.getService(ProgramManager.class);
+		pmTwo = toolTwo.getService(ProgramManager.class).orElseThrow();
 		SwingUtilities.invokeAndWait(() -> pmTwo.openProgram(programTwo.getDomainFile()));
 		// create function at "entry" (taskman has been analyzed)
 		setupNotepad();

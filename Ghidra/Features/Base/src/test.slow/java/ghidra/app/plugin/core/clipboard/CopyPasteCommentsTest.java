@@ -121,13 +121,13 @@ public class CopyPasteCommentsTest extends AbstractProgramBasedTest {
 		setupProgramOne();
 		setupProgramTwo();
 
-		pmOne = toolOne.getService(ProgramManager.class);
+		pmOne = toolOne.getService(ProgramManager.class).orElseThrow();
 		runSwing(() -> {
 			pmOne.openProgram(df);
 			programOne = (ProgramDB) pmOne.getCurrentProgram();
 		});
 
-		pmTwo = toolTwo.getService(ProgramManager.class);
+		pmTwo = toolTwo.getService(ProgramManager.class).orElseThrow();
 		runSwing(() -> {
 			pmTwo.openProgram(df2);
 			programTwo = (ProgramDB) pmTwo.getCurrentProgram();

@@ -432,7 +432,7 @@ public class MarkerManager implements MarkerService {
 
 	public GoToService getGoToService() {
 		if (goToService == null) {
-			goToService = tool.getService(GoToService.class);
+			tool.getService(GoToService.class).ifPresent(service -> goToService = service);
 		}
 		return goToService;
 	}

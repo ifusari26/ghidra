@@ -53,7 +53,7 @@ public abstract class CompareFunctionsAction extends DockingAction {
 	 */
 	public CompareFunctionsAction(PluginTool tool, String owner) {
 		super("Compare Functions", owner, KeyBindingType.SHARED);
-		this.comparisonService = tool.getService(FunctionComparisonService.class);
+		this.comparisonService = tool.getService(FunctionComparisonService.class).orElseThrow();
 		setActionAttributes();
 	}
 

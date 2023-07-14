@@ -1,0 +1,27 @@
+package tools.ghidra.marshmallows.loaders;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.function.Function;
+
+public interface Loader<T> {
+
+	@SuppressWarnings("unchecked")
+	void load(final T... srcs);
+
+	static URL[] getUrlsFromStrings(final String... strings) {
+		return (URL[]) Arrays.stream(strings).map(Loader::createUrl).toArray();
+	}
+
+	default Optional<T> transform(final String path, final Function<String, T> transformer) {
+		try {
+			URL url = new URL(path);
+			return Optional.of(url);
+		} catch (MalformedURLException e) {
+			return Optional.empty();
+		}
+	}
+
+}

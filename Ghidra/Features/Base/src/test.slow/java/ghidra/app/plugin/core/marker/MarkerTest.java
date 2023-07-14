@@ -433,8 +433,8 @@ public class MarkerTest extends AbstractGhidraHeadedIntegrationTest {
 	private void setupTool(PluginTool tool) throws Exception {
 
 		cb = env.getPlugin(CodeBrowserPlugin.class);
-		markerService = tool.getService(MarkerService.class);
-		codeViewerService = tool.getService(CodeViewerService.class);
+		markerService = tool.getService(MarkerService.class).orElseThrow();
+		codeViewerService = tool.getService(CodeViewerService.class).orElseThrow();
 
 		ClearPlugin cp = getPlugin(tool, ClearPlugin.class);
 		clearAction = getAction(cp, "Clear Code Bytes");

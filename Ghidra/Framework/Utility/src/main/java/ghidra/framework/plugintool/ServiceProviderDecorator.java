@@ -52,10 +52,10 @@ public class ServiceProviderDecorator implements ServiceProvider {
 	}
 
 	@Override
-	public <T> T getService(Class<T> serviceClass) {
-		Object service = overriddenServices.get(serviceClass);
+	public <T> Optional<T> getService(Class<T> serviceClass) {
+		final Object service = overriddenServices.get(serviceClass);
 		if (service != null) {
-			return serviceClass.cast(service);
+			return Optional.of(serviceClass.cast(service));
 		}
 		return delegate.getService(serviceClass);
 	}

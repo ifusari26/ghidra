@@ -232,7 +232,7 @@ public class FindPossibleReferencesPlugin extends Plugin {
 
 		model = new FindReferencesTableModel(fromSet, tool, currentProgram);
 
-		TableService service = tool.getService(TableService.class);
+		TableService service = tool.getService(TableService.class).orElseThrow();
 		TableComponentProvider<ReferenceAddressPair> p =
 			service.showTable("Find References to" + title, getName(), model, "Possible References",
 				context.getNavigatable());

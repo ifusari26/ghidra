@@ -532,8 +532,9 @@ public class DefaultGraphDisplay implements GraphDisplay {
 		// allow the user to edit the options for the current graph instance.
 
 		if (graphDisplayOptions.isRegisteredWithTool()) {
-			OptionsService service = tool.getService(OptionsService.class);
-			service.showOptionsDialog("Graph." + relativePath, "");
+			tool.getService(OptionsService.class).ifPresent(
+					service -> service.showOptionsDialog("Graph." + relativePath, "")
+			);
 		}
 		else {
 			ToolOptions transientOptions = new ToolOptions("Graph");

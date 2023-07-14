@@ -406,20 +406,15 @@ public class FillOutStructureCmd extends BackgroundCommand {
 	 */
 	private DecompInterface setUpDecompiler() {
 		DecompInterface decomplib = new DecompInterface();
-
-		DecompileOptions options;
-		options = new DecompileOptions();
-		OptionsService service = tool.getService(OptionsService.class);
-		if (service != null) {
+		DecompileOptions options = new DecompileOptions();
+		tool.getService(OptionsService.class).ifPresent(service -> {
 			ToolOptions opt = service.getOptions("Decompiler");
 			options.grabFromToolAndProgram(null, opt, currentProgram);
-		}
+		});
 		decomplib.setOptions(options);
-
 		decomplib.toggleCCode(true);
 		decomplib.toggleSyntaxTree(true);
 		decomplib.setSimplificationStyle("decompile");
-
 		return decomplib;
 	}
 

@@ -55,7 +55,7 @@ class AnalyzeAllOpenProgramsTask extends Task {
 		super("Analyzing All Open Programs", true, true, false);
 		this.tool = plugin.getTool();
 
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		final ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		this.prototypeProgram = pm.getCurrentProgram();
 		this.programs = Arrays.asList(pm.getAllOpenPrograms());
 		this.analyzeStrategy = new DefaultAnalyzeProgramStrategy();

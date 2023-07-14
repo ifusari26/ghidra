@@ -674,9 +674,10 @@ class FGActionManager {
 
 				@Override
 				public void actionPerformed(ActionContext context) {
-					OptionsService service = tool.getService(OptionsService.class);
-					service.showOptionsDialog(FunctionGraphPlugin.OPTIONS_NAME_PATH,
-						"Function Graph");
+					tool.getService(OptionsService.class).ifPresent(
+							service -> service.showOptionsDialog(FunctionGraphPlugin.OPTIONS_NAME_PATH,
+									"Function Graph")
+					);
 				}
 
 				@Override

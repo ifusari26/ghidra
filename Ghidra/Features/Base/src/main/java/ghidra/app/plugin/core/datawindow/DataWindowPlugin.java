@@ -239,10 +239,10 @@ public class DataWindowPlugin extends ProgramPlugin implements DomainObjectListe
 		}
 
 		if (filterAction.getViewMode()) {
-			ProgramTreeService service = tool.getService(ProgramTreeService.class);
-			if (service != null) {
-				return service.getView();
-			}
+			return tool
+					.getService(ProgramTreeService.class)
+					.map(ProgramTreeService::getView)
+					.orElse(null);
 		}
 		return null;
 	}

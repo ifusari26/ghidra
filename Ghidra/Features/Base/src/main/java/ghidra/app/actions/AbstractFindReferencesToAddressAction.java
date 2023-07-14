@@ -50,31 +50,26 @@ public abstract class AbstractFindReferencesToAddressAction extends NavigatableC
 
 	@Override
 	public void actionPerformed(NavigatableActionContext context) {
-
-		LocationReferencesService service = tool.getService(LocationReferencesService.class);
-		if (service == null) {
-			Msg.showError(this, null, "Missing Plugin",
-				"The " + LocationReferencesService.class.getSimpleName() + " is not installed.\n" +
-					"Please add the plugin implementing this service.");
-			return;
-		}
-
-		Program program = context.getProgram();
-		ProgramLocation location = getLocation(context);
-		Address address = location.getAddress();
-		Listing listing = program.getListing();
-		CodeUnit cu = listing.getCodeUnitContaining(address);
-
-		int[] path = location.getComponentPath();
-		if (cu instanceof Data) {
-			Data outerData = (Data) cu;
-			Data data = outerData.getComponent(location.getComponentPath());
-			address = data.getMinAddress();
-		}
-
-		AddressFieldLocation addressLocation =
-			new AddressFieldLocation(program, address, path, address.toString(), 0);
-		service.showReferencesToLocation(addressLocation, context.getNavigatable());
+		tool.getService(LocationReferencesService.class).ifPresentOrElse(
+				service -> {
+					Program program = context.getProgram();
+					ProgramLocation location = getLocation(context);
+					Address address = location.getAddress();
+					Listing listing = program.getListing();
+					CodeUnit cu = listing.getCodeUnitContaining(address);
+					int[] path = location.getComponentPath();
+					if (cu instanceof Data outerData) {
+						Data data = outerData.getComponent(location.getComponentPath());
+						address = data.getMinAddress();
+					}
+					AddressFieldLocation addressLocation =
+							new AddressFieldLocation(program, address, path, address.toString(), 0);
+					service.showReferencesToLocation(addressLocation, context.getNavigatable());
+				},
+				() -> Msg.showError(this, null, "Missing Plugin",
+						"The " + LocationReferencesService.class.getSimpleName() + " is not installed.\n" +
+								"Please add the plugin implementing this service.")
+		);
 	}
 
 	@Override

@@ -68,7 +68,7 @@ public class AutoRenamePluginTest extends AbstractGhidraHeadedIntegrationTest {
 		renameAction = getAction(plugin, "Rename Fragment from Program Tree View");
 		labelAction = getAction(plugin, "Rename Fragment from Code Browser");
 
-		service = tool.getService(ProgramTreeService.class);
+		service = tool.getService(ProgramTreeService.class).orElseThrow();
 
 		ProgramBuilder builder = new ProgramBuilder("notepad", ProgramBuilder._TOY);
 		builder.createMemory("test1", "0x1001000", 0x4000);
@@ -83,7 +83,7 @@ public class AutoRenamePluginTest extends AbstractGhidraHeadedIntegrationTest {
 
 		program = builder.getProgram();
 
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.openProgram(program.getDomainFile());
 
 // for debug
@@ -105,7 +105,7 @@ public class AutoRenamePluginTest extends AbstractGhidraHeadedIntegrationTest {
 		gps[0] = new GroupPath(new String[] { root.getName(), "DLLs" });
 		setSelection(gps);
 
-		ViewManagerService vmService = tool.getService(ViewManagerService.class);
+		ViewManagerService vmService = tool.getService(ViewManagerService.class).orElseThrow();
 		ViewProviderService vps = vmService.getCurrentViewProvider();
 
 		Object context = vps.getActivePopupObject(null);
@@ -144,7 +144,7 @@ public class AutoRenamePluginTest extends AbstractGhidraHeadedIntegrationTest {
 		Symbol s = program.getSymbolTable().getPrimarySymbol(frag.getMinAddress());
 		setSelection(gps);
 
-		ViewManagerService vmService = tool.getService(ViewManagerService.class);
+		ViewManagerService vmService = tool.getService(ViewManagerService.class).orElseThrow();
 		ViewProviderService vps = vmService.getCurrentViewProvider();
 		Object context = vps.getActivePopupObject(null);
 		performAction(renameAction, createContext(context), true);

@@ -73,7 +73,7 @@ public class FunctionWindowPluginTest extends AbstractGhidraHeadedIntegrationTes
 	}
 
 	private void closeProgram() {
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.closeProgram(program, true);
 		waitForSwing();
 		waitForNotBusy(functionTable);

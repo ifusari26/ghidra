@@ -328,12 +328,10 @@ public class NextPreviousBookmarkAction extends MultiStateDockingAction<String> 
 		}
 
 		tool.clearStatusInfo();
-		GoToService service = tool.getService(GoToService.class);
-		if (service != null) {
+		tool.getService(GoToService.class).ifPresent(service -> {
 			Navigatable navigatable = listingActionContext.getNavigatable();
 			gotoAddress(service, navigatable, address);
-		}
-
+		});
 	}
 
 	public void setDirection(boolean isForward) {

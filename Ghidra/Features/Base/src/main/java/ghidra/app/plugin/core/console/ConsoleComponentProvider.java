@@ -18,6 +18,7 @@ package ghidra.app.plugin.core.console;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.PrintWriter;
+import java.util.Optional;
 
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
@@ -152,8 +153,7 @@ public class ConsoleComponentProvider extends ComponentProviderAdapter
 					return;
 				}
 
-				GoToService gotoService = tool.getService(GoToService.class);
-				if (gotoService == null) {
+				if (tool.getService(GoToService.class).isEmpty()) {
 					return;
 				}
 
@@ -189,13 +189,13 @@ public class ConsoleComponentProvider extends ComponentProviderAdapter
 	}
 
 	private void goTo(ConsoleWord word) {
-
-		GoToService gotoService = tool.getService(GoToService.class);
-		if (gotoService == null) {
+		Optional<GoToService> gotoServiceOptional = tool.getService(GoToService.class);
+		if (gotoServiceOptional.isEmpty()) {
 			return;
 		}
 
-		// NOTE: must be case sensitive otherwise the service will report that it has
+		final GoToService gotoService = gotoServiceOptional.get();
+		// NOTE: must be case-sensitive otherwise the service will report that it has
 		//       processed the request even if there are no matches
 		boolean found =
 			gotoService.goToQuery(currentAddress, new QueryData(word.word, true), null, null);
@@ -203,7 +203,6 @@ public class ConsoleComponentProvider extends ComponentProviderAdapter
 			select(word);
 			return;
 		}
-
 		ConsoleWord trimmedWord = word.getWordWithoutSpecialCharacters();
 		found = gotoService.goToQuery(currentAddress, new QueryData(trimmedWord.word, true), null,
 			null);

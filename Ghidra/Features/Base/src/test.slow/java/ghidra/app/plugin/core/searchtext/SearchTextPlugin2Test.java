@@ -65,7 +65,7 @@ public class SearchTextPlugin2Test extends AbstractGhidraHeadedIntegrationTest {
 		tool = env.launchDefaultTool(program);
 
 		plugin = env.getPlugin(SearchTextPlugin.class);
-		goToService = tool.getService(GoToService.class);
+		goToService = tool.getService(GoToService.class).orElseThrow();
 
 		searchAction = getAction(plugin, "Search Text");
 		cbPlugin = env.getPlugin(CodeBrowserPlugin.class);
@@ -624,7 +624,7 @@ public class SearchTextPlugin2Test extends AbstractGhidraHeadedIntegrationTest {
 
 		waitForSearchTasks(tempDialog);
 
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		runSwing(() -> pm.closeProgram(), true);
 		env.restartTool();
 

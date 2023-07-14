@@ -57,7 +57,7 @@ public class GraphExportTest extends AbstractGhidraHeadedIntegrationTest {
 		tool = env.getTool();
 
 		initializeTool();
-		GraphDisplayBroker broker = tool.getService(GraphDisplayBroker.class);
+		GraphDisplayBroker broker = tool.getService(GraphDisplayBroker.class).orElseThrow();
 		GraphDisplayProvider exportProvider = broker.getGraphDisplayProvider("Graph Export");
 
 		AttributedGraph graph = createGraph();

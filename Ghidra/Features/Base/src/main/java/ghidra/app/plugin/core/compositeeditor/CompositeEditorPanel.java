@@ -15,23 +15,6 @@
  */
 package ghidra.app.plugin.core.compositeeditor;
 
-import java.awt.*;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.dnd.*;
-import java.awt.event.*;
-import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.EventObject;
-import java.util.List;
-
-import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.event.CellEditorListener;
-import javax.swing.event.ChangeEvent;
-import javax.swing.table.*;
-import javax.swing.text.JTextComponent;
-
 import docking.DockingWindowManager;
 import docking.actions.KeyBindingUtils;
 import docking.dnd.*;
@@ -41,7 +24,10 @@ import docking.widgets.fieldpanel.support.FieldRange;
 import docking.widgets.fieldpanel.support.FieldSelection;
 import docking.widgets.label.GDLabel;
 import docking.widgets.label.GLabel;
-import docking.widgets.table.*;
+import docking.widgets.table.FocusableEditor;
+import docking.widgets.table.GTable;
+import docking.widgets.table.GTableCellRenderer;
+import docking.widgets.table.GTableColumnModel;
 import docking.widgets.textfield.GValidatedTextField;
 import generic.theme.GColor;
 import ghidra.app.services.DataTypeManagerService;
@@ -49,16 +35,35 @@ import ghidra.app.util.datatype.DataTypeSelectionEditor;
 import ghidra.app.util.datatype.NavigationDirection;
 import ghidra.framework.plugintool.Plugin;
 import ghidra.framework.plugintool.PluginTool;
-import ghidra.program.model.data.*;
 import ghidra.program.model.data.Composite;
+import ghidra.program.model.data.*;
 import ghidra.program.model.listing.DataTypeArchive;
 import ghidra.program.model.listing.Program;
-import ghidra.util.*;
+import ghidra.util.ColorUtils;
+import ghidra.util.HelpLocation;
+import ghidra.util.Msg;
+import ghidra.util.Swing;
 import ghidra.util.data.DataTypeParser.AllowedDataTypes;
 import ghidra.util.exception.UsrException;
 import ghidra.util.layout.VerticalLayout;
 import help.Help;
 import help.HelpService;
+
+import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.event.CellEditorListener;
+import javax.swing.event.ChangeEvent;
+import javax.swing.table.*;
+import javax.swing.text.JTextComponent;
+import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.dnd.*;
+import java.awt.event.*;
+import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.EventObject;
+import java.util.List;
 
 /**
  * Panel for editing a composite data type. Specific composite data type editors
@@ -1320,15 +1325,15 @@ public abstract class CompositeEditorPanel extends JPanel
 		}
 
 		private void stopEdit(PluginTool tool) {
-			DataTypeManagerService service = tool.getService(DataTypeManagerService.class);
-			DataType dataType = service.getDataType((String) null);
-			if (dataType != null) {
-				editor.setCellEditorValue(dataType);
-				editor.stopCellEditing();
-			}
-			else {
-				editor.cancelCellEditing();
-			}
+			tool.getService(DataTypeManagerService.class).ifPresent(service -> {
+				final DataType dataType = service.getDataType((String) null);
+				if (dataType != null) {
+					editor.setCellEditorValue(dataType);
+					editor.stopCellEditing();
+				} else {
+					editor.cancelCellEditing();
+				}
+			});
 		}
 
 		@Override

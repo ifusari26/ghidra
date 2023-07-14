@@ -80,7 +80,7 @@ public class NextPrevSelectionHighlightTest extends AbstractGhidraHeadedIntegrat
 	}
 
 	private void closeProgram() {
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.closeProgram(program, true);
 	}
 
@@ -94,7 +94,7 @@ public class NextPrevSelectionHighlightTest extends AbstractGhidraHeadedIntegrat
 		builder.setName(programName);
 		program = builder.getProgram();
 
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.openProgram(program.getDomainFile());
 		builder.dispose();
 		addrFactory = program.getAddressFactory();

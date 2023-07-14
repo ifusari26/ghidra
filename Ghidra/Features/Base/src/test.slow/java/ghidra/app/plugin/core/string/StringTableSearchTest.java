@@ -159,7 +159,7 @@ public class StringTableSearchTest extends AbstractGhidraHeadedIntegrationTest {
 		program = builder.getProgram();
 
 		listing = program.getListing();
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.openProgram(program.getDomainFile());
 		searchAction = (NavigatableContextAction) getAction(plugin, "Search for Strings");
 		env.showTool();

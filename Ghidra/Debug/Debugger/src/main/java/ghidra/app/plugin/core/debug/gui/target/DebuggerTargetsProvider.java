@@ -109,9 +109,12 @@ public class DebuggerTargetsProvider extends ComponentProviderAdapter {
 		public void actionPerformed(ActionContext context) {
 			// NB. Drop the future on the floor, because the UI will report issues.
 			// Cancellation should be ignored.
-			ProgramManager programManager = tool.getService(ProgramManager.class);
-			Program program = programManager == null ? null : programManager.getCurrentProgram();
-			modelService.showConnectDialog(program);
+			tool.getService(ProgramManager.class).ifPresent(
+					service -> {
+						final Program program = service.getCurrentProgram();
+						modelService.showConnectDialog(program);
+					}
+			);
 		}
 
 		@Override

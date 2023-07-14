@@ -1,0 +1,20 @@
+package utilities;
+
+import java.util.Optional;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
+public final class Accessors {
+
+	public static <T> Optional<T> createInstanceOf(final Class<T> type) {
+		try {
+			Constructor<T> constructor = type.getConstructor();
+			return Optional.ofNullable(constructor.newInstance());
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException e) {
+			return Optional.empty();
+		}
+	}
+
+}

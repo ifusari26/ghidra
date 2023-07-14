@@ -19,6 +19,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.EventObject;
 
+import javax.annotation.Nullable;
 import javax.swing.*;
 import javax.swing.event.CellEditorListener;
 import javax.swing.event.ChangeEvent;
@@ -85,9 +86,10 @@ public class DataTypeTableCellEditor extends AbstractCellEditor
 		this(tool, null);
 	}
 
+	@Nullable
 	private DataTypeManagerService updateService() {
 		if (tool != null) {
-			service = tool.getService(DataTypeManagerService.class);
+			return tool.getService(DataTypeManagerService.class).orElse(null);
 		}
 		return service;
 	}

@@ -75,7 +75,7 @@ public class ApplyDataTypeToBrowserTest extends AbstractGhidraHeadedIntegrationT
 		tool.addPlugin(DataPlugin.class.getName());
 
 		program = buildWallaceSrcProgram();
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.openProgram(program.getDomainFile());
 
 		env.showTool();
@@ -123,7 +123,7 @@ public class ApplyDataTypeToBrowserTest extends AbstractGhidraHeadedIntegrationT
 	@After
 	public void tearDown() throws Exception {
 		executeOnSwingWithoutBlocking(() -> {
-			ProgramManager pm = tool.getService(ProgramManager.class);
+			ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 			pm.closeProgram();
 		});
 

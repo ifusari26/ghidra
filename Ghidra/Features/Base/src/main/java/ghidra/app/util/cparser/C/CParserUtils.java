@@ -78,7 +78,7 @@ public class CParserUtils {
 	 */
 	public static FunctionDefinitionDataType parseSignature(ServiceProvider serviceProvider,
 			Program program, String signatureText) {
-		DataTypeManagerService service = serviceProvider.getService(DataTypeManagerService.class);
+		DataTypeManagerService service = serviceProvider.getService(DataTypeManagerService.class).orElseThrow();
 		return parseSignature(service, program, signatureText);
 	}
 

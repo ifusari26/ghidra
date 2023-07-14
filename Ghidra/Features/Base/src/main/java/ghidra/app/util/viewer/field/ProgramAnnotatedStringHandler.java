@@ -16,6 +16,7 @@
 package ghidra.app.util.viewer.field;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -126,7 +127,7 @@ public class ProgramAnnotatedStringHandler implements AnnotatedStringHandler {
 			ServiceProvider serviceProvider) {
 
 		ProjectDataService projectDataService =
-			serviceProvider.getService(ProjectDataService.class);
+			serviceProvider.getService(ProjectDataService.class).orElseThrow();
 		ProjectData projectData = projectDataService.getProjectData();
 
 		// default folder is the root folder
@@ -166,46 +167,45 @@ public class ProgramAnnotatedStringHandler implements AnnotatedStringHandler {
 	private void navigate(DomainFile programFile, SymbolPath symbolPath, Navigatable navigatable,
 			ServiceProvider serviceProvider) {
 
-		GoToService goToService = serviceProvider.getService(GoToService.class);
-		if (goToService == null) {
+		Optional<GoToService> goToServiceOptional = serviceProvider.getService(GoToService.class);
+		if (goToServiceOptional.isEmpty()) {
 			// shouldn't happen
 			Msg.showWarn(this, null, "Service Missing",
 				"This annotation requires the GoToService to be enabled");
 			return;
 		}
 
-		ProgramManager programManager = serviceProvider.getService(ProgramManager.class);
-		Program program = programManager.openProgram(programFile, DomainFile.DEFAULT_VERSION,
-			ProgramManager.OPEN_HIDDEN);
-		if (program == null) {
-			return; // cancelled
-		}
+		GoToService goToService = goToServiceOptional.get();
+		serviceProvider.getService(ProgramManager.class).ifPresent(service -> {
+			Program program = service.openProgram(programFile, DomainFile.DEFAULT_VERSION);
+			if (program == null) {
+				return;
+			}
+			if (symbolPath == null) { // no symbol; just open and go to the program
+				Address start = program.getMemory().getMinAddress();
+				goToService.goTo(navigatable, new ProgramLocation(program, start), program);
+				return;
+			}
 
-		if (symbolPath == null) { // no symbol; just open and go to the program
-			Address start = program.getMemory().getMinAddress();
-			goToService.goTo(navigatable, new ProgramLocation(program, start), program);
-			return;
-		}
+			// try any symbols(s) first
+			List<Symbol> symbols = NamespaceUtils.getSymbols(symbolPath.getPath(), program);
+			if (goToSymbol(symbols, navigatable, program, goToService)) {
+				return;
+			}
 
-		// try any symbols(s) first
-		List<Symbol> symbols = NamespaceUtils.getSymbols(symbolPath.getPath(), program);
-		if (goToSymbol(symbols, navigatable, program, goToService)) {
-			return;
-		}
-
-		String symbolName = symbolPath.getName();
-		Address address = getAddress(symbolName, program);
-		if (goToAddress(address, program, navigatable, goToService)) {
-			return;
-		}
-
-		Msg.showInfo(getClass(), null, "No Symbol: " + symbolName,
-			"Unable to navigate to '" + symbolName + "' in the program '" + programFile.getName() +
-				"'.\nMake sure that the given symbol/address exists.");
-		if (!programManager.isVisible(program)) {
-			// we opened a hidden program, but could not navigate--close the program
-			programManager.closeProgram(program, true);
-		}
+			String symbolName = symbolPath.getName();
+			Address address = getAddress(symbolName, program);
+			if (goToAddress(address, program, navigatable, goToService)) {
+				return;
+			}
+			Msg.showInfo(getClass(), null, "No Symbol: " + symbolName,
+					"Unable to navigate to '" + symbolName + "' in the program '" + programFile.getName() +
+							"'.\nMake sure that the given symbol/address exists.");
+			if (!service.isVisible(program)) {
+				// we opened a hidden program, but could not navigate--close the program
+				service.closeProgram(program, true);
+			}
+		});
 	}
 
 	private boolean goToAddress(Address address, Program program, Navigatable navigatable,

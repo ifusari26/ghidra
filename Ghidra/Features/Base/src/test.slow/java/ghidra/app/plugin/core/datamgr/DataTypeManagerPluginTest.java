@@ -631,7 +631,7 @@ public class DataTypeManagerPluginTest extends AbstractGhidraHeadedIntegrationTe
 	public void testCloseProgram() throws Exception {
 
 		runSwing(() -> {
-			ProgramManager pm = tool.getService(ProgramManager.class);
+			ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 			pm.closeProgram();
 		});
 		GTreeNode rootNode = tree.getModelRoot();
@@ -903,7 +903,7 @@ public class DataTypeManagerPluginTest extends AbstractGhidraHeadedIntegrationTe
 	@Test
 	public void testGetSelectedDatatypesFromService() {
 		DataTypeManagerService dataTypeManagerService =
-			tool.getService(DataTypeManagerService.class);
+			tool.getService(DataTypeManagerService.class).orElseThrow();
 
 		assertEquals(0, dataTypeManagerService.getSelectedDatatypes().size());
 

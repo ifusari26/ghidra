@@ -4,9 +4,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -273,8 +273,8 @@ public class CreateStructureDialog extends ReusableDialogComponentProvider {
 		return matchingStylePanel;
 	}
 
-	// toggles whether the structure being created is new, based upon the name field, or a current 
-	// structure, based upon a structure in the table.  This method updates the GUI to reflect the 
+	// toggles whether the structure being created is new, based upon the name field, or a current
+	// structure, based upon a structure in the table.  This method updates the GUI to reflect the
 	// current creation state.
 	private void setCreateStructureByName(boolean createStructureByName) {
 		if (createStructureByName) {
@@ -302,17 +302,17 @@ public class CreateStructureDialog extends ReusableDialogComponentProvider {
 		Swing.runLater(() -> {
 			// Get the structures from the DataTypeManagers of the
 			// DataTypeManagerService
-			DataTypeManagerService service = pluginTool.getService(DataTypeManagerService.class);
-			DataTypeManager[] dataTypeManagers = null;
-
-			if (service != null) {
-				dataTypeManagers = service.getDataTypeManagers();
-			}
-			else {
-				dataTypeManagers = new DataTypeManager[] { program.getDataTypeManager() };
-			}
-
-			getMatchingStructuresFromDataTypeManagers(structure, dataTypeManagers);
+			pluginTool
+                    .getService(DataTypeManagerService.class)
+                    .ifPresentOrElse(
+                            service -> getMatchingStructuresFromDataTypeManagers(
+                                    structure,
+                                    service.getDataTypeManagers()
+                            ),
+                            () -> getMatchingStructuresFromDataTypeManagers(structure, new DataTypeManager[]{
+                                    program.getDataTypeManager()
+                            })
+                    );
 		});
 	}
 

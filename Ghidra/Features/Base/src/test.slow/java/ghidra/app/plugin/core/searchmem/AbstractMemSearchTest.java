@@ -89,7 +89,7 @@ public abstract class AbstractMemSearchTest extends AbstractProgramBasedTest {
 		cb = codeBrowser; // TODO delete after 7.3 release; just use the parent's CodeBrowser
 
 		provider = cb.getProvider();
-		markerService = tool.getService(MarkerService.class);
+		markerService = tool.getService(MarkerService.class).orElseThrow();
 
 		tableServicePlugin = env.getPlugin(TableServicePlugin.class);
 
@@ -155,7 +155,7 @@ public abstract class AbstractMemSearchTest extends AbstractProgramBasedTest {
 
 	@SuppressWarnings("unchecked")
 	private List<Address> getHighlightAddresses() {
-		CodeViewerService service = tool.getService(CodeViewerService.class);
+		CodeViewerService service = tool.getService(CodeViewerService.class).orElseThrow();
 		Object codeViewerProvider = getInstanceField("connectedProvider", service);
 		Map<Program, ListingHighlightProvider> highlighterMap =
 			(Map<Program, ListingHighlightProvider>) getInstanceField("programHighlighterMap",
@@ -232,7 +232,7 @@ public abstract class AbstractMemSearchTest extends AbstractProgramBasedTest {
 	}
 
 	protected ListingHighlightProvider getHighlightProvider() {
-		CodeViewerService service = tool.getService(CodeViewerService.class);
+		CodeViewerService service = tool.getService(CodeViewerService.class).orElseThrow();
 		FormatManager fm = (FormatManager) getInstanceField("formatMgr", service);
 		return (ListingHighlightProvider) getInstanceField("highlightProvider", fm);
 	}

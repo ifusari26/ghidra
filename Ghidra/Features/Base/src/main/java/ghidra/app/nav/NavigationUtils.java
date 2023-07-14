@@ -41,11 +41,9 @@ public class NavigationUtils {
 
 	public static void setSelection(PluginTool tool, Navigatable navigatable,
 			ProgramSelection selection) {
-		if (navigatable == null) {
-			GoToService service = tool.getService(GoToService.class);
-			if (service == null) {
-				return;	// can't do anything here
-			}
+		// TODO: Unsure if this is an appropriate fix
+		if (navigatable == null || tool.getService(GoToService.class).isEmpty()) {
+			return;
 		}
 
 		SystemUtilities.runIfSwingOrPostSwingLater(() -> {

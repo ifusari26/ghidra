@@ -1444,7 +1444,7 @@ public class Function1Test extends AbstractGhidraHeadedIntegrationTest {
 	}
 
 	private void closeProgram() {
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.closeProgram(program, true);
 		waitForSwing();
 	}
@@ -1536,7 +1536,7 @@ public class Function1Test extends AbstractGhidraHeadedIntegrationTest {
 		ClassicSampleX86ProgramBuilder builder = new ClassicSampleX86ProgramBuilder();
 		program = builder.getProgram();
 
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.openProgram(program.getDomainFile());
 		addrFactory = program.getAddressFactory();
 	}

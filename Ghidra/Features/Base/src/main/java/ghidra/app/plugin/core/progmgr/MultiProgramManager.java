@@ -4,9 +4,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -221,19 +221,15 @@ class MultiProgramManager implements DomainObjectListener, TransactionListener {
 	}
 
 	void saveLocation() {
-		NavigationHistoryService historyService = tool.getService(NavigationHistoryService.class);
-		if (historyService == null) {
-			return;
-		}
-		GoToService gotoService = tool.getService(GoToService.class);
-		if (gotoService == null) {
-			return;
-		}
-		Navigatable defaultNavigatable = gotoService.getDefaultNavigatable();
-		if (defaultNavigatable == null || defaultNavigatable.getProgram() == null) {
-			return;
-		}
-		historyService.addNewLocation(defaultNavigatable);
+		tool.getService(NavigationHistoryService.class).ifPresent(
+				historyService -> tool.getService(GoToService.class).ifPresent(gotoService -> {
+					Navigatable defaultNavigatable = gotoService.getDefaultNavigatable();
+					if (defaultNavigatable == null || defaultNavigatable.getProgram() == null) {
+						return;
+					}
+					historyService.addNewLocation(defaultNavigatable);
+				})
+		);
 	}
 
 	private void setCurrentProgram(ProgramInfo info) {
@@ -556,14 +552,14 @@ class MultiProgramManager implements DomainObjectListener, TransactionListener {
 			this.visible = visible;
 			instance = nextAvailableId.incrementAndGet();
 		}
-		
+
 		/**
 		 * {@return URL used to open program or null if not applicable}
 		 */
 		URL getGhidraUrl() {
 			return ghidraURL;
 		}
-		
+
 		/**
 		 * Get the {@link DomainFile} which corresponds to this program.  If {@link #getGhidraUrl()}
 		 * return null this file was used to open program.
@@ -578,7 +574,7 @@ class MultiProgramManager implements DomainObjectListener, TransactionListener {
 			ghidraURL = null;
 			str = null;
 		}
-		
+
 		public void setVisible(boolean state) {
 			visible = state;
 			fireVisibilityChangeEvent(program, visible);

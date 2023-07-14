@@ -93,10 +93,9 @@ public class FunctionGraphPlugin extends ProgramPlugin implements OptionsChangeL
 		createNewProvider();
 		initializeOptions();
 
-		ColorizingService colorizingService = tool.getService(ColorizingService.class);
-		if (colorizingService != null) {
-			colorProvider = new ToolBasedColorProvider(this, colorizingService);
-		}
+		tool.getService(ColorizingService.class).ifPresent(service ->
+				colorProvider = new ToolBasedColorProvider(this, service)
+		);
 	}
 
 	@Override
@@ -345,14 +344,16 @@ public class FunctionGraphPlugin extends ProgramPlugin implements OptionsChangeL
 	public void readConfigState(SaveState saveState) {
 		Element formatElement = saveState.getXmlElement(USER_DEFINED_FORMAT_CONFIG_NAME);
 		if (formatElement != null) {
-			OptionsService options = getTool().getService(OptionsService.class);
-			ToolOptions displayOptions = options.getOptions(GhidraOptions.CATEGORY_BROWSER_DISPLAY);
-			ToolOptions fieldOptions = options.getOptions(GhidraOptions.CATEGORY_BROWSER_FIELDS);
-			userDefinedFormatManager = new FormatManager(displayOptions, fieldOptions);
-			SaveState formatState = new SaveState(formatElement);
-			userDefinedFormatManager.readState(formatState);
-
-			connectedProvider.formatChanged();
+			getTool().getService(OptionsService.class).ifPresent(
+					service -> {
+						ToolOptions displayOptions = service.getOptions(GhidraOptions.CATEGORY_BROWSER_DISPLAY);
+						ToolOptions fieldOptions = service.getOptions(GhidraOptions.CATEGORY_BROWSER_FIELDS);
+						userDefinedFormatManager = new FormatManager(displayOptions, fieldOptions);
+						SaveState formatState = new SaveState(formatElement);
+						userDefinedFormatManager.readState(formatState);
+						connectedProvider.formatChanged();
+					}
+			);
 		}
 
 		colorProvider.savePluginColors(saveState);
@@ -401,8 +402,7 @@ public class FunctionGraphPlugin extends ProgramPlugin implements OptionsChangeL
 
 	@Override
 	public void readDataState(SaveState saveState) {
-		ProgramManager programManagerService = tool.getService(ProgramManager.class);
-
+		Optional<ProgramManager> programManagerService = tool.getService(ProgramManager.class);
 		if (connectedProvider != null) {
 			connectedProvider.readDataState(saveState);
 			connectedProvider.readConfigState(saveState);
@@ -417,13 +417,15 @@ public class FunctionGraphPlugin extends ProgramPlugin implements OptionsChangeL
 			if (file == null) {
 				continue;
 			}
-			Program program = programManagerService.openProgram(file);
-			if (program != null) {
-				FGProvider provider = createNewDisconnectedProvider();
-				provider.doSetProgram(program);
-				provider.readDataState(providerSaveState);
-				provider.readConfigState(providerSaveState);
-			}
+			programManagerService.ifPresent(service -> {
+				Program program = service.openProgram(file);
+				if (program != null) {
+					FGProvider provider = createNewDisconnectedProvider();
+					provider.doSetProgram(program);
+					provider.readDataState(providerSaveState);
+					provider.readConfigState(providerSaveState);
+				}
+			});
 		}
 	}
 

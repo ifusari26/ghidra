@@ -89,12 +89,12 @@ public class SearchTextPlugin1Test extends AbstractGhidraHeadedIntegrationTest {
 		tool.addPlugin(MarkerManagerPlugin.class.getName());
 		plugin = env.getPlugin(SearchTextPlugin.class);
 
-		goToService = tool.getService(GoToService.class);
+		goToService = tool.getService(GoToService.class).orElseThrow();
 
 		program = buildProgram();
 		listing = program.getListing();
 
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.openProgram(program.getDomainFile());
 
 		searchAction = getAction(plugin, "Search Text");
@@ -672,7 +672,7 @@ public class SearchTextPlugin1Test extends AbstractGhidraHeadedIntegrationTest {
 		// test marker stuff
 		//
 		AddressSet set = getAddressesFromModel(model);
-		MarkerService markerService = tool.getService(MarkerService.class);
+		MarkerService markerService = tool.getService(MarkerService.class).orElseThrow();
 		MarkerSet markerSet = markerService.getMarkerSet("Search", program);
 		assertNotNull(markerSet);
 		AddressSet addresses = runSwing(() -> markerSet.getAddressSet());

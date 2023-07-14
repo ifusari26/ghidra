@@ -65,9 +65,11 @@ public class ModuleAlgorithmPlugin extends ProgramPlugin implements BlockModelSe
 
 	@Override
     protected void init() {
-        blockModelService = tool.getService(BlockModelService.class);
-        blockModelService.addListener(this);
-        updateSubroutineActions();
+        tool.getService(BlockModelService.class).ifPresent(service -> {
+			blockModelService = service;
+			blockModelService.addListener(ModuleAlgorithmPlugin.this);
+			updateSubroutineActions();
+		});
     }
     
 	@Override

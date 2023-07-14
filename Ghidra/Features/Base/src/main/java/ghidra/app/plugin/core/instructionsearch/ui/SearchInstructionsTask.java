@@ -190,8 +190,9 @@ class SearchInstructionsTask extends Task {
 	}
 
 	private void goToLocation(Address addr) {
-		GoToService gs = searchPlugin.getTool().getService(GoToService.class);
-		BytesFieldLocation bloc = new BytesFieldLocation(searchPlugin.getCurrentProgram(), addr);
-		gs.goTo(bloc);
+		searchPlugin.getTool().getService(GoToService.class).ifPresent(service -> {
+			BytesFieldLocation bloc = new BytesFieldLocation(searchPlugin.getCurrentProgram(), addr);
+			service.goTo(bloc);
+		});
 	}
 }

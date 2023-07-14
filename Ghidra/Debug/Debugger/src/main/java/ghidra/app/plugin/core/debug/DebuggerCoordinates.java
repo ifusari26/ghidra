@@ -689,21 +689,19 @@ public class DebuggerCoordinates {
 		return df;
 	}
 
-	public static DebuggerCoordinates readDataState(PluginTool tool, SaveState saveState,
-			String key) {
+	public static DebuggerCoordinates readDataState(PluginTool tool, SaveState saveState, String key) {
 		if (!saveState.hasValue(key)) {
 			return NOWHERE;
 		}
-		DebuggerTraceManagerService traceManager =
-			tool.getService(DebuggerTraceManagerService.class);
+		Optional<DebuggerTraceManagerService> traceManager = tool.getService(DebuggerTraceManagerService.class);
 		Trace trace = null;
 		Element coordElement = saveState.getXmlElement(key);
 		SaveState coordState = new SaveState(coordElement);
-		if (traceManager != null) {
+		if (traceManager.isPresent()) {
 			DomainFile df = getDomainFile(tool, coordState);
 			int version = coordState.getInt(KEY_TRACE_VERSION, DomainFile.DEFAULT_VERSION);
 			if (df != null) {
-				trace = traceManager.openTrace(df, version);
+				trace = traceManager.get().openTrace(df, version);
 			}
 		}
 		TraceThread thread = null;
@@ -715,10 +713,8 @@ public class DebuggerCoordinates {
 		TraceSchedule time;
 		try {
 			time = TraceSchedule.parse(timeSpec);
-		}
-		catch (Exception e) {
-			Msg.error(DebuggerCoordinates.class,
-				"Could not restore invalid time specification: " + timeSpec);
+		} catch (Exception e) {
+			Msg.error(DebuggerCoordinates.class, "Could not restore invalid time specification: " + timeSpec);
 			time = TraceSchedule.ZERO;
 		}
 		Integer frame = null;
@@ -731,19 +727,13 @@ public class DebuggerCoordinates {
 			try {
 				TraceObjectKeyPath path = TraceObjectKeyPath.parse(pathString);
 				object = trace.getObjectManager().getObjectByCanonicalPath(path);
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				Msg.error(DebuggerCoordinates.class, "Could not restore object: " + pathString, e);
 				object = trace.getObjectManager().getRootObject();
 			}
 		}
 
-		DebuggerCoordinates coords = DebuggerCoordinates.NOWHERE.trace(trace)
-				.thread(thread)
-				.time(time)
-				.frame(frame)
-				.object(object);
-		return coords;
+		return DebuggerCoordinates.NOWHERE.trace(trace).thread(thread).time(time).frame(frame).object(object);
 	}
 
 	public boolean isAlive() {

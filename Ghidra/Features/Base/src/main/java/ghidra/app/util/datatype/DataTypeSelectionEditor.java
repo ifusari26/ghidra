@@ -70,7 +70,8 @@ public class DataTypeSelectionEditor extends AbstractCellEditor {
 
 	public DataTypeSelectionEditor(ServiceProvider serviceProvider,
 			DataTypeParser.AllowedDataTypes allowedDataTypes) {
-		this(serviceProvider.getService(DataTypeManagerService.class), allowedDataTypes);
+		// The other constructor checks for null.
+		this(serviceProvider.getService(DataTypeManagerService.class).orElse(null), allowedDataTypes);
 	}
 
 	public DataTypeSelectionEditor(DataTypeManagerService service,

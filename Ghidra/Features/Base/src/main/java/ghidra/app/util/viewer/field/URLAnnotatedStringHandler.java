@@ -96,7 +96,7 @@ public class URLAnnotatedStringHandler implements AnnotatedStringHandler {
 		URL url = getURLForString(urlString);
 		if (url != null) {
 			if (GhidraURL.PROTOCOL.equals(url.getProtocol())) {
-				ProgramManager programManager = serviceProvider.getService(ProgramManager.class);
+				ProgramManager programManager = serviceProvider.getService(ProgramManager.class).orElseThrow();
 				return programManager.openProgram(url, ProgramManager.OPEN_CURRENT) != null;
 			}
 			BrowserLoader.display(url, null, serviceProvider);

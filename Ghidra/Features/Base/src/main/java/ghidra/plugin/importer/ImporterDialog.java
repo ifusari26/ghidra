@@ -106,7 +106,7 @@ public class ImporterDialog extends DialogComponentProvider {
 			ByteProvider byteProvider, String suggestedDestinationPath) {
 		super(title);
 		this.tool = tool;
-		this.programManager = tool.getService(ProgramManager.class);
+		this.programManager = tool.getService(ProgramManager.class).orElseThrow();
 		this.fsrl = byteProvider.getFSRL();
 		this.loaderMap = loaderMap;
 		this.byteProvider = byteProvider;

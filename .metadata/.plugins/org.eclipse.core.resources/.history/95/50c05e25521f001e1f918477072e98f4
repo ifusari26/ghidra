@@ -1,0 +1,49 @@
+package tools.ghidra.marshmallows.providers;
+
+import java.awt.LayoutManager2;
+import java.util.Optional;
+
+import javax.swing.JPanel;
+
+import org.jetbrains.annotations.Nullable;
+
+import utilities.Accessors;
+
+/**
+ * Provides a {@link JPanel JPanel}.
+ */
+public abstract class PanelProvider {
+	
+	public static JPanel panel(final Class<? extends LayoutManager2> layout) {
+		LayoutManager2 type = Accessors.createInstanceOf(layout);
+		return new JPanel(type);
+	}
+	
+	/**
+	 * Parent object.
+	 */
+	private final Optional<JPanel> parent;
+	
+	
+	/**
+	 * Create a panel provider for a parent.
+	 * If the <b>parent</b> object is not present, then this instance
+	 * will provide un-owned {@link JPanel `JPanel`s}.
+	 * @param parent parent.
+	 */
+	public PanelProvider(@Nullable final JPanel parent) {
+		this.parent = Optional.ofNullable(parent);
+	}
+	
+	
+	/**
+	 * Get a panel.
+	 * @return panel
+	 */
+	public JPanel getPanel() {
+		JPanel child = new JPanel();
+		this.parent.ifPresent((panel) -> panel.add(child));
+		return child;
+	}
+
+}

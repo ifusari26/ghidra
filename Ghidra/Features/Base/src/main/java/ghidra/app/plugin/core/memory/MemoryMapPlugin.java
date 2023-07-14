@@ -106,7 +106,7 @@ public class MemoryMapPlugin extends ProgramPlugin implements DomainObjectListen
 
 	@Override
 	protected void init() {
-		goToService = tool.getService(GoToService.class);
+		tool.getService(GoToService.class).ifPresent(service -> goToService = service);
 		if (currentProgram != null) {
 			programActivated(currentProgram);
 		}

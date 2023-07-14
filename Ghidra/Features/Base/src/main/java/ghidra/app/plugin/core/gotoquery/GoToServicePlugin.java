@@ -4,9 +4,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -54,191 +54,187 @@ import ghidra.program.util.ProgramSelection;
 //@formatter:on
 public final class GoToServicePlugin extends ProgramPlugin {
 
-	private GoToServiceImpl gotoService;
-	private boolean disposed;
+    private GoToServiceImpl gotoService;
+    private boolean disposed;
 
-	/**
-	 * Creates a new instance of the <CODE>GoToServicePlugin</CODE>
-	 * @param tool the tool
-	 */
-	public GoToServicePlugin(PluginTool tool) {
-		super(tool);
+    /**
+     * Creates a new instance of the <CODE>GoToServicePlugin</CODE>
+     *
+     * @param tool the tool
+     */
+    public GoToServicePlugin(PluginTool tool) {
+        super(tool);
 
-		Options opt = tool.getOptions(SearchConstants.SEARCH_OPTION_NAME);
+        Options opt = tool.getOptions(SearchConstants.SEARCH_OPTION_NAME);
 
-		// we register this option here, since the other search plugins all depend on this service
-		opt.registerOption(GhidraOptions.OPTION_SEARCH_LIMIT,
-			SearchConstants.DEFAULT_SEARCH_LIMIT, null,
-			"The maximum number of search results.");
+        // we register this option here, since the other search plugins all depend on this service
+        opt.registerOption(GhidraOptions.OPTION_SEARCH_LIMIT,
+                SearchConstants.DEFAULT_SEARCH_LIMIT, null,
+                "The maximum number of search results.");
 
-		gotoService = new GoToServiceImpl(this, new DefaultNavigatable());
+        gotoService = new GoToServiceImpl(this, new DefaultNavigatable());
 
-		registerServiceProvided(GoToService.class, gotoService);
-	}
+        registerServiceProvided(GoToService.class, gotoService);
+    }
 
-	@Override
-	protected void init() {
-		NavigatableRegistry.registerNavigatable(tool, gotoService.getDefaultNavigatable());
-	}
+    @Override
+    protected void init() {
+        NavigatableRegistry.registerNavigatable(tool, gotoService.getDefaultNavigatable());
+    }
 
-	@Override
-	protected void dispose() {
-		disposed = true;
-		NavigatableRegistry.unregisterNavigatable(tool, gotoService.getDefaultNavigatable());
-	}
+    @Override
+    protected void dispose() {
+        disposed = true;
+        NavigatableRegistry.unregisterNavigatable(tool, gotoService.getDefaultNavigatable());
+    }
 
-	int getMaxHits() {
-		Options opt = tool.getOptions(SearchConstants.SEARCH_OPTION_NAME);
-		int maxSearchHits =
-			opt.getInt(GhidraOptions.OPTION_SEARCH_LIMIT, SearchConstants.DEFAULT_SEARCH_LIMIT);
+    int getMaxHits() {
+        Options opt = tool.getOptions(SearchConstants.SEARCH_OPTION_NAME);
+        int maxSearchHits =
+                opt.getInt(GhidraOptions.OPTION_SEARCH_LIMIT, SearchConstants.DEFAULT_SEARCH_LIMIT);
 
-		return maxSearchHits;
-	}
+        return maxSearchHits;
+    }
 
-	GoToService getGotoService() {
-		return gotoService;
-	}
+    GoToService getGotoService() {
+        return gotoService;
+    }
 
-	private void updateCurrentProgram(Program p) {
-		ProgramManager service = tool.getService(ProgramManager.class);
-		if (service != null) {
-			service.setCurrentProgram(p);
-		}
-	}
+    private void updateCurrentProgram(Program p) {
+        tool.getService(ProgramManager.class).ifPresent(service -> service.setCurrentProgram(p));
+    }
 
-	class DefaultNavigatable implements Navigatable {
-		private Navigatable focusedNavigatable;
+    class DefaultNavigatable implements Navigatable {
+        private Navigatable focusedNavigatable;
 
-		@Override
-		public ProgramLocation getLocation() {
-			return currentLocation;
-		}
+        @Override
+        public ProgramLocation getLocation() {
+            return currentLocation;
+        }
 
-		@Override
-		public boolean goTo(Program program, ProgramLocation location) {
-			updateCurrentProgram(program);
-			if (currentProgram != program) {
-				return false;
-			}
-			firePluginEvent(new ProgramLocationPluginEvent(getName(), location, currentProgram));
-			currentLocation = location;
-			return true;
-		}
+        @Override
+        public boolean goTo(Program program, ProgramLocation location) {
+            updateCurrentProgram(program);
+            if (currentProgram != program) {
+                return false;
+            }
+            firePluginEvent(new ProgramLocationPluginEvent(getName(), location, currentProgram));
+            currentLocation = location;
+            return true;
+        }
 
-		@Override
-		public LocationMemento getMemento() {
-			return new DefaultNavigatableLocationMemento(currentProgram, currentLocation, tool);
-		}
+        @Override
+        public LocationMemento getMemento() {
+            return new DefaultNavigatableLocationMemento(currentProgram, currentLocation, tool);
+        }
 
-		@Override
-		public void setMemento(LocationMemento memento) {
-			DefaultNavigatableLocationMemento defaultMemento =
-				(DefaultNavigatableLocationMemento) memento;
-			defaultMemento.setMementos();
-			focusedNavigatable = defaultMemento.getFocusedNavigatable();
-		}
+        @Override
+        public void setMemento(LocationMemento memento) {
+            DefaultNavigatableLocationMemento defaultMemento =
+                    (DefaultNavigatableLocationMemento) memento;
+            defaultMemento.setMementos();
+            focusedNavigatable = defaultMemento.getFocusedNavigatable();
+        }
 
-		@Override
-		public Program getProgram() {
-			return currentProgram;
-		}
+        @Override
+        public Program getProgram() {
+            return currentProgram;
+        }
 
-		@Override
-		public Icon getNavigatableIcon() {
-			return null;
-		}
+        @Override
+        public Icon getNavigatableIcon() {
+            return null;
+        }
 
-		@Override
-		public boolean isConnected() {
-			// the default is considered to always be connected
-			return true;
-		}
+        @Override
+        public boolean isConnected() {
+            // the default is considered to always be connected
+            return true;
+        }
 
-		@Override
-		public boolean supportsMarkers() {
-			return isConnected();
-		}
+        @Override
+        public boolean supportsMarkers() {
+            return isConnected();
+        }
 
-		@Override
-		public long getInstanceID() {
-			return Navigatable.DEFAULT_NAVIGATABLE_ID;
-		}
+        @Override
+        public long getInstanceID() {
+            return Navigatable.DEFAULT_NAVIGATABLE_ID;
+        }
 
-		@Override
-		public boolean isVisible() {
-			return true;
-		}
+        @Override
+        public boolean isVisible() {
+            return true;
+        }
 
-		@Override
-		public boolean isDisposed() {
-			return disposed;
-		}
+        @Override
+        public boolean isDisposed() {
+            return disposed;
+        }
 
-		@Override
-		public void requestFocus() {
-			if (focusedNavigatable != null && focusedNavigatable.isVisible()) {
-				focusedNavigatable.requestFocus();
-				focusedNavigatable = null;
-			}
-		}
+        @Override
+        public void requestFocus() {
+            if (focusedNavigatable != null && focusedNavigatable.isVisible()) {
+                focusedNavigatable.requestFocus();
+                focusedNavigatable = null;
+            }
+        }
 
-		@Override
-		public void addNavigatableListener(NavigatableRemovalListener listener) {
-			// do nothing, default Navigatable never goes away
-		}
+        @Override
+        public void addNavigatableListener(NavigatableRemovalListener listener) {
+            // do nothing, default Navigatable never goes away
+        }
 
-		@Override
-		public void removeNavigatableListener(NavigatableRemovalListener listener) {
-			// do nothing, default Navigatable never goes away
-		}
+        @Override
+        public void removeNavigatableListener(NavigatableRemovalListener listener) {
+            // do nothing, default Navigatable never goes away
+        }
 
-		@Override
-		public void setHighlight(ProgramSelection highlight) {
-			tool.firePluginEvent(new ProgramHighlightPluginEvent(getName(), highlight,
-				currentProgram));
-		}
+        @Override
+        public void setHighlight(ProgramSelection highlight) {
+            tool.firePluginEvent(new ProgramHighlightPluginEvent(getName(), highlight,
+                    currentProgram));
+        }
 
-		@Override
-		public boolean supportsHighlight() {
-			return true;
-		}
+        @Override
+        public boolean supportsHighlight() {
+            return true;
+        }
 
-		@Override
-		public void setSelection(ProgramSelection selection) {
-			tool.firePluginEvent(new ProgramSelectionPluginEvent(getName(), selection,
-				currentProgram));
-		}
+        @Override
+        public void setSelection(ProgramSelection selection) {
+            tool.firePluginEvent(new ProgramSelectionPluginEvent(getName(), selection,
+                    currentProgram));
+        }
 
-		@Override
-		public ProgramSelection getSelection() {
-			return currentSelection;
-		}
+        @Override
+        public ProgramSelection getSelection() {
+            return currentSelection;
+        }
 
-		@Override
-		public ProgramSelection getHighlight() {
-			return currentHighlight;
-		}
+        @Override
+        public ProgramSelection getHighlight() {
+            return currentHighlight;
+        }
 
-		@Override
-		public String getTextSelection() {
-			return null;
-		}
+        @Override
+        public String getTextSelection() {
+            return null;
+        }
 
-		@Override
-		public void removeHighlightProvider(ListingHighlightProvider highlightProvider, Program program) {
-			CodeViewerService service = tool.getService(CodeViewerService.class);
-			if (service != null) {
-				service.removeHighlightProvider(highlightProvider, program);
-			}
-		}
+        @Override
+        public void removeHighlightProvider(ListingHighlightProvider highlightProvider, Program program) {
+            tool.getService(CodeViewerService.class).ifPresent(
+                    service -> service.removeHighlightProvider(highlightProvider, program)
+            );
+        }
 
-		@Override
-		public void setHighlightProvider(ListingHighlightProvider highlightProvider, Program program) {
-			CodeViewerService service = tool.getService(CodeViewerService.class);
-			if (service != null) {
-				service.setHighlightProvider(highlightProvider, program);
-			}
-		}
-	}
+        @Override
+        public void setHighlightProvider(ListingHighlightProvider highlightProvider, Program program) {
+            tool.getService(CodeViewerService.class).ifPresent(
+                    service -> service.setHighlightProvider(highlightProvider, program)
+            );
+        }
+    }
 
 }

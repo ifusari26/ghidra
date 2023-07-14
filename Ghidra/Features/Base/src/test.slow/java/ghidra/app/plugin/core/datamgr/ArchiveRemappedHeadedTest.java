@@ -76,7 +76,7 @@ public class ArchiveRemappedHeadedTest extends AbstractGhidraHeadedIntegrationTe
 
 		tool.addPlugin(DataTypeManagerPlugin.class.getName());
 		plugin = env.getPlugin(DataTypeManagerPlugin.class);
-		service = tool.getService(DataTypeManagerService.class);
+		service = tool.getService(DataTypeManagerService.class).orElse(null);
 		assertNotNull(service);
 
 		// Close any archives which may have opened with tool
@@ -104,7 +104,7 @@ public class ArchiveRemappedHeadedTest extends AbstractGhidraHeadedIntegrationTe
 	}
 
 	private void openProgramInTool() {
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.openProgram(program.getDomainFile());
 
 		waitForTree(tree);

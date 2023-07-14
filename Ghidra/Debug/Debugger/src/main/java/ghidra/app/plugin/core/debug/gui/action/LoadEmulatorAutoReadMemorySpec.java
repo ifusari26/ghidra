@@ -16,6 +16,7 @@
 package ghidra.app.plugin.core.debug.gui.action;
 
 import java.nio.ByteBuffer;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import javax.swing.Icon;
@@ -57,9 +58,8 @@ public class LoadEmulatorAutoReadMemorySpec implements AutoReadMemorySpec {
 	@Override
 	public CompletableFuture<?> readMemory(PluginTool tool, DebuggerCoordinates coordinates,
 			AddressSetView visible) {
-		DebuggerStaticMappingService mappingService =
-			tool.getService(DebuggerStaticMappingService.class);
-		if (mappingService == null) {
+		Optional<DebuggerStaticMappingService> mappingServiceOptional = tool.getService(DebuggerStaticMappingService.class);
+		if (mappingServiceOptional.isEmpty()) {
 			return AsyncUtils.NIL;
 		}
 		Trace trace = coordinates.getTrace();
@@ -85,6 +85,7 @@ public class LoadEmulatorAutoReadMemorySpec implements AutoReadMemorySpec {
 
 		long snap = coordinates.getSnap();
 		ByteBuffer buf = ByteBuffer.allocate(4096);
+		final DebuggerStaticMappingService mappingService = mappingServiceOptional.get();
 		try (Transaction tx = trace.openTransaction("Load Visible")) {
 			new AbstractMappedMemoryBytesVisitor(mappingService, buf.array()) {
 				@Override
@@ -95,8 +96,7 @@ public class LoadEmulatorAutoReadMemorySpec implements AutoReadMemorySpec {
 				}
 			}.visit(trace, snap, toRead);
 			return AsyncUtils.NIL;
-		}
-		catch (MemoryAccessException e) {
+		} catch (MemoryAccessException e) {
 			throw new AssertionError(e);
 		}
 	}

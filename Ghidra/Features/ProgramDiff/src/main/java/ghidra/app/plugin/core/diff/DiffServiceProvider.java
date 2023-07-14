@@ -5,9 +5,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,18 +21,21 @@ import ghidra.app.services.ProgramManager;
 import ghidra.framework.plugintool.ServiceProvider;
 import ghidra.framework.plugintool.util.ServiceListener;
 
+import java.util.Optional;
+
 public class DiffServiceProvider implements ServiceProvider {
-	
-	private ServiceProvider serviceProvider;
-	private ProgramDiffPlugin programDiffPlugin;
-	private DiffProgramManager diffProgramManager;
-	private DiffGoToService diffGoToService;
-	
+
+	private final ServiceProvider serviceProvider;
+	private final ProgramDiffPlugin programDiffPlugin;
+	private final DiffProgramManager diffProgramManager;
+	private final DiffGoToService diffGoToService;
+
 	DiffServiceProvider(ServiceProvider serviceProvider, ProgramDiffPlugin programDiffPlugin) {
 		this.serviceProvider = serviceProvider;
 		this.programDiffPlugin = programDiffPlugin;
 		this.diffProgramManager = new DiffProgramManager(this.programDiffPlugin);
-		GoToService goToService = serviceProvider.getService(GoToService.class);
+		// This should exist. If for some reason it doesn't, then it will throw an error in the constructor.
+		GoToService goToService = serviceProvider.getService(GoToService.class).orElseThrow();
 		this.diffGoToService = new DiffGoToService(goToService, programDiffPlugin);
 	}
 
@@ -40,12 +43,11 @@ public class DiffServiceProvider implements ServiceProvider {
 		serviceProvider.addServiceListener(listener);
 	}
 
-	public <T> T getService(Class<T> serviceClass) {
+	public <T> Optional<T> getService(Class<T> serviceClass) {
 		if (serviceClass == ProgramManager.class) {
-			return serviceClass.cast( diffProgramManager );
-		}
-		else if (serviceClass == GoToService.class) {
-			return serviceClass.cast( diffGoToService );
+			return Optional.of(serviceClass.cast( diffProgramManager));
+		} else if (serviceClass == GoToService.class) {
+			return Optional.of(serviceClass.cast( diffGoToService));
 		}
 		return serviceProvider.getService(serviceClass);
 	}

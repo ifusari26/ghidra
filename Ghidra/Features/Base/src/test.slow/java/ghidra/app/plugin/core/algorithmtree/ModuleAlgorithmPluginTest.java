@@ -59,7 +59,7 @@ public class ModuleAlgorithmPluginTest extends AbstractGhidraHeadedIntegrationTe
 		tool.addPlugin(ModuleAlgorithmPlugin.class.getName());
 		plugin = env.getPlugin(ModuleAlgorithmPlugin.class);
 		actions = getActionsByOwner(tool, plugin.getName());
-		service = tool.getService(ProgramTreeService.class);
+		service = tool.getService(ProgramTreeService.class).orElseThrow();
 
 	}
 
@@ -76,7 +76,7 @@ public class ModuleAlgorithmPluginTest extends AbstractGhidraHeadedIntegrationTe
 		gps[0] = new GroupPath(new String[] { root.getName(), ".text" });
 		setGroupSelection(gps);
 
-		ViewManagerService vmService = tool.getService(ViewManagerService.class);
+		ViewManagerService vmService = tool.getService(ViewManagerService.class).orElseThrow();
 		ViewProviderService vps = vmService.getCurrentViewProvider();
 		getContextObject(vps);
 
@@ -93,7 +93,7 @@ public class ModuleAlgorithmPluginTest extends AbstractGhidraHeadedIntegrationTe
 		gps[0] = new GroupPath(new String[] { root.getName(), ".text" });
 		setGroupSelection(gps);
 
-		ViewManagerService vmService = tool.getService(ViewManagerService.class);
+		ViewManagerService vmService = tool.getService(ViewManagerService.class).orElseThrow();
 		ViewProviderService vps = vmService.getCurrentViewProvider();
 
 		getContextObject(vps);

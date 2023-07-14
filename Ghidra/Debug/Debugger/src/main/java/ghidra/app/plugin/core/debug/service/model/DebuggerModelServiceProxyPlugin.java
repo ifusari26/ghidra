@@ -597,7 +597,7 @@ public class DebuggerModelServiceProxyPlugin extends Plugin
 	public TraceRecorder recordTargetAndActivateTrace(TargetObject target,
 			DebuggerTargetTraceMapper mapper) throws IOException {
 		DebuggerTraceManagerService traceManager =
-			tool.getService(DebuggerTraceManagerService.class);
+			tool.getService(DebuggerTraceManagerService.class).orElseThrow();
 		return delegate.recordTargetAndActivateTrace(target, mapper, traceManager);
 	}
 

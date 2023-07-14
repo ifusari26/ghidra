@@ -82,7 +82,7 @@ public class FindReferencesToFieldAction extends DockingAction {
 		final DataTypeNode dataTypeNode = (DataTypeNode) selectionPaths[0].getLastPathComponent();
 
 		PluginTool tool = plugin.getTool();
-		FindAppliedDataTypesService service = tool.getService(FindAppliedDataTypesService.class);
+		FindAppliedDataTypesService service = tool.getService(FindAppliedDataTypesService.class).orElse(null);
 		if (service == null) {
 			Msg.showError(this, null, "Missing Plugin",
 				"The FindAppliedDataTypesService is not installed.\n" +

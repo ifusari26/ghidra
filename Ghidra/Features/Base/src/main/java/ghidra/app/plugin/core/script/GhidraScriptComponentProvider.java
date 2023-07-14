@@ -655,7 +655,6 @@ public class GhidraScriptComponentProvider extends ComponentProviderAdapter {
 	}
 
 	private void doRunScript(GhidraScript script, TaskListener listener) {
-
 		ConsoleService console = plugin.getConsoleService();
 		RunScriptTask task = new RunScriptTask(script, plugin.getCurrentState(), console);
 		runningScriptTaskSet.add(task);

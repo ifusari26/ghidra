@@ -59,7 +59,7 @@ public class AnalysisOptionsTest extends AbstractGhidraHeadedIntegrationTest {
 		addPlugin(tool, AutoAnalysisPlugin.class);
 		showTool(tool);
 		program = buildProgram("test", ProgramBuilder._TOY);
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.openProgram(program.getDomainFile());
 		optionsDialog = invokeAnalysisDialog();
 	}

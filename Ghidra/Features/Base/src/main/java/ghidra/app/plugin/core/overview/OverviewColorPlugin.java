@@ -68,12 +68,10 @@ public class OverviewColorPlugin extends ProgramPlugin {
 	@Override
 	protected void init() {
 		super.init();
-		codeViewerService = tool.getService(CodeViewerService.class);
+		tool.getService(CodeViewerService.class).ifPresent(service -> codeViewerService = service);
 		allServices = ClassSearcher.getInstances(OverviewColorService.class);
 		createActions();
-		for (OverviewColorService service : allServices) {
-			service.initialize(tool);
-		}
+		allServices.forEach(service -> service.initialize(tool));
 	}
 
 	@Override

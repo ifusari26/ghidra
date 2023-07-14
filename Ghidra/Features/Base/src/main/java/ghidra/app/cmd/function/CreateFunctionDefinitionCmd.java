@@ -70,24 +70,19 @@ public class CreateFunctionDefinitionCmd implements Command {
 		FunctionSignature sig;
 		try {
 			sig = func.getSignature(true);
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			if (func.getName().indexOf(FileSystem.SEPARATOR_CHAR) >= 0) {
 				statusMsg = "Datatype names can not contain a '" + FileSystem.SEPARATOR_CHAR + "'";
-			}
-			else {
+			} else {
 				statusMsg = e.getMessage();
 			}
 			return false;
 		}
 		FunctionDefinitionDataType functionDef = new FunctionDefinitionDataType(sig);
 		DataType newType = dtm.resolve(functionDef, null);
-
-		DataTypeManagerService service = serviceProvider.getService(DataTypeManagerService.class);
-		if (service != null) {
-			service.setDataTypeSelected(newType);
-		}
-
+		serviceProvider.getService(DataTypeManagerService.class).ifPresent(
+				service -> service.setDataTypeSelected(newType)
+		);
 		return true;
 	}
 

@@ -18,6 +18,7 @@ package ghidra.app.plugin.core.instructionsearch.ui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.swing.*;
 
@@ -463,27 +464,26 @@ public class InstructionSearchDialog extends ReusableDialogComponentProvider imp
 	 * @param searchResults
 	 */
 	public void displaySearchResults(List<InstructionMetadata> searchResults) {
-
-		Address[] tableArray = new Address[searchResults.size()];
-		for (int x = 0; x < searchResults.size(); x++) {
-			tableArray[x] = searchResults.get(x).getAddr();
-		}
-
-		TableService ts = plugin.getTool().getService(TableService.class);
-		if (ts == null) {
-			Msg.error(null, "Unable to show addresses, no table service available");
-		}
-		else {
-			// The results window can be set to allow selection of multiple search results,
-			// provided the results are all the same size.  This should be the case for us and
-			// as we're matching bytes, the size should always be divisible by 8.  But do a check
-			// anyway.
-			int matchSize = 1;
-			if (searchData.getValueString().length() % 8 == 0) {
-				matchSize = searchData.getValueString().length() / 8;
-			}
-			show("Addresses", ts, tableArray, matchSize);
-		}
+		Address[] tableArray = searchResults
+				.stream()
+				.map(InstructionMetadata::getAddr)
+				.toList()
+				// Force typing
+				.toArray(new Address[0]);
+		plugin.getTool().getService(TableService.class).ifPresentOrElse(
+				service -> {
+					// The results window can be set to allow selection of multiple search results,
+					// provided the results are all the same size.  This should be the case for us and
+					// as we're matching bytes, the size should always be divisible by 8.  But do a check
+					// anyway.
+					int matchSize = 1;
+					if (searchData.getValueString().length() % 8 == 0) {
+						matchSize = searchData.getValueString().length() / 8;
+					}
+					show("Addresses", service, tableArray, matchSize);
+				},
+				() -> Msg.error(null, "Unable to show addresses, no table service available")
+		);
 	}
 
 	/**
@@ -510,8 +510,7 @@ public class InstructionSearchDialog extends ReusableDialogComponentProvider imp
 	}
 
 	private void goToLocation(Address addr) {
-		GoToService gs = plugin.getTool().getService(GoToService.class);
-		gs.goTo(addr);
+		plugin.getTool().getService(GoToService.class).ifPresent(service -> service.goTo(addr));
 	}
 
 	public InstructionSearchPlugin getPlugin() {

@@ -69,7 +69,7 @@ public class DisassemblerPluginTest extends AbstractGhidraHeadedIntegrationTest 
 	}
 
 	private void closeProgram() {
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.closeProgram();
 	}
 
@@ -443,7 +443,7 @@ public class DisassemblerPluginTest extends AbstractGhidraHeadedIntegrationTest 
 	}
 
 	private void openProgramInTool() {
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.openProgram(program.getDomainFile());
 		addrFactory = program.getAddressFactory();
 

@@ -227,12 +227,13 @@ public class EclipseIntegrationPlugin extends ProgramPlugin implements EclipseIn
 					error + "\nWould you like to verify your \"" +
 						EclipseIntegrationOptionsPlugin.PLUGIN_OPTIONS_NAME + "\" options now?");
 				if (choice == OptionDialog.YES_OPTION) {
-					AppInfo.getFrontEndTool().getService(OptionsService.class).showOptionsDialog(
-						EclipseIntegrationOptionsPlugin.PLUGIN_OPTIONS_NAME, null);
+					AppInfo.getFrontEndTool().getService(OptionsService.class).ifPresent(
+							service -> service.showOptionsDialog(
+						EclipseIntegrationOptionsPlugin.PLUGIN_OPTIONS_NAME, null)
+					);
 				}
 			});
-		}
-		else {
+		} else {
 			Msg.showError(EclipseConnectorTask.class, null, "Failed to launch Eclipse", error, t);
 		}
 	}

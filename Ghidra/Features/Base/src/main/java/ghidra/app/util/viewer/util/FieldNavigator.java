@@ -37,14 +37,14 @@ public class FieldNavigator implements ButtonPressedListener, FieldMouseHandlerS
 
 	public FieldNavigator(ServiceProvider serviceProvider, Navigatable navigatable) {
 		this.serviceProvider = serviceProvider;
-		if (navigatable == null) {
-			GoToService service = serviceProvider.getService(GoToService.class);
-			if (service != null) {
-				navigatable = service.getDefaultNavigatable();
-			}
+		if (navigatable != null) {
+			this.navigatable = navigatable;
+		} else {
+			this.navigatable = this.serviceProvider
+					.getService(GoToService.class)
+					.map(GoToService::getDefaultNavigatable)
+					.orElse(null);
 		}
-		this.navigatable = navigatable;
-
 	}
 
 	private void fieldElementClicked(Object clickedObject, ProgramLocation programLocation,

@@ -66,8 +66,8 @@ public class MultiTabPluginTest extends AbstractGhidraHeadedIntegrationTest {
 		tool = env.getTool();
 		tool.addPlugin(MultiTabPlugin.class.getName());
 		tool.addPlugin(MarkerManagerPlugin.class.getName());
-		pm = tool.getService(ProgramManager.class);
-		markerService = tool.getService(MarkerService.class);
+		pm = tool.getService(ProgramManager.class).orElseThrow();
+		markerService = tool.getService(MarkerService.class).orElseThrow();
 		env.showTool();
 
 		reconfigureTimerSpeedForTests();
@@ -327,7 +327,7 @@ public class MultiTabPluginTest extends AbstractGhidraHeadedIntegrationTest {
 		Program p1 = openDummyProgram("notepad", true);
 		Program p2 = openDummyProgram("login", true);
 
-		ProgramManager programManager = tool.getService(ProgramManager.class);
+		ProgramManager programManager = tool.getService(ProgramManager.class).orElseThrow();
 		programManager.setCurrentProgram(p1);
 
 		MarkerSet set = createMarkers(p1);

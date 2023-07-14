@@ -74,7 +74,7 @@ class SymbolPanel extends JPanel {
 			}
 		});
 
-		GoToService goToService = tool.getService(GoToService.class);
+		GoToService goToService = tool.getService(GoToService.class).orElseThrow();
 		symTable.installNavigation(goToService, goToService.getDefaultNavigatable());
 
 		for (int i = 0; i < symTable.getColumnCount(); i++) {

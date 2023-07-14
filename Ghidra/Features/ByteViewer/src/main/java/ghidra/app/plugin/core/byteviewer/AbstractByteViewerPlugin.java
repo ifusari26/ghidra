@@ -64,13 +64,10 @@ public abstract class AbstractByteViewerPlugin<P extends ProgramByteViewerCompon
 
 	@Override
 	protected void init() {
-		ClipboardService clipboardService = tool.getService(ClipboardService.class);
-		if (clipboardService != null) {
-			connectedProvider.setClipboardService(clipboardService);
-			for (P provider : disconnectedProviders) {
-				provider.setClipboardService(clipboardService);
-			}
-		}
+		tool.getService(ClipboardService.class).ifPresent(service -> {
+			connectedProvider.setClipboardService(service);
+			disconnectedProviders.forEach(provider -> provider.setClipboardService(service));
+		});
 	}
 
 	/**
@@ -112,13 +109,8 @@ public abstract class AbstractByteViewerPlugin<P extends ProgramByteViewerCompon
 	 */
 	@Override
 	public void readDataState(SaveState saveState) {
-
 		doWithEventsDisabled(() -> {
-
-			ProgramManager programManagerService = tool.getService(ProgramManager.class);
-
 			connectedProvider.readDataState(saveState);
-
 			int numDisconnected = saveState.getInt("Num Disconnected", 0);
 			for (int i = 0; i < numDisconnected; i++) {
 				Element xmlElement = saveState.getXmlElement("Provider" + i);
@@ -128,17 +120,21 @@ public abstract class AbstractByteViewerPlugin<P extends ProgramByteViewerCompon
 				if (file == null) {
 					continue;
 				}
-				Program program = programManagerService.openProgram(file);
-				if (program != null) {
-					P provider = createProvider(false);
-					provider.doSetProgram(program);
-					provider.readConfigState(providerSaveState);
-					provider.readDataState(providerSaveState);
-					tool.showComponentProvider(provider, true);
-					addProvider(provider);
-				}
+				// If the prograqm manager is present...
+				tool.getService(ProgramManager.class).ifPresent(
+						service -> {
+							final Optional<Program> program = Optional.ofNullable(service.openProgram(file));
+							program.ifPresent(p -> {
+								final P provider = createProvider(false);
+								provider.doSetProgram(p);
+								provider.readConfigState(providerSaveState);
+								provider.readDataState(providerSaveState);
+								tool.showComponentProvider(provider, true);
+								addProvider(provider);
+							});
+						}
+				);
 			}
-
 		});
 	}
 
@@ -257,8 +253,12 @@ public abstract class AbstractByteViewerPlugin<P extends ProgramByteViewerCompon
 	}
 
 	void addProvider(P provider) {
-		disconnectedProviders.add(provider);
-		provider.setClipboardService(tool.getService(ClipboardService.class));
+		tool.getService(ClipboardService.class).ifPresent(
+				service -> {
+					disconnectedProviders.add(provider);
+					provider.setClipboardService(service);
+				}
+		);
 	}
 
 	Program getProgram() {
@@ -287,10 +287,10 @@ public abstract class AbstractByteViewerPlugin<P extends ProgramByteViewerCompon
 	}
 
 	protected void exportLocation(Program program, ProgramLocation location) {
-		GoToService service = tool.getService(GoToService.class);
-		if (service != null) {
-			service.goTo(location, program);
-		}
+		tool.getService(GoToService.class).ifPresent(
+				service -> service.goTo(location, program)
+		);
+
 	}
 
 	protected void removeProvider(ByteViewerComponentProvider provider) {

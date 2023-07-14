@@ -1,0 +1,103 @@
+package tools.ghidra.marshmallows.providers;
+
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+
+import docking.ComponentProvider;
+import docking.action.builder.ActionBuilder;
+import docking.action.ToolBarData;
+import ghidra.framework.plugintool.Plugin;
+import ghidra.framework.plugintool.PluginInfo;
+import ghidra.util.HelpLocation;
+import lombok.Getter;
+import resources.Icons;
+
+public final class MarshmallowsPluginProvider extends ComponentProvider implements Initializable {
+
+	@Getter
+	private final FileProvider fileProvider;
+	private final ToolBarData toolbar;
+	private final String topic;
+
+	private final String anchor;
+
+	private JPanel panel;
+	private JTextArea area;
+
+	public MarshmallowsPluginProvider(final Plugin plugin, final String owner) {
+		super(plugin.getTool(), owner, owner);
+		// Set information based off of plugin information.
+		PluginInfo info = PluginInfoProvider.getPluginInfo(plugin);
+		this.topic = info.category();
+		this.anchor = info.packageName();
+		this.toolbar = new ToolBarData(Icons.ADD_ICON, this.anchor);
+		this.fileProvider = new FileProvider();
+	}
+
+	// Customize GUI
+	private void buildPanel() {
+		panel = new JPanel(new BorderLayout());
+		panel.setName(this.anchor);
+		area = new JTextArea(5, 25);
+		area.setEditable(false);
+		area.setName(this.anchor);
+		panel.add(area);
+	}
+
+	private void createActions() {
+		ActionBuilder builder = new ActionBuilder("Toggle sources", anchor);
+		builder
+			.description("Toggle sources")
+			.onAction(System.out::println)
+			.enabled(isVisible())
+			.buildAndInstallLocal(this)
+			.setToolBarData(this.toolbar);
+		
+//		action = new DockingAction("Toggle sources", "not untitled") {
+//			// Access filesystem?
+//			@Override
+//			public void actionPerformed(ActionContext context) {
+//				fileProvider.getBundles()
+//					.stream()
+//					.map(ResourceFile::getAbsolutePath)
+//					.forEach((path) -> {
+//						Msg.info(this, path);
+//						ActionBuilder builder = new ActionBuilder(path, anchor);
+//						builder
+//							.popupMenuPath(path)
+//							.toolBarGroup(null)
+//							.enabledWhen(ctx -> {
+//								Object contextObject = context.getContextObject();
+//								return (contextObject instanceof GTable) ||
+//									(contextObject instanceof ResourceFile);
+//							})
+//							.onAction(ctx -> System.out.println(path))
+//							.buildAndInstallLocal(MarshmallowsPluginProvider.this);
+//					});
+//			}
+//		};
+//		action.setToolBarData(this.toolbar);
+//		action.setEnabled(true);
+//		action.markHelpUnnecessary();
+//		dockingTool.addLocalAction(this, action);
+	}
+
+	@Override
+	public JComponent getComponent() {
+		return panel;
+	}
+
+	@Override
+	public void initialize() {
+		HelpLocation helpLocation = new HelpLocation(this.topic, this.anchor);
+		this.setHelpLocation(helpLocation);
+		buildPanel();
+		//createActions();
+	}
+
+}

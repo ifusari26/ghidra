@@ -99,7 +99,10 @@ public class ProgramDatabaseSearchIteratorTest extends AbstractGhidraHeadedInteg
 		builder.createEmptyFunction("MyFunc", "0", 26, new WordDataType(), p1, p2, p3);
 		builder.createComment("0", "Blah Blah Blah -- imm", CodeUnit.PLATE_COMMENT);
 
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		// This should exist
+		ProgramManager pm = tool.getService(ProgramManager.class).orElse(null);
+		Assert.assertNotNull(pm);
+
 		pm.openProgram(program.getDomainFile());
 		space = program.getMinAddress().getAddressSpace();
 		env.showTool();

@@ -612,7 +612,7 @@ public class ProgramTreePlugin1Test extends AbstractProgramTreePluginTest {
 		ProgramNode sscanfNode = funcNode.getChild("sscanf");
 		setViewPaths(sscanfNode);
 
-		GoToService goToService = tool.getService(GoToService.class);
+		GoToService goToService = tool.getService(GoToService.class).orElseThrow();
 		goToService.goTo(new ProgramLocation(program, sscanfNode.getFragment().getMinAddress()));
 		assertPluginViewAppliedToTool();
 	}

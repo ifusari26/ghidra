@@ -1,0 +1,34 @@
+package tools.ghidra.marshmallows.data;
+
+/**
+ *
+ */
+public final class Constants {
+
+    private Constants() {
+    }
+
+    public static final class Plugin {
+
+        private Plugin() {
+        }
+
+        /**
+         * The plugin name.
+         */
+        public static final String NAME = "marshmallows";
+
+        /**
+         * The plugin description.
+         */
+        public static final String DESCRIPTION = "marshmallows!!!!";
+
+        /**
+         * The plugin version.
+         */
+        public static final String VERBOSE = "marshmallows are great in trail mix";
+
+        public static final String CATEGORY = "ICECAP";
+    }
+
+}

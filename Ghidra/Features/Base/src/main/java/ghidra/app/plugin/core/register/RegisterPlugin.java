@@ -77,11 +77,11 @@ public class RegisterPlugin extends ProgramPlugin {
 		registerMgrProvider = new RegisterManagerProvider(tool, getName());
 		tool.addComponentProvider(registerMgrProvider, false);
 		createActions();
-		fieldMouseHandlerService = tool.getService(FieldMouseHandlerService.class);
 		fieldMouseHandler = new RegisterTransitionFieldMouseHandler();
-		if (fieldMouseHandlerService != null) {
+		tool.getService(FieldMouseHandlerService.class).ifPresent(service -> {
+			fieldMouseHandlerService = service;
 			fieldMouseHandlerService.addFieldMouseHandler(fieldMouseHandler);
-		}
+		});
 	}
 
 	@Override
@@ -404,7 +404,7 @@ public class RegisterPlugin extends ProgramPlugin {
 				RegisterFieldLocation loc = (RegisterFieldLocation) location;
 				reg = loc.getRegister();
 			}
-			ProgramManager programManager = serviceProvider.getService(ProgramManager.class);
+			ProgramManager programManager = serviceProvider.getService(ProgramManager.class).orElse(null);
 			if (programManager == null) {
 				return false;
 			}

@@ -1,0 +1,7 @@
+package tools.ghidra.marshmallows.providers;
+
+public interface Initializable {
+
+    void initialize();
+
+}

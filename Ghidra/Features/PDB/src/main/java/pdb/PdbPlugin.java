@@ -132,7 +132,7 @@ public class PdbPlugin extends Plugin {
 			tool.setStatusInfo("");
 
 			DataTypeManagerService dataTypeManagerService =
-				tool.getService(DataTypeManagerService.class);
+				tool.getService(DataTypeManagerService.class).orElse(null);
 			if (dataTypeManagerService == null) {
 				Msg.showWarn(getClass(), null, "Load PDB",
 					"Unable to locate DataTypeService in the current tool.");
@@ -163,13 +163,12 @@ public class PdbPlugin extends Plugin {
 				DockingWindowManager.showDialog(null, dialog);
 			}
 		}
-		catch (Exception e) {
-			String message = null;
+		catch (ReflectiveOperationException e) {
+			String message;
 			if (e instanceof InvocationTargetException && e.getCause() != null) {
 				message =
 					Objects.requireNonNullElse(e.getCause().getMessage(), e.getCause().toString());
-			}
-			else {
+			} else {
 				message = Objects.requireNonNullElse(e.getMessage(), e.toString());
 			}
 			Msg.showError(this, null, "Error Loading PDB",

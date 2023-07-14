@@ -74,7 +74,7 @@ public class DataTypeCopyMoveDragTest extends AbstractGhidraHeadedIntegrationTes
 		tool.addPlugin(DataTypeManagerPlugin.class.getName());
 
 		program = buildProgram();
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.openProgram(program.getDomainFile());
 
 		env.showTool();
@@ -130,9 +130,7 @@ public class DataTypeCopyMoveDragTest extends AbstractGhidraHeadedIntegrationTes
 	@After
 	public void tearDown() throws Exception {
 		executeOnSwingWithoutBlocking(() -> {
-			ProgramManager pm = tool.getService(ProgramManager.class);
-			pm.closeProgram();
-
+			tool.getService(ProgramManager.class).ifPresent(ProgramManager::closeProgram);
 		});
 
 		// this handles the save changes dialog and potential analysis dialogs

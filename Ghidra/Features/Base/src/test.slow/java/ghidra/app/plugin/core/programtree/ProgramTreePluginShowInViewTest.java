@@ -66,7 +66,7 @@ public class ProgramTreePluginShowInViewTest extends AbstractGhidraHeadedIntegra
 		env = new TestEnv();
 		tool = env.getTool();
 		tool.addPlugin(ProgramTreePlugin.class.getName());
-		ProgramTreeService service = tool.getService(ProgramTreeService.class);
+		ProgramTreeService service = tool.getService(ProgramTreeService.class).orElseThrow();
 		plugin = (ProgramTreePlugin) service;
 		tool.addPlugin(CodeBrowserPlugin.class.getName());
 		tool.addPlugin(GoToAddressLabelPlugin.class.getName());
@@ -76,7 +76,7 @@ public class ProgramTreePluginShowInViewTest extends AbstractGhidraHeadedIntegra
 		program = (ProgramDB) buildProgram();
 
 		addrFactory = program.getAddressFactory();
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.openProgram(program.getDomainFile());
 
 		String treeName = plugin.getViewedTreeName();
@@ -94,7 +94,7 @@ public class ProgramTreePluginShowInViewTest extends AbstractGhidraHeadedIntegra
 		assertNotNull(cutAction);
 
 		root = (ProgramNode) tree.getModel().getRoot();
-		viewMgrService = tool.getService(ViewManagerService.class);
+		viewMgrService = tool.getService(ViewManagerService.class).orElseThrow();
 
 		setTreeView("Main Tree");
 
@@ -404,7 +404,7 @@ public class ProgramTreePluginShowInViewTest extends AbstractGhidraHeadedIntegra
 	}
 
 	private void goTo(long address) {
-		GoToService goToService = tool.getService(GoToService.class);
+		GoToService goToService = tool.getService(GoToService.class).orElseThrow();
 		goToService.goTo(getAddr(address));
 	}
 
@@ -415,7 +415,7 @@ public class ProgramTreePluginShowInViewTest extends AbstractGhidraHeadedIntegra
 		//setup scenario of fragment C being in two folders
 		copyFolderOrFragment(".data", "Not Real Blocks");
 
-		GoToService goToService = tool.getService(GoToService.class);
+		GoToService goToService = tool.getService(GoToService.class).orElseThrow();
 		goToService.goTo(getAddr(0x1001200));
 
 		waitForSwing();

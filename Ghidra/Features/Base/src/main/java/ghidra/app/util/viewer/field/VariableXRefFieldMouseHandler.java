@@ -53,18 +53,16 @@ public class VariableXRefFieldMouseHandler extends XRefFieldMouseHandler {
 	}
 
 	@Override
-	protected void showXRefDialog(Navigatable navigatable, ProgramLocation location,
-			ServiceProvider serviceProvider) {
-		TableService service = serviceProvider.getService(TableService.class);
-		if (service == null) {
-			return;
-		}
+	protected void showXRefDialog(Navigatable navigatable,
+								  ProgramLocation location,
+								  ServiceProvider serviceProvider) {
+		serviceProvider.getService(TableService.class).ifPresent(service -> {
+			VariableLocation variableLocation = (VariableLocation) location;
+			Variable variable = variableLocation.getVariable();
 
-		VariableLocation variableLocation = (VariableLocation) location;
-		Variable variable = variableLocation.getVariable();
-
-		Set<Reference> refs = getVariableRefs(variable);
-		XReferenceUtils.showXrefs(navigatable, serviceProvider, service, location, refs);
+			Set<Reference> refs = getVariableRefs(variable);
+			XReferenceUtils.showXrefs(navigatable, serviceProvider, service, location, refs);
+		});
 	}
 
 	private Set<Reference> getVariableRefs(Variable var) {

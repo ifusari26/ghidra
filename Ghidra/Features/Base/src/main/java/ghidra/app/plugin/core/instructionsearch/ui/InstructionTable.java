@@ -490,7 +490,7 @@ public class InstructionTable extends AbstractInstructionTable {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			GoToService gs = plugin.getTool().getService(GoToService.class);
+			GoToService gs = plugin.getTool().getService(GoToService.class).orElseThrow();
 
 			// Only go somewhere if something is actually in the table.  If it's empty this makes
 			// no sense.  Note that the plugin.getInstructions() call can never be null, so no 

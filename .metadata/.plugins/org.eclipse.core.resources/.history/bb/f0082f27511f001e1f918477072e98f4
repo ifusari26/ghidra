@@ -1,0 +1,39 @@
+package utilities;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.function.Function;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+public final class Utilities {
+	
+	private Utilities() { }
+	
+	@SuppressWarnings("unchecked")
+	public static <T, R> R[] transform(final Function<T, R> transformer, final T... values) {
+		return (R[]) Arrays.stream(values).map(transformer::apply).toArray();
+	}
+	
+	@SuppressWarnings("unchecked")
+	@NotNull
+	public static <T, R> R[] transformNotNull(final Function<T, R> transformer, @NotNull final T... values) {
+		R[] result = Transformers.transform(transformer, values);
+		// Filter null values
+		return (R[]) Arrays.stream(result).filter((value) -> value != null).toArray();
+	}
+	
+	@Nullable
+	public static URL createUrl(final String path) {
+		try {
+			URL url = new URL(path);
+			return url;
+		} catch (MalformedURLException e) {
+			return null;
+		}
+	}
+	
+	
+}

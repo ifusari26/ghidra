@@ -1,0 +1,26 @@
+package tools.ghidra.marshmallows.providers;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import generic.jar.ResourceFile;
+import ghidra.app.plugin.core.osgi.BundleHost;
+import ghidra.app.script.GhidraScriptUtil;
+import lombok.Getter;
+
+public class FileProvider {
+	
+	@Getter
+	private final BundleHost bundleHost;
+	
+	public FileProvider() {
+		this.bundleHost = GhidraScriptUtil.acquireBundleHostReference();
+	}
+	
+	public List<ResourceFile> getBundles() {
+		return this.bundleHost.getBundleFiles().stream().collect(Collectors.toList());
+	}
+	
+
+}

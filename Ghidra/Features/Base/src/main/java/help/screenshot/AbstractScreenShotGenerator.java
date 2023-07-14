@@ -25,11 +25,13 @@ import java.io.IOException;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Predicate;
 
 import javax.swing.*;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 
+import ghidra.app.plugin.core.datamgr.archive.DuplicateIdException;
 import org.junit.*;
 
 import docking.*;
@@ -141,35 +143,38 @@ public abstract class AbstractScreenShotGenerator extends AbstractGhidraHeadedIn
 
 	public void loadProgram() throws Exception {
 		loadProgram("WinHelloCPP.exe");
-
-		DataTypeManagerService dtms = tool.getService(DataTypeManagerService.class);
-		dtms.openDataTypeArchive("windows_vs12_32.gdt");
+		tool.getService(DataTypeManagerService.class).ifPresent(service -> {
+			try {
+				service.openDataTypeArchive("windows_vs12_32.gdt");
+			} catch (IOException | DuplicateIdException e) {
+				throw new RuntimeException(e);
+			}
+		});
 	}
 
 	public void closeNonProgramArchives() {
-		DataTypeManagerService service = tool.getService(DataTypeManagerService.class);
-		DataTypeManager[] dtms = service.getDataTypeManagers();
-		for (DataTypeManager dtm : dtms) {
-			if (dtm instanceof BuiltInDataTypeManager || dtm instanceof ProgramDataTypeManager) {
-				continue;
-			}
-
-			service.closeArchive(dtm);
-		}
+		final Predicate<DataTypeManager> filter = (manager) -> {
+			// noinspection: Hiding this to support shorter lines.
+			return manager instanceof BuiltInDataTypeManager || manager instanceof ProgramDataTypeManager;
+		};
+		tool.getService(DataTypeManagerService.class).ifPresent(service -> {
+			Arrays
+					.stream(service.getDataTypeManagers())
+					.filter(filter)
+					.forEach(service::closeArchive);
+		});
 	}
 
 	public Program loadProgram(final String programName) {
 		runSwing(() -> {
 			program = env.getProgram(programName);
-			ProgramManager pm = tool.getService(ProgramManager.class);
-			pm.openProgram(program.getDomainFile());
+			tool.getService(ProgramManager.class).ifPresent(service -> service.openProgram(program.getDomainFile()));
 		});
 		return program;
 	}
 
 	public void exit() {
 		System.exit(0);
-
 	}
 
 	public void setUser(String userName) {

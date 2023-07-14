@@ -79,7 +79,7 @@ public class BookmarkPluginTest extends AbstractGhidraHeadedIntegrationTest {
 		tool.setSize(2000, 800);
 		program = buildProgram();
 
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.openProgram(program.getDomainFile());
 
 		initProgram();
@@ -539,7 +539,7 @@ public class BookmarkPluginTest extends AbstractGhidraHeadedIntegrationTest {
 
 	@Test
 	public void testMarkerAdded() throws Exception {
-		MarkerService markerService = tool.getService(MarkerService.class);
+		MarkerService markerService = tool.getService(MarkerService.class).orElseThrow();
 		MarkerSet markerSet = markerService.getMarkerSet("Type1 Bookmarks", program);
 		AddressSet addressSet = runSwing(() -> markerSet.getAddressSet());
 		assertFalse(addressSet.contains(addr("01001100")));

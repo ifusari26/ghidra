@@ -74,7 +74,7 @@ public class MarkerManagerPlugin extends Plugin {
 
 	@Override
 	protected void init() {
-		codeViewerService = tool.getService(CodeViewerService.class);
+		codeViewerService = tool.getService(CodeViewerService.class).orElseThrow();
 		codeViewerService.addMarginProvider(markerManager.getMarginProvider());
 		codeViewerService.addOverviewProvider(markerManager.getOverviewProvider());
 	}

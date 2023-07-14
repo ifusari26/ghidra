@@ -175,10 +175,7 @@ public class FallThroughPlugin extends Plugin {
 	}
 
 	void goTo(Address address) {
-		GoToService goToService = tool.getService(GoToService.class);
-		if (goToService != null) {
-			goToService.goTo(new AddressFieldLocation(currentProgram, address));
-		}
+		tool.getService(GoToService.class).ifPresent(service -> service.goTo(new AddressFieldLocation(currentProgram, address)));
 	}
 
 }

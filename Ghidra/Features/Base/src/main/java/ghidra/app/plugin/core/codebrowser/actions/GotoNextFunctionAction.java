@@ -77,18 +77,14 @@ public class GotoNextFunctionAction extends NavigatableContextAction {
 			return;
 		}
 
-		GoToService service = tool.getService(GoToService.class);
-		if (service != null) {
+		tool.getService(GoToService.class).ifPresentOrElse(service -> {
 			FunctionSignatureFieldLocation location =
-				new FunctionSignatureFieldLocation(program, function.getEntryPoint(), null, 0,
-					function.getPrototypeString(false, false));
+					new FunctionSignatureFieldLocation(program, function.getEntryPoint(), null, 0,
+							function.getPrototypeString(false, false));
 
 			Navigatable navigatable = context.getNavigatable();
 			service.goTo(navigatable, location, navigatable.getProgram());
-		}
-		else {
-			tool.setStatusInfo("Can't find Go To Service!");
-		}
+		}, () -> tool.setStatusInfo("Can't find Go To Service!"));
 	}
 
 }

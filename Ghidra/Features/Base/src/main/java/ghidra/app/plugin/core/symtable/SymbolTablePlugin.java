@@ -109,8 +109,8 @@ public class SymbolTablePlugin extends Plugin implements DomainObjectListener {
 
 	@Override
 	protected void init() {
-		gotoService = tool.getService(GoToService.class);
-		blockModelService = tool.getService(BlockModelService.class);
+		gotoService = tool.getService(GoToService.class).orElseThrow();
+		blockModelService = tool.getService(BlockModelService.class).orElseThrow();
 
 		symProvider = new SymbolProvider(this);
 		refProvider = new ReferenceProvider(this);

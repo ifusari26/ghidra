@@ -202,13 +202,13 @@ public class DebuggerBlockChooserDialog extends ReusableDialogComponentProvider 
 
 	public Map.Entry<Program, MemoryBlock> chooseBlock(PluginTool tool, TraceSection section,
 			Collection<Program> programs) {
-		DebuggerStaticMappingService service = tool.getService(DebuggerStaticMappingService.class);
+		DebuggerStaticMappingService service = tool.getService(DebuggerStaticMappingService.class).orElseThrow();
 		return chooseBlock(tool, programs, rec -> rec.score(section, service));
 	}
 
 	public Map.Entry<Program, MemoryBlock> chooseBlock(PluginTool tool, TraceMemoryRegion region,
 			Collection<Program> programs) {
-		DebuggerStaticMappingService service = tool.getService(DebuggerStaticMappingService.class);
+		DebuggerStaticMappingService service = tool.getService(DebuggerStaticMappingService.class).orElseThrow();
 		return chooseBlock(tool, programs, rec -> rec.score(region, service));
 	}
 

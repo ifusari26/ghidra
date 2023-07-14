@@ -1011,11 +1011,9 @@ public class SleighInstructionPrototype implements InstructionPrototype {
 				emit.resolveFinalFallthrough();
 			}
 			return emit.getPcodeOp();
-		}
-		catch (NotYetImplementedException e) {
+		} catch (NotYetImplementedException e) {
 			// unimpl
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			Msg.error(this, "Pcode error at " + context.getAddress() + ": " + e.getMessage());
 		}
 		PcodeOp[] res = new PcodeOp[1];

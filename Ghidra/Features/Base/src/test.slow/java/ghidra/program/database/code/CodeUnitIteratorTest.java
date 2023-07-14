@@ -111,7 +111,7 @@ public class CodeUnitIteratorTest extends AbstractGhidraHeadedIntegrationTest {
 			tool.addPlugin(BookmarkPlugin.class.getName());
 			tool.addPlugin(GoToAddressLabelPlugin.class.getName());
 
-			ProgramManager pm = tool.getService(ProgramManager.class);
+			ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 			pm.openProgram(program);
 
 			showTool(tool);

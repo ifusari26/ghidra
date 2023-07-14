@@ -426,7 +426,7 @@ public class SymbolInspector implements OptionsChangeListener {
 	}
 
 	private static ToolOptions getOptions(ServiceProvider serviceProvider) {
-		OptionsService service = serviceProvider.getService(OptionsService.class);
+		OptionsService service = serviceProvider.getService(OptionsService.class).orElseThrow();
 		return service.getOptions(GhidraOptions.CATEGORY_BROWSER_DISPLAY);
 	}
 

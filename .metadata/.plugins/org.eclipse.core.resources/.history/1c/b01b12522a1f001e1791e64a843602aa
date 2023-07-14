@@ -1,0 +1,15 @@
+package tools.ghidra.marshmallows;
+
+import javax.swing.Icon;
+import tools.ghidra.marshmallows.data.Constants;
+
+
+import ghidra.framework.plugintool.util.PluginPackage;
+
+public class MarshmallowsPluginPackage extends PluginPackage {
+
+	protected MarshmallowsPluginPackage() {
+		super(Constants.Plugin.NAME, icon, Constants.Plugin.VERBOSE);
+	}
+
+}

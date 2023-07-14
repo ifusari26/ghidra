@@ -57,7 +57,7 @@ public class DisplayTypeAsGraphAction extends DockingAction {
 
 	@Override
 	public void actionPerformed(ActionContext context) {
-		GraphDisplayBroker broker = plugin.getTool().getService(GraphDisplayBroker.class);
+		GraphDisplayBroker broker = plugin.getTool().getService(GraphDisplayBroker.class).orElse(null);
 		if (broker == null) {
 			Msg.showError(this, null, "Missing Plugin", "The Graph plugin is not installed.\n" +
 				"Please add the plugin implementing this service.");

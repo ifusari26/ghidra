@@ -16,6 +16,7 @@
 package ghidra.app.plugin.core.debug.service.emulation.data;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import ghidra.app.plugin.core.debug.utils.AbstractMappedMemoryBytesVisitor;
@@ -103,12 +104,13 @@ public class DefaultPcodeDebuggerMemoryAccess extends DefaultPcodeTraceMemoryAcc
 	@Override
 	public boolean readFromStaticImages(SemisparseByteArray bytes, AddressSetView guestView) {
 		// TODO: Expand to block? DON'T OVERWRITE KNOWN!
-		DebuggerStaticMappingService mappingService =
+		final Optional<DebuggerStaticMappingService> mappingServiceOptional =
 			tool.getService(DebuggerStaticMappingService.class);
-		if (mappingService == null) {
+		if (mappingServiceOptional.isEmpty()) {
 			return false;
 		}
 
+		final DebuggerStaticMappingService mappingService = mappingServiceOptional.get();
 		try {
 			return new AbstractMappedMemoryBytesVisitor(mappingService, new byte[4096]) {
 				@Override

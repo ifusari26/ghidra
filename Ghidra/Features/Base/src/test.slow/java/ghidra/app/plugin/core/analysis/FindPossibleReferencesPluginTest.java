@@ -225,7 +225,7 @@ public class FindPossibleReferencesPluginTest extends AbstractGhidraHeadedIntegr
 	}
 
 	private void openProgram(Program p) throws Exception {
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		program = p;
 		pm.openProgram(program.getDomainFile());
 		addrFactory = program.getAddressFactory();

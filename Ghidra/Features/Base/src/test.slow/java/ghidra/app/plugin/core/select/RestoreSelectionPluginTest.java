@@ -78,7 +78,7 @@ public class RestoreSelectionPluginTest extends AbstractGhidraHeadedIntegrationT
 
 	@After
 	public void tearDown() throws Exception {
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.closeAllPrograms(true);
 		env.dispose();
 	}
@@ -97,7 +97,7 @@ public class RestoreSelectionPluginTest extends AbstractGhidraHeadedIntegrationT
 
 		// multiple programs
 		Program secondaryProgram = buildProgram2();
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.openProgram(secondaryProgram.getDomainFile());
 
 		// make sure the selection is disabled when this program is active

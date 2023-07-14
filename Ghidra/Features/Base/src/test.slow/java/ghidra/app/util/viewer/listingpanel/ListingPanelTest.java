@@ -63,7 +63,7 @@ public class ListingPanelTest extends AbstractGhidraHeadedIntegrationTest {
 		cb = env.getPlugin(CodeBrowserPlugin.class);
 		loadProgram("notepad");
 		resetFormatOptions();
-		cvs = tool.getService(CodeViewerService.class);
+		cvs = tool.getService(CodeViewerService.class).orElseThrow();
 		listingModel = cvs.getListingModel();
 	}
 
@@ -82,7 +82,7 @@ public class ListingPanelTest extends AbstractGhidraHeadedIntegrationTest {
 
 	private void loadProgram(String programName) throws Exception {
 		program = buildProgram();
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.openProgram(program.getDomainFile());
 		addrFactory = program.getAddressFactory();
 		space = addrFactory.getDefaultAddressSpace();
@@ -306,7 +306,7 @@ public class ListingPanelTest extends AbstractGhidraHeadedIntegrationTest {
 		showTool(tool);
 
 		AtomicReference<AddressSetView> addresses = new AtomicReference<>();
-		CodeViewerService cvs = tool.getService(CodeViewerService.class);
+		CodeViewerService cvs = tool.getService(CodeViewerService.class).orElseThrow();
 		cvs.addListingDisplayListener(new AddressSetDisplayListener() {
 			@Override
 			public void visibleAddressesChanged(AddressSetView visibleAddresses) {

@@ -74,10 +74,10 @@ public class SearchTextPlugin3Test extends AbstractGhidraHeadedIntegrationTest {
 		tool.addPlugin(SearchTextPlugin.class.getName());
 		tool.addPlugin(MarkerManagerPlugin.class.getName());
 		plugin = env.getPlugin(SearchTextPlugin.class);
-		goToService = tool.getService(GoToService.class);
+		goToService = tool.getService(GoToService.class).orElseThrow();
 		program = buildProgram();
 		listing = program.getListing();
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.openProgram(program.getDomainFile());
 		searchAction = getAction(plugin, "Search Text");
 		cbPlugin = env.getPlugin(CodeBrowserPlugin.class);

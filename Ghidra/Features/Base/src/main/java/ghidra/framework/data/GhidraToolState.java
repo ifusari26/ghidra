@@ -54,11 +54,7 @@ public class GhidraToolState extends ToolState implements NavigatableRemovalList
                 return nav;
             }
         }
-        GoToService service = tool.getService(GoToService.class);
-        if (service != null) {
-            return service.getDefaultNavigatable();
-        }
-        return null;
+        return tool.getService(GoToService.class).map(GoToService::getDefaultNavigatable).orElse(null);
     }
 
     @Override

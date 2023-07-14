@@ -127,8 +127,11 @@ public class FGController implements ProgramLocationListener, ProgramSelectionLi
 	}
 
 	private FormatManager createFullFormatManager() {
-		CodeViewerService codeViewer = plugin.getTool().getService(CodeViewerService.class);
-		return codeViewer.getFormatManager();
+		return plugin
+				.getTool()
+				.getService(CodeViewerService.class)
+				.map(CodeViewerService::getFormatManager)
+				.orElse(null);
 	}
 
 	public FormatManager getMinimalFormatManager() {
@@ -177,7 +180,7 @@ public class FGController implements ProgramLocationListener, ProgramSelectionLi
 	}
 
 	private FormatManager createDefaultFormat() {
-		OptionsService options = plugin.getTool().getService(OptionsService.class);
+		OptionsService options = plugin.getTool().getService(OptionsService.class).orElseThrow();
 		ToolOptions displayOptions = options.getOptions(GhidraOptions.CATEGORY_BROWSER_DISPLAY);
 		ToolOptions fieldOptions = options.getOptions(GhidraOptions.CATEGORY_BROWSER_FIELDS);
 

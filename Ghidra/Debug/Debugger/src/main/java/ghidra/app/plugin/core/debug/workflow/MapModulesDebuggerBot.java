@@ -46,13 +46,16 @@ public class MapModulesDebuggerBot extends AbstractMapDebuggerBot {
 	@Override
 	protected void doAnalysis(PluginTool tool, Trace trace, Set<Program> programs,
 			TaskMonitor monitor) throws CancelledException {
-		DebuggerStaticMappingService mappingService =
+		Optional<DebuggerStaticMappingService> mappingServiceOptional =
 			tool.getService(DebuggerStaticMappingService.class);
-		if (mappingService != null) {
-			Map<?, ModuleMapProposal> maps = mappingService
-					.proposeModuleMaps(trace.getModuleManager().getAllModules(), programs);
-			Collection<ModuleMapEntry> entries = MapProposal.flatten(maps.values());
-			entries = MapProposal.removeOverlapping(entries);
+		if (mappingServiceOptional.isPresent()) {
+			DebuggerStaticMappingService mappingService = mappingServiceOptional.get();
+			Map<?, ModuleMapProposal> maps = mappingService.proposeModuleMaps(
+					trace.getModuleManager().getAllModules(), programs
+			);
+			Collection<ModuleMapEntry> entries = MapProposal.removeOverlapping(
+					MapProposal.flatten(maps.values())
+			);
 			mappingService.addModuleMappings(entries, monitor, false);
 		}
 	}

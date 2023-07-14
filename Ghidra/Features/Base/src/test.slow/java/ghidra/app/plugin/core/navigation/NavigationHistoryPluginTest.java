@@ -73,7 +73,7 @@ public class NavigationHistoryPluginTest extends AbstractGhidraHeadedIntegration
 		nextPrevPlugin = env.getPlugin(NextPrevAddressPlugin.class);
 		plugin = env.getPlugin(NavigationHistoryPlugin.class);
 		cb = env.getPlugin(CodeBrowserPlugin.class);
-		goToService = tool.getService(GoToService.class);
+		goToService = tool.getService(GoToService.class).orElseThrow();
 		navigatable = goToService.getDefaultNavigatable();
 		prevAction = getAction(nextPrevPlugin, "Previous Location in History");
 		nextAction = getAction(nextPrevPlugin, "Next Location in History");

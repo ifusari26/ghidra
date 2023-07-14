@@ -25,6 +25,7 @@ import java.util.stream.Stream;
 import javax.swing.*;
 import javax.swing.table.TableColumnModel;
 
+import ghidra.program.model.correlate.Hash;
 import org.apache.commons.lang3.StringUtils;
 
 import docking.DialogComponentProvider;
@@ -212,24 +213,19 @@ public class SetEquateDialog extends DialogComponentProvider {
 	}
 
 	private Set<EquateRowObject> createEntriesFromDataTypeManager() {
-
-		DataTypeManagerService service = tool.getService(DataTypeManagerService.class);
-		if (service == null) {
-			return new HashSet<>();
-		}
-
-		Set<EquateRowObject> entries = new HashSet<>();
-
-		//@formatter:off
-		service.getSortedDataTypeList()
-			.stream()
-			.filter(dt -> dt instanceof Enum)
-			.map(Enum.class::cast)
-			.flatMap(this::enumToRowObjects)
-			.forEach(entries::add);
-		//@formatter:on
-
-		return entries;
+		return tool
+				.getService(DataTypeManagerService.class)
+				.map(
+						service -> service
+								.getSortedDataTypeList()
+								.stream()
+								.filter(dt -> dt instanceof Enum)
+								.map(Enum.class::cast)
+								.flatMap(this::enumToRowObjects)
+								.collect(Collectors.toSet())
+				)
+				// If it doesn't exist, return an empty HashSet<>
+				.orElse(new HashSet<>());
 	}
 
 	private Stream<EquateRowObject> enumToRowObjects(Enum enoom) {

@@ -19,6 +19,8 @@ import ghidra.app.services.GoToService;
 import ghidra.framework.plugintool.ServiceProvider;
 import ghidra.framework.plugintool.util.ServiceListener;
 
+import java.util.Optional;
+
 /**
  * This provides services, but overrides and implements its own goTo for one of the listing 
  * panels in a dual listing code comparison panel.
@@ -41,7 +43,7 @@ class DualListingServiceProvider implements ServiceProvider {
 	DualListingServiceProvider(ServiceProvider serviceProvider, ListingCodeComparisonPanel panel,
 			boolean isLeftPanel) {
 		this.serviceProvider = serviceProvider;
-		GoToService goToService = serviceProvider.getService(GoToService.class);
+		GoToService goToService = serviceProvider.getService(GoToService.class).orElseThrow();
 		this.dualListingGoToService = new DualListingGoToService(goToService, panel, isLeftPanel);
 	}
 
@@ -51,9 +53,9 @@ class DualListingServiceProvider implements ServiceProvider {
 	}
 
 	@Override
-	public <T> T getService(Class<T> serviceClass) {
+	public <T> Optional<T> getService(Class<T> serviceClass) {
 		if (serviceClass == GoToService.class) {
-			return serviceClass.cast(dualListingGoToService);
+			return Optional.of(serviceClass.cast(dualListingGoToService));
 		}
 		return serviceProvider.getService(serviceClass);
 	}

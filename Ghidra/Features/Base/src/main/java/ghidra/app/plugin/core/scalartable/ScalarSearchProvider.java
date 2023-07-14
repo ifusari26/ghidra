@@ -218,7 +218,7 @@ public class ScalarSearchProvider extends ComponentProviderAdapter {
 		scalarModel.addTableModelListener(
 			e -> setSubTitle(primarySubTitle + ' ' + scalarModel.getRowCount() + " items"));
 
-		GoToService goToService = tool.getService(GoToService.class);
+		GoToService goToService = tool.getService(GoToService.class).orElseThrow();
 		scalarTable.installNavigation(goToService, goToService.getDefaultNavigatable());
 
 		mainPanel = new JPanel(new BorderLayout());

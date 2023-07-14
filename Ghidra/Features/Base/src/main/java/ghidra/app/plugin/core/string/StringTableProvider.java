@@ -518,7 +518,7 @@ public class StringTableProvider extends ComponentProviderAdapter implements Dom
 
 		stringModel.addTableModelListener(e -> updateSubTitle());
 
-		GoToService goToService = tool.getService(GoToService.class);
+		GoToService goToService = tool.getService(GoToService.class).orElseThrow();
 		table.installNavigation(goToService, goToService.getDefaultNavigatable());
 		table.setDefaultRenderer(FoundString.DefinedState.class, new DefinedColumnRenderer());
 

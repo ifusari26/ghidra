@@ -87,13 +87,13 @@ public class CommentFieldMouseHandler implements FieldMouseHandlerExtension {
 			return false;
 		}
 		ProgramLocation location = sourceNavigatable.getLocation();
-		GoToService goToService = serviceProvider.getService(GoToService.class);
-		if (goToService == null) {
-			return false;
-		}
 		QueryData queryData = new QueryData(wordString, false);
-		return goToService.goToQuery(sourceNavigatable, location.getAddress(), queryData, null,
-			null);
-
+		// If the provider exists, return the value of the operation or else false.
+		return serviceProvider
+				.getService(GoToService.class)
+				.map(service -> service.goToQuery(
+						sourceNavigatable, location.getAddress(), queryData, null, null
+				))
+				.orElse(false);
 	}
 }

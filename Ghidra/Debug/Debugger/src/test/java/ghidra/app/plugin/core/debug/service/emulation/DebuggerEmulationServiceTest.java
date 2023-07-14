@@ -268,7 +268,7 @@ public class DebuggerEmulationServiceTest extends AbstractGhidraHeadedDebuggerGU
 		waitForSwing();
 
 		DebuggerStaticMappingService mappings =
-			tool.getService(DebuggerStaticMappingService.class);
+			tool.getService(DebuggerStaticMappingService.class).orElseThrow();
 		CompletableFuture<Void> settled;
 		TraceThread thread;
 		TraceMemorySpace regs;

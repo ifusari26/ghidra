@@ -358,8 +358,9 @@ public class EnumEditorProvider extends ComponentProviderAdapter
 	}
 
 	private void showDataEnumInTree() {
-		DataTypeManagerService dtmService = tool.getService(DataTypeManagerService.class);
-		dtmService.setDataTypeSelected(originalEnum);
+		tool.getService(DataTypeManagerService.class).ifPresent(service -> {
+			service.setDataTypeSelected(originalEnum);
+		});
 	}
 
 	/**

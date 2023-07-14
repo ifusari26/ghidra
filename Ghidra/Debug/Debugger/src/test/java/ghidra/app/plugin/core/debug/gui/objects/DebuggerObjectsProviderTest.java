@@ -35,8 +35,8 @@ public class DebuggerObjectsProviderTest extends AbstractGhidraHeadedDebuggerGUI
 		objectsPlugin = addPlugin(tool, DebuggerObjectsPlugin.class);
 		objectsProvider = waitForComponentProvider(DebuggerObjectsProvider.class);
 
-		mappingService = tool.getService(DebuggerStaticMappingService.class);
-		codeViewer = tool.getService(CodeViewerService.class);
+		mappingService = tool.getService(DebuggerStaticMappingService.class).orElseThrow();
+		codeViewer = tool.getService(CodeViewerService.class).orElseThrow();
 	}
 
 	@Test

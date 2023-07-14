@@ -44,17 +44,19 @@ public class PCodeDfgAction extends AbstractDecompilerAction {
 	@Override
 	protected void decompilerActionPerformed(DecompilerActionContext context) {
 		PluginTool tool = context.getTool();
-		GraphDisplayBroker service = tool.getService(GraphDisplayBroker.class);
-		if (service == null) {
-			Msg.showError(this, tool.getToolFrame(), "AST Graph Failed",
-				"Graph Display Broker service not found!\n" +
-					"Please add a Graph Display Broker service");
-			return;
-		}
-
-		HighFunction highFunction = context.getHighFunction();
-		PCodeDfgGraphTask task = new PCodeDfgGraphTask(tool, service, highFunction);
-		new TaskLauncher(task, tool.getToolFrame());
+		tool.getService(GraphDisplayBroker.class).ifPresentOrElse(
+				service -> {
+					HighFunction highFunction = context.getHighFunction();
+					PCodeDfgGraphTask task = new PCodeDfgGraphTask(tool, service, highFunction);
+					new TaskLauncher(task, tool.getToolFrame());
+				},
+				() -> Msg.showError(
+						this,
+						tool.getToolFrame(),
+						"AST Graph Failed",
+						"Graph Display Broker service not found!\n" + "Please add a Graph Display Broker service"
+				)
+		);
 	}
 
 }

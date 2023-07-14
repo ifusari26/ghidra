@@ -240,29 +240,30 @@ public class CppExporter extends Exporter {
 		}
 	}
 
-	private void configureOptions(Program program) {
-		if (!userSuppliedOptions) {
-			options = new DecompileOptions();
-
-			if (provider != null) {
-				OptionsService service = provider.getService(OptionsService.class);
-				if (service != null) {
-					ToolOptions fieldOptions =
-						service.getOptions(GhidraOptions.CATEGORY_BROWSER_FIELDS);
-					ToolOptions opt = service.getOptions("Decompiler");
-					options.grabFromToolAndProgram(fieldOptions, opt, program);
-				}
-			}
-			else {
-				options.grabFromProgram(program);	// Let headless pull program specific options
-			}
-
-			if (isUseCppStyleComments) {
-				options.setCommentStyle(CommentStyleEnum.CPPStyle);
-			}
-			else {
-				options.setCommentStyle(CommentStyleEnum.CStyle);
-			}
+	private void configureOptions(final Program program) {
+		if (userSuppliedOptions) {
+			return;
+		}
+		options = new DecompileOptions();
+		if (provider != null) {
+			provider
+					.getService(OptionsService.class)
+					.ifPresent(
+							service -> {
+								ToolOptions fieldOptions =
+										service.getOptions(GhidraOptions.CATEGORY_BROWSER_FIELDS);
+								ToolOptions opt = service.getOptions("Decompiler");
+								options.grabFromToolAndProgram(fieldOptions, opt, program);
+							}
+					);
+		} else {
+			// Let headless pull program specific options
+			options.grabFromProgram(program);
+		}
+		if (isUseCppStyleComments) {
+			options.setCommentStyle(CommentStyleEnum.CPPStyle);
+		} else {
+			options.setCommentStyle(CommentStyleEnum.CStyle);
 		}
 	}
 

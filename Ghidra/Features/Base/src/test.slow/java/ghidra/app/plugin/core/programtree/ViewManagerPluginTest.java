@@ -83,10 +83,10 @@ public class ViewManagerPluginTest extends AbstractGhidraHeadedIntegrationTest {
 		builder.createProgramTree("Tree Three");
 		builder.createFragment("Tree Three", "", ".text", "0x1001000", "0x10011ff");
 
-		programMgr = tool.getService(ProgramManager.class);
+		programMgr = tool.getService(ProgramManager.class).orElseThrow();
 		programMgr.openProgram(program.getDomainFile());
 
-		ViewManagerService vms = tool.getService(ViewManagerService.class);
+		ViewManagerService vms = tool.getService(ViewManagerService.class).orElseThrow();
 		provider = (ViewManagerComponentProvider) vms;
 		tool.showComponentProvider(provider, true);
 

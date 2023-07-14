@@ -63,8 +63,9 @@ public class OpenFunctionTableAction extends DockingAction {
 		super("Add Functions To Comparison", provider.getOwner());
 
 		this.tool = tool;
-		this.programManagerService = tool.getService(ProgramManager.class);
-		this.comparisonService = tool.getService(FunctionComparisonService.class);
+		// Required
+		this.programManagerService = tool.getService(ProgramManager.class).orElseThrow();
+		this.comparisonService = tool.getService(FunctionComparisonService.class).orElseThrow();
 
 		setDescription("Add functions to comparison");
 		setPopupMenuData(new MenuData(new String[] { "Add functions" }, ADD_TO_COMPARISON_ICON,

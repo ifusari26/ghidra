@@ -4,9 +4,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,6 +18,8 @@ package ghidra.app.util.viewer.field;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 import ghidra.app.nav.Navigatable;
 import ghidra.app.nav.NavigationUtils;
@@ -37,74 +39,67 @@ import ghidra.util.table.field.OutgoingReferenceEndpoint;
  */
 public class MnemonicFieldMouseHandler implements FieldMouseHandlerExtension {
 
-	private final static Class<?>[] SUPPORTED_CLASSES = new Class[] { MnemonicFieldLocation.class };
+    private final static Class<?>[] SUPPORTED_CLASSES = new Class[]{MnemonicFieldLocation.class};
 
-	@Override
-	public boolean fieldElementClicked(Object clickedObject, Navigatable sourceNavigatable,
-			ProgramLocation location, MouseEvent mouseEvent, ServiceProvider serviceProvider) {
+    @Override
+    public boolean fieldElementClicked(Object clickedObject, Navigatable sourceNavigatable,
+                                       ProgramLocation location, MouseEvent mouseEvent, ServiceProvider serviceProvider) {
 
-		if (mouseEvent.getClickCount() != 2 || mouseEvent.getButton() != MouseEvent.BUTTON1) {
-			return false;
-		}
+        if (mouseEvent.getClickCount() != 2 || mouseEvent.getButton() != MouseEvent.BUTTON1) {
+            return false;
+        }
 
-		ProgramManager programManager = serviceProvider.getService(ProgramManager.class);
-		if (programManager == null) {
-			return false;
-		}
-		Program program = programManager.getCurrentProgram();
-		Listing listing = program.getListing();
-		CodeUnit codeUnit = listing.getCodeUnitAt(location.getAddress());
-		return checkMemReferences(codeUnit, serviceProvider);
-	}
+        return serviceProvider.getService(ProgramManager.class)
+                .map(programManager -> {
+                    Program program = programManager.getCurrentProgram();
+                    Listing listing = program.getListing();
+                    CodeUnit codeUnit = listing.getCodeUnitAt(location.getAddress());
+                    return checkMemReferences(codeUnit, serviceProvider);
+                })
+                .orElse(false);
+    }
 
-	private boolean checkMemReferences(CodeUnit codeUnit, ServiceProvider serviceProvider) {
+    private boolean checkMemReferences(CodeUnit codeUnit, ServiceProvider serviceProvider) {
+        if (codeUnit == null) {
+            return false;
+        }
 
-		if (codeUnit == null) {
-			return false;
-		}
+        Reference[] refs = codeUnit.getMnemonicReferences();
+        if (refs.length > 1) {
+            List<OutgoingReferenceEndpoint> outgoingReferences = new ArrayList<OutgoingReferenceEndpoint>();
+            for (Reference reference : refs) {
+                outgoingReferences.add(new OutgoingReferenceEndpoint(reference,
+                        ReferenceUtils.isOffcut(codeUnit.getProgram(), reference.getToAddress())));
+            }
 
-		Reference[] refs = codeUnit.getMnemonicReferences();
-		if (refs.length > 1) {
-			List<OutgoingReferenceEndpoint> outgoingReferences = new ArrayList<OutgoingReferenceEndpoint>();
-			for (Reference reference : refs) {
-				outgoingReferences.add(new OutgoingReferenceEndpoint(reference,
-					ReferenceUtils.isOffcut(codeUnit.getProgram(), reference.getToAddress())));
-			}
+            IncomingReferencesTableModel model =
+                    new IncomingReferencesTableModel("Mnemonic", serviceProvider,
+                            codeUnit.getProgram(), outgoingReferences, null);
 
-			IncomingReferencesTableModel model =
-				new IncomingReferencesTableModel("Mnemonic", serviceProvider,
-					codeUnit.getProgram(), outgoingReferences, null);
+            Optional<TableService> service = serviceProvider.getService(TableService.class);
+            if (service.isPresent()) {
+                Navigatable nav = NavigationUtils.getActiveNavigatable();
+                service.get().showTable("Mnemonic", "Mnemonic", model, "References", nav);
+                return true;
+            }
+        } else if (refs.length == 1) {
+            SymbolTable st = codeUnit.getProgram().getSymbolTable();
+            Symbol symbol = st.getSymbol(refs[0]);
 
-			TableService service = serviceProvider.getService(TableService.class);
-			if (service != null) {
-				Navigatable nav = NavigationUtils.getActiveNavigatable();
-				service.showTable("Mnemonic", "Mnemonic", model, "References", nav);
-				return true;
-			}
-		}
-		else if (refs.length == 1) {
-			SymbolTable st = codeUnit.getProgram().getSymbolTable();
-			Symbol symbol = st.getSymbol(refs[0]);
+            final AtomicReference<ProgramLocation> loc = new AtomicReference<>();
+            if (symbol != null) {
+                loc.set(symbol.getProgramLocation());
+            } else {
+                loc.set(new AddressFieldLocation(codeUnit.getProgram(), refs[0].getToAddress()));
+            }
 
-			ProgramLocation loc = null;
-			if (symbol != null) {
-				loc = symbol.getProgramLocation();
-			}
-			else {
-				loc = new AddressFieldLocation(codeUnit.getProgram(), refs[0].getToAddress());
-			}
+            serviceProvider.getService(GoToService.class).ifPresent(service -> service.goTo(loc.get()));
+        }
+        return false;
+    }
 
-			GoToService goToService = serviceProvider.getService(GoToService.class);
-			if (goToService != null) {
-				return goToService.goTo(loc);
-			}
-		}
-
-		return false;
-	}
-
-	@Override
-	public Class<?>[] getSupportedProgramLocations() {
-		return SUPPORTED_CLASSES;
-	}
+    @Override
+    public Class<?>[] getSupportedProgramLocations() {
+        return SUPPORTED_CLASSES;
+    }
 }

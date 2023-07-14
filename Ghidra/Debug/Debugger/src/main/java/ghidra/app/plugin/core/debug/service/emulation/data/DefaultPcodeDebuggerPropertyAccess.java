@@ -23,6 +23,8 @@ import ghidra.program.util.ProgramLocation;
 import ghidra.trace.model.DefaultTraceLocation;
 import ghidra.trace.model.Lifespan;
 
+import java.util.Optional;
+
 /**
  * The default trace-and-debugger-property access shim
  *
@@ -52,24 +54,33 @@ public class DefaultPcodeDebuggerPropertyAccess<T>
 
 	@Override
 	protected T whenNull(Address hostAddress) {
-		DebuggerStaticMappingService mappingService =
-			data.getTool().getService(DebuggerStaticMappingService.class);
-		if (mappingService == null) {
+		final Optional<DebuggerStaticMappingService> mappingServiceOptional = data.getTool().getService(
+				DebuggerStaticMappingService.class
+		);
+		if (mappingServiceOptional.isEmpty()) {
 			return super.whenNull(hostAddress);
 		}
-		ProgramLocation progLoc = mappingService.getOpenMappedLocation(new DefaultTraceLocation(
-			data.getPlatform().getTrace(), null, Lifespan.at(data.getSnap()), hostAddress));
-		if (progLoc == null) {
+		final DebuggerStaticMappingService mappingService = mappingServiceOptional.get();
+		final ProgramLocation programLocation = mappingService.getOpenMappedLocation(
+				new DefaultTraceLocation(
+						data.getPlatform().getTrace(),
+						null,
+						Lifespan.at(data.getSnap()),
+						hostAddress
+				)
+		);
+		if (programLocation == null) {
 			return super.whenNull(hostAddress);
 		}
-
 		// NB. This is stored in the program, not the user data, despite what the name implies
-		PropertyMap<?> map =
-			progLoc.getProgram().getUsrPropertyManager().getPropertyMap(name);
+		final PropertyMap<?> map = programLocation
+				.getProgram()
+				.getUsrPropertyManager()
+				.getPropertyMap(name);
 		if (map == null) {
 			return super.whenNull(hostAddress);
 		}
-		Object object = map.get(progLoc.getByteAddress());
+		Object object = map.get(programLocation.getByteAddress());
 		if (!type.isInstance(object)) {
 			// TODO: Warn?
 			return super.whenNull(hostAddress);

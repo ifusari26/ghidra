@@ -49,7 +49,7 @@ public class DebuggerPlatformPluginTest extends AbstractGhidraHeadedDebuggerGUIT
 	@Before
 	public void setUpPlatformTest() throws Throwable {
 		platformPlugin = addPlugin(tool, DebuggerPlatformPlugin.class);
-		platformService = tool.getService(DebuggerPlatformService.class);
+		platformService = tool.getService(DebuggerPlatformService.class).orElseThrow();
 	}
 
 	protected void chooseLanguageIDViaMore(LanguageID langID) {
@@ -59,7 +59,7 @@ public class DebuggerPlatformPluginTest extends AbstractGhidraHeadedDebuggerGUIT
 		dialog.setFilterRecommended(false);
 		waitForSwing();
 
-		List<DebuggerPlatformOffer> offers = runSwing(() -> dialog.getDisplayedOffers());
+		List<DebuggerPlatformOffer> offers = runSwing(dialog::getDisplayedOffers);
 		DebuggerPlatformOffer toyOffer = offers.stream()
 				.filter(o -> Objects.equals(langID, o.getLanguageID()))
 				.findFirst()

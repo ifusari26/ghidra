@@ -234,8 +234,7 @@ public class DataPlugin extends Plugin implements DataService {
 	 * Initialize services used
 	 */
 	private void initializeServices() {
-
-		dtmService = tool.getService(DataTypeManagerService.class);
+		dtmService = tool.getService(DataTypeManagerService.class).orElseThrow();
 		if (dtmService == null) {
 			throw new AssertException("DataTypeManagerService was not found!");
 		}

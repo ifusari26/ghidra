@@ -275,10 +275,7 @@ public class ProgramByteViewerComponentProvider extends ByteViewerComponentProvi
 				tool.setStatusInfo("Program location not applicable for this provider!");
 				return false;
 			}
-			ProgramManager programManagerService = tool.getService(ProgramManager.class);
-			if (programManagerService != null) {
-				programManagerService.setCurrentProgram(gotoProgram);
-			}
+			tool.getService(ProgramManager.class).ifPresent(service -> service.setCurrentProgram(gotoProgram));
 		}
 		setLocation(location, false);
 		return true;

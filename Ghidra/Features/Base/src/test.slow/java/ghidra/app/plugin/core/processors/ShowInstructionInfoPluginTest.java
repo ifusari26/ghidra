@@ -82,7 +82,7 @@ public class ShowInstructionInfoPluginTest extends AbstractGhidraHeadedIntegrati
 		builder.setBytes(startAddressString, BYTES);
 		builder.disassemble(startAddressString, BYTES.length);
 		program = builder.getProgram();
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		pm.openProgram(program.getDomainFile());
 	}
 
@@ -284,7 +284,7 @@ public class ShowInstructionInfoPluginTest extends AbstractGhidraHeadedIntegrati
 		assertEquals(1, list.size());
 		assertNotNull(getCurrentComponentProviderFromPlugin());
 
-		final ProgramManager pm = tool.getService(ProgramManager.class);
+		final ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		runSwing(() -> pm.closeProgram());
 		list = getDisconnectedProviderList();
 		//should only be the dynamic provider left
@@ -370,10 +370,10 @@ public class ShowInstructionInfoPluginTest extends AbstractGhidraHeadedIntegrati
 	 * @return The instruction at the new location or null if there is no
 	 *         instruction.
 	 */
-	private Instruction changeLocationToAddress(String addressString) throws Exception {
+	private Instruction changeLocationToAddress(String addressString) {
 		CodeBrowserPlugin cbp = env.getPlugin(CodeBrowserPlugin.class);
 		final Address address = program.getAddressFactory().getAddress(addressString);
-		final GoToService goToService = tool.getService(GoToService.class);
+		final GoToService goToService = tool.getService(GoToService.class).orElseThrow();
 		runSwing(() -> goToService.goTo(new AddressFieldLocation(program, address)));
 
 		waitForSwing();

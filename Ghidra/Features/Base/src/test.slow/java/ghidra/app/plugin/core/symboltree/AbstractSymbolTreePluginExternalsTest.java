@@ -456,7 +456,7 @@ public abstract class AbstractSymbolTreePluginExternalsTest
 	}
 
 	protected void closeProgram() throws Exception {
-		ProgramManager pm = tool.getService(ProgramManager.class);
+		ProgramManager pm = tool.getService(ProgramManager.class).orElseThrow();
 		runSwing(() -> pm.closeProgram());
 	}
 

@@ -4,9 +4,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,58 +36,56 @@ import ghidra.util.HelpLocation;
 
 public class GotoPreviousFunctionAction extends NavigatableContextAction {
 
-	private PluginTool tool;
+    private PluginTool tool;
 
-	public GotoPreviousFunctionAction(PluginTool tool, String owner) {
-		super("Go To Previous Function", owner);
-		this.tool = tool;
+    public GotoPreviousFunctionAction(PluginTool tool, String owner) {
+        super("Go To Previous Function", owner);
+        this.tool = tool;
 
-		MenuData menuData =
-			new MenuData(new String[] { ToolConstants.MENU_NAVIGATION, "Go To Previous Function" },
-				null, "GoTo");
-		menuData.setMenuSubGroup("zb");
-		setMenuBarData(menuData);
-		KeyStroke keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_UP, InputEvent.CTRL_DOWN_MASK);
-		setKeyBindingData(new KeyBindingData(keyStroke));
-		setHelpLocation(new HelpLocation(HelpTopics.NAVIGATION, "Next_Previous_Function"));
-		addToWindowWhen(NavigatableActionContext.class);
-	}
+        MenuData menuData =
+                new MenuData(new String[]{ToolConstants.MENU_NAVIGATION, "Go To Previous Function"},
+                        null, "GoTo");
+        menuData.setMenuSubGroup("zb");
+        setMenuBarData(menuData);
+        KeyStroke keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_UP, InputEvent.CTRL_DOWN_MASK);
+        setKeyBindingData(new KeyBindingData(keyStroke));
+        setHelpLocation(new HelpLocation(HelpTopics.NAVIGATION, "Next_Previous_Function"));
+        addToWindowWhen(NavigatableActionContext.class);
+    }
 
-	private Function getPreviousFunction(Program program, Address address) {
-		FunctionIterator functionIterator = program.getListing().getFunctions(address, false);
-		if (!functionIterator.hasNext()) {
-			return null;
-		}
-		Function nextFunction = functionIterator.next();
-		if (!nextFunction.getEntryPoint().equals(address)) {
-			return nextFunction;
-		}
-		if (!functionIterator.hasNext()) {
-			return null;
-		}
-		return functionIterator.next();
-	}
+    private Function getPreviousFunction(Program program, Address address) {
+        FunctionIterator functionIterator = program.getListing().getFunctions(address, false);
+        if (!functionIterator.hasNext()) {
+            return null;
+        }
+        Function nextFunction = functionIterator.next();
+        if (!nextFunction.getEntryPoint().equals(address)) {
+            return nextFunction;
+        }
+        if (!functionIterator.hasNext()) {
+            return null;
+        }
+        return functionIterator.next();
+    }
 
-	@Override
-	protected void actionPerformed(NavigatableActionContext context) {
-		Address address = context.getAddress();
-		Program program = context.getProgram();
-		Function function = getPreviousFunction(program, address);
-		if (function == null) {
-			return;
-		}
+    @Override
+    protected void actionPerformed(NavigatableActionContext context) {
+        Address address = context.getAddress();
+        Program program = context.getProgram();
+        Function function = getPreviousFunction(program, address);
+        if (function == null) {
+            return;
+        }
 
-		GoToService service = tool.getService(GoToService.class);
-		if (service != null) {
-			FunctionSignatureFieldLocation location = new FunctionSignatureFieldLocation(program,
-				function.getEntryPoint(), null, 0, function.getPrototypeString(false, false));
-
-			Navigatable navigatable = context.getNavigatable();
-			service.goTo(navigatable, location, navigatable.getProgram());
-		}
-		else {
-			tool.setStatusInfo("Can't find Go To Service!");
-		}
-	}
+        tool.getService(GoToService.class).ifPresentOrElse(
+                service -> {
+                    FunctionSignatureFieldLocation location = new FunctionSignatureFieldLocation(program,
+                            function.getEntryPoint(), null, 0, function.getPrototypeString(false, false));
+                    Navigatable navigatable = context.getNavigatable();
+                    service.goTo(navigatable, location, navigatable.getProgram());
+                },
+                () -> tool.setStatusInfo("Can't find Go To Service!")
+        );
+    }
 
 }

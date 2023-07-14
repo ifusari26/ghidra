@@ -126,8 +126,7 @@ class CommentWindowProvider extends ComponentProviderAdapter {
 			setSubTitle(buffy.toString());
 		});
 
-		GoToService goToService = tool.getService(GoToService.class);
-		commentTable.installNavigation(goToService, goToService.getDefaultNavigatable());
+		tool.getService(GoToService.class).ifPresent(service -> commentTable.installNavigation(service, service.getDefaultNavigatable()));
 
 		JTableHeader commentHeader = commentTable.getTableHeader();
 		commentHeader.setUpdateTableInRealTime(true);

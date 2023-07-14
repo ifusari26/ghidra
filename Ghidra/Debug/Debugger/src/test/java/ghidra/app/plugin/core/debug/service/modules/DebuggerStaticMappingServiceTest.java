@@ -53,7 +53,7 @@ public class DebuggerStaticMappingServiceTest extends AbstractGhidraHeadedDebugg
 	@Before
 	public void setUpStaticMappingService() throws Exception {
 		addPlugin(tool, DebuggerStaticMappingServicePlugin.class);
-		mappingService = tool.getService(DebuggerStaticMappingService.class);
+		mappingService = tool.getService(DebuggerStaticMappingService.class).orElseThrow();
 
 		createTrace();
 		intoProject(tb.trace);

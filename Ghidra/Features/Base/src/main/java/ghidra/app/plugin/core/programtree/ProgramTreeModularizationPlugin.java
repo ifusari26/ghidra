@@ -121,26 +121,34 @@ public class ProgramTreeModularizationPlugin extends ProgramPlugin {
 	/**
 	 * Method createTree.
 	 */
+	@SuppressWarnings("deprecation")
 	private void applyDominanceAlgorithm(ProgramNode node) {
-		BlockModelService blockModelService = tool.getService(BlockModelService.class);
-
-		DominanceModularizationCmd cmd =
-			new DominanceModularizationCmd(node.getGroupPath(), node.getGroup().getTreeName(),
-				currentSelection, blockModelService.getActiveSubroutineModel());
-		tool.executeBackgroundCommand(cmd, currentProgram);
+		tool.getService(BlockModelService.class).ifPresent(service -> {
+			DominanceModularizationCmd cmd = new DominanceModularizationCmd(
+							node.getGroupPath(),
+							node.getGroup().getTreeName(),
+							currentSelection,
+							service.getActiveSubroutineModel()
+			);
+			tool.executeBackgroundCommand(cmd, currentProgram);
+		});
 	}
 
 	/**
 	 * Method createTree.
 	 */
+	@SuppressWarnings("deprecation")
 	private void applyComplexityDepthAlgorithm(ProgramNode node) {
-		BlockModelService blockModelService = tool.getService(BlockModelService.class);
-
-		ComplexityDepthModularizationCmd cmd =
-			new ComplexityDepthModularizationCmd(node.getGroupPath(),
-				node.getGroup().getTreeName(), currentSelection,
-				blockModelService.getActiveSubroutineModel());
-		tool.executeBackgroundCommand(cmd, currentProgram);
+		tool.getService(BlockModelService.class).ifPresent(service -> {
+			ComplexityDepthModularizationCmd cmd =
+					new ComplexityDepthModularizationCmd(
+							node.getGroupPath(),
+							node.getGroup().getTreeName(),
+							currentSelection,
+							service.getActiveSubroutineModel()
+			);
+			tool.executeBackgroundCommand(cmd, currentProgram);
+		});
 	}
 
 }
